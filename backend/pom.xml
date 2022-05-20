@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>user-manager-system</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>User Manager System</name>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>com.biit</groupId>
+        <artifactId>versions</artifactId>
+        <version>[0.1,0.2)</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+
+    <modules>
+        <module>user-manager-system-logger</module>
+        <module>user-manager-system-persistence</module>
+        <module>user-manager-system-core</module>
+        <module>user-manager-system-rest</module>
+    </modules>
+
+    <scm>
+        <connection>scm:git:git.biit-solutions.com:BiiT/UserManagerSystem.git</connection>
+        <developerConnection>scm:git:git.biit-solutions.com:BiiT/UserManagerSystem.git</developerConnection>
+        <tag>UserManagerSystem</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>libs-releases</name>
+            <url>https://artifactory.biit-solutions.com/artifactory/libs-release</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>libs-snapshot</name>
+            <url>https://artifactory.biit-solutions.com/artifactory/libs-snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
+    <properties>
+        <main.basedir>${project.basedir}</main.basedir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.jdk.version}</source>
+                    <target>${java.jdk.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle.version}</version>
+                <configuration>
+                    <configLocation>${main.basedir}/checkstyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

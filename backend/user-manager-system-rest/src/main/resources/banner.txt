@@ -1,0 +1,12 @@
+${AnsiColor.BRIGHT_YELLOW}${AnsiStyle.BOLD}
+,--. ,--.                           ,--.   ,--.
+|  | |  |  ,---.   ,---.  ,--.--.   |   `.'   |  ,--,--. ,--,--,   ,--,--.  ,---.   ,---.  ,--.--.
+|  | |  | (  .-'  | .-. : |  .--'   |  |'.'|  | ' ,-.  | |      \ ' ,-.  | | .-. | | .-. : |  .--'
+'  '-'  ' .-'  `) \   --. |  |      |  |   |  | \ '-'  | |  ||  | \ '-'  | ' '-' ' \   --. |  |
+ `-----'  `----'   `----' `--'      `--'   `--'  `--`--' `--''--'  `--`--' .`-  /   `----' `--'
+                                                                           `---'
+${AnsiColor.CYAN}${AnsiStyle.BOLD}
+::  User Manager System  ::  (v${application.version})
+::  Java                 ::  (v${java.version})
+::  Spring Boot          ::  (v${spring-boot.version})
+${AnsiStyle.NORMAL}
