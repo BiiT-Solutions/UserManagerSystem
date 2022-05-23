@@ -21,6 +21,14 @@
             <artifactId>user-manager-system-persistence</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.biit</groupId>
+            <artifactId>user-manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
         <!-- Testing -->
         <dependency>
             <groupId>org.testng</groupId>
