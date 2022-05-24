@@ -3,6 +3,7 @@ package com.biit.usermanager.core.controller;
 import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
+import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
@@ -21,5 +22,10 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     @Override
     protected UserConverterRequest createConverterRequest(User entity) {
         return new UserConverterRequest(entity);
+    }
+
+    public UserDTO getByUserName(String username) {
+        return converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                "No User with username '" + username + "' found on the system."))));
     }
 }

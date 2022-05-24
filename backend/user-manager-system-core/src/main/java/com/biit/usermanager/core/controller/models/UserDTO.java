@@ -1,5 +1,6 @@
 package com.biit.usermanager.core.controller.models;
 
+import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
 
-public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails {
+public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAuthenticatedUser<Long> {
     private String idCard;
 
     private String username = "";
@@ -18,6 +19,8 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails {
     private String lastname = "";
 
     private String email = "";
+
+    private String phone = "";
 
     private Locale locale;
 
@@ -44,6 +47,18 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public String getFullName() {
+        return (getFirstName() != null ? getFirstName() : "") +
+                (getFirstName() != null && getLastName() != null ? " " : "") +
+                (getLastName() != null ? getLastName() : "");
+    }
+
+    @Override
+    public String getMobilePhone() {
+        return getPhone();
     }
 
     @Override
@@ -170,6 +185,14 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails {
 
     public void setAccountBlocked(boolean accountBlocked) {
         this.accountBlocked = accountBlocked;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     @Override

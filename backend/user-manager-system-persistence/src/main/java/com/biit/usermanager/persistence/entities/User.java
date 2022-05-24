@@ -37,6 +37,10 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String email = "";
 
+    @Column(name = "phone", nullable = false)
+    @Convert(converter = StringCryptoConverter.class)
+    private String phone = "";
+
     @Column(name = "locale")
     @Convert(converter = LocaleCryptoConverter.class)
     private String locale = "";
@@ -159,6 +163,14 @@ public class User extends Element {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     @Override

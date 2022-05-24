@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>com.biit</groupId>
-            <artifactId>rest-server</artifactId>
+            <artifactId>rest-server-security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.modelmapper</groupId>
