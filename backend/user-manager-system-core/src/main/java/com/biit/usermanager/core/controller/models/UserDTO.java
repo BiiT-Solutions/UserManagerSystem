@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
 
-public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAuthenticatedUser<Long> {
+public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAuthenticatedUser {
     private String idCard;
 
     private String username = "";
@@ -203,6 +203,11 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
     @Override
     public Long getUniqueId() {
         return getId();
+    }
+
+    @Override
+    public String getUID() {
+        return getId().toString();
     }
 
     @Override

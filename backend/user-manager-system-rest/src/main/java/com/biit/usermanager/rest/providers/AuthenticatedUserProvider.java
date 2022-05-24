@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class AuthenticatedUserProvider implements IAuthenticatedUserProvider<Long> {
+public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     private final UserController userController;
 
     @Autowired
@@ -22,7 +22,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider<Lon
     }
 
     @Override
-    public Optional<IAuthenticatedUser<Long>> findByUsername(String username) {
+    public Optional<IAuthenticatedUser> findByUsername(String username) {
         try {
             return Optional.of(userController.getByUserName(username));
         } catch (UserNotFoundException e) {
@@ -32,9 +32,9 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider<Lon
     }
 
     @Override
-    public Optional<IAuthenticatedUser<Long>> findByUniqueId(Long uniqueId) {
+    public Optional<IAuthenticatedUser> findByUID(String uid) {
         try {
-            return Optional.of(userController.get(uniqueId));
+            return Optional.of(userController.get(Long.parseLong(uid)));
         } catch (NotFoundException e) {
             UserManagerLogger.warning(this.getClass(), e.getMessage());
         }
@@ -42,7 +42,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider<Lon
     }
 
     @Override
-    public IAuthenticatedUser<Long> create(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
         return null;
     }
 }
