@@ -2,7 +2,7 @@ package com.biit.usermanager.core.converters;
 
 import com.biit.usermanager.core.controller.models.OrganizationDTO;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
-import com.biit.usermanager.persistence.Organization;
+import com.biit.usermanager.persistence.entities.Organization;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 

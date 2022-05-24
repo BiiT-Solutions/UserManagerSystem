@@ -1,4 +1,4 @@
-package com.biit.usermanager.persistence;
+package com.biit.usermanager.persistence.entities;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;

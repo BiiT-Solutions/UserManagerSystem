@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.converters.models;
 
-import com.biit.usermanager.persistence.User;
+import com.biit.usermanager.persistence.entities.User;
 
 public class UserConverterRequest extends ConverterRequest<User> {
     public UserConverterRequest(User entity) {

@@ -22,7 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @SpringBootApplication
 @ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client"})
 @ConfigurationPropertiesScan({"com.biit.usermanager.rest"})
-@EnableJpaRepositories({"com.biit.usermanager.persistence.repositories"})
+//@EnableJpaRepositories({"com.biit.usermanager.persistence.repositories"})
 @EntityScan({"com.biit.usermanager.persistence.entities"})
 public class UserManagerServer {
 
@@ -36,25 +36,25 @@ public class UserManagerServer {
 		return new LoggableDispatcherServlet();
 	}
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
-			}
-		};
-	}
-
-	@Bean("threadPoolExecutor")
-	public TaskExecutor getAsyncExecutor() {
-		final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(20);
-		executor.setMaxPoolSize(100);
-		executor.setWaitForTasksToCompleteOnShutdown(true);
-		executor.setThreadNamePrefix("Rest_Async-");
-		return executor;
-	}
+//	@Bean
+//	public WebMvcConfigurer corsConfigurer() {
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
+//			}
+//		};
+//	}
+//
+//	@Bean("threadPoolExecutor")
+//	public TaskExecutor getAsyncExecutor() {
+//		final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//		executor.setCorePoolSize(20);
+//		executor.setMaxPoolSize(100);
+//		executor.setWaitForTasksToCompleteOnShutdown(true);
+//		executor.setThreadNamePrefix("Rest_Async-");
+//		return executor;
+//	}
 
 	@Bean
 	public ApplicationListener<ContextRefreshedEvent> startupLoggingListener() {

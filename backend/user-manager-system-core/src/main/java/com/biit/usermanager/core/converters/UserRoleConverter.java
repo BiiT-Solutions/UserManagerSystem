@@ -5,7 +5,7 @@ import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
-import com.biit.usermanager.persistence.UserRole;
+import com.biit.usermanager.persistence.entities.UserRole;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 

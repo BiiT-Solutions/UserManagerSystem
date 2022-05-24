@@ -1,4 +1,4 @@
-package com.biit.usermanager.persistence;
+package com.biit.usermanager.persistence.entities;
 
 import com.biit.database.encryption.StringCryptoConverter;
 import org.hibernate.annotations.Cache;
@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "organizations")
-public class Organization {
+public class Organization extends Element {
 
     @Column(name = "name", nullable = false)
     @Convert(converter = StringCryptoConverter.class)

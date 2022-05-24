@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.converters.models;
 
-import com.biit.usermanager.persistence.Role;
+import com.biit.usermanager.persistence.entities.Role;
 
 public class RoleConverterRequest extends ConverterRequest<Role> {
     public RoleConverterRequest(Role entity) {

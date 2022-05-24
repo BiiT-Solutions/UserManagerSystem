@@ -1,4 +1,4 @@
-package com.biit.usermanager.persistence;
+package com.biit.usermanager.persistence.entities;
 
 import com.biit.database.encryption.StringCryptoConverter;
 import org.hibernate.annotations.Cache;
