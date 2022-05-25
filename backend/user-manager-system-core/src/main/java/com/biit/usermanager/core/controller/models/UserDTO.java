@@ -3,11 +3,13 @@ package com.biit.usermanager.core.controller.models;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Set;
 
 public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAuthenticatedUser {
     private String idCard;
@@ -43,6 +45,8 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
     public void setIdCard(String idCard) {
         this.idCard = idCard;
     }
+
+    private Set<SimpleGrantedAuthority> grantedAuthorities;
 
     @Override
     public String getUsername() {
@@ -140,7 +144,11 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return grantedAuthorities;
+    }
+
+    public void setGrantedAuthorities(Set<SimpleGrantedAuthority> grantedAuthorities) {
+        this.grantedAuthorities = grantedAuthorities;
     }
 
     @Override

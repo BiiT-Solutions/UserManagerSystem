@@ -4,27 +4,35 @@ import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.usermanager.core.controller.UserController;
+import com.biit.usermanager.core.controller.UserRoleController;
+import com.biit.usermanager.core.controller.models.OrganizationDTO;
+import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.exceptions.NotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.logger.UserManagerLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     private final UserController userController;
+    private final UserRoleController userRoleController;
 
     @Autowired
-    public AuthenticatedUserProvider(UserController userController) {
+    public AuthenticatedUserProvider(UserController userController, UserRoleController userRoleController) {
         this.userController = userController;
+        this.userRoleController = userRoleController;
     }
 
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username) {
         try {
-            return Optional.of(userController.getByUserName(username));
+            return Optional.of(setGrantedAuthorities(userController.getByUserName(username), null));
         } catch (UserNotFoundException e) {
             UserManagerLogger.warning(this.getClass(), e.getMessage());
         }
@@ -34,7 +42,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByUID(String uid) {
         try {
-            return Optional.of(userController.get(Long.parseLong(uid)));
+            return Optional.of(setGrantedAuthorities(userController.get(Long.parseLong(uid)), null));
         } catch (NotFoundException e) {
             UserManagerLogger.warning(this.getClass(), e.getMessage());
         }
@@ -44,5 +52,16 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
         return null;
+    }
+
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, OrganizationDTO organizationDTO) {
+        if (userDTO != null) {
+            final Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
+            userRoleController.getByUserAndOrganization(userDTO, organizationDTO).stream()
+                    .filter(userRoleDTO -> userRoleDTO.getRole()!=null && userRoleDTO.getRole().getName() != null)
+                    .forEach(userRoleDTO -> grantedAuthorities.add(new SimpleGrantedAuthority(userRoleDTO.getRole().getName().toUpperCase())));
+            userDTO.setGrantedAuthorities(grantedAuthorities);
+        }
+        return userDTO;
     }
 }
