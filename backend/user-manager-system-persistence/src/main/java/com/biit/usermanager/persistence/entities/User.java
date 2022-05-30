@@ -1,9 +1,6 @@
 package com.biit.usermanager.persistence.entities;
 
-import com.biit.database.encryption.BooleanCryptoConverter;
-import com.biit.database.encryption.LocalDateTimeCryptoConverter;
-import com.biit.database.encryption.LocaleCryptoConverter;
-import com.biit.database.encryption.StringCryptoConverter;
+import com.biit.database.encryption.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -42,11 +39,11 @@ public class User extends Element {
     private String phone = "";
 
     @Column(name = "locale")
-    @Convert(converter = LocaleCryptoConverter.class)
+    @Convert(converter = StringCryptoConverter.class)
     private String locale = "";
 
     @Column(name = "password", nullable = false)
-    @Convert(converter = StringCryptoConverter.class)
+    @Convert(converter = BCryptPasswordConverter.class)
     private String password = "";
 
     @Column(name = "password_modified_date")

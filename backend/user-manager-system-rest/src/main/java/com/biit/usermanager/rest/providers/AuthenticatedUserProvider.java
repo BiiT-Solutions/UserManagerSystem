@@ -1,5 +1,6 @@
 package com.biit.usermanager.rest.providers;
 
+import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
@@ -51,14 +52,28 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
-        return null;
+        return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getName(),
+                createUserRequest.getLastname(), createUserRequest.getPassword());
+    }
+
+    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password) {
+        if (findByUsername(username).isPresent()) {
+            throw new BadRequestException(this.getClass(), "Username exists!");
+        }
+        final UserDTO user = new UserDTO();
+        user.setUsername(username);
+        user.setFirstName(name);
+        user.setLastname(lastName);
+        user.setIdCard(uniqueId);
+        user.setPassword(password);
+        return userController.create(user);
     }
 
     private UserDTO setGrantedAuthorities(UserDTO userDTO, OrganizationDTO organizationDTO) {
         if (userDTO != null) {
             final Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
             userRoleController.getByUserAndOrganization(userDTO, organizationDTO).stream()
-                    .filter(userRoleDTO -> userRoleDTO.getRole()!=null && userRoleDTO.getRole().getName() != null)
+                    .filter(userRoleDTO -> userRoleDTO.getRole() != null && userRoleDTO.getRole().getName() != null)
                     .forEach(userRoleDTO -> grantedAuthorities.add(new SimpleGrantedAuthority(userRoleDTO.getRole().getName().toUpperCase())));
             userDTO.setGrantedAuthorities(grantedAuthorities);
         }

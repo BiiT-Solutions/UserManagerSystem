@@ -23,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client"})
 @ConfigurationPropertiesScan({"com.biit.usermanager.rest"})
 //@EnableJpaRepositories({"com.biit.usermanager.persistence.repositories"})
-@EntityScan({"com.biit.usermanager.persistence.entities"})
+@EntityScan({"com.biit.usermanager.persistence.entities", "com.biit.server.security.userguard"})
 public class UserManagerServer {
 
 	public static void main(String[] args) {
