@@ -3,11 +3,11 @@
     <test name="UserManager" enabled="true" preserve-order="true">
         <groups>
             <run>
-                <include name="userRegistration"/>
+                <!-- <include name="userRegistration"/> -->
             </run>
         </groups>
         <classes>
-            <class name="com.biit.server.security.test.UserRegistrationTest"/>
+            <!-- <class name="com.biit.server.security.test.UserRegistrationTest"/> -->
         </classes>
     </test>
 </suite>
