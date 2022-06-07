@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>user-manager-system</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6-SNAPSHOT</version>
     <name>User Manager System</name>
     <packaging>pom</packaging>
 
@@ -25,7 +25,7 @@
     <scm>
         <connection>scm:git:git.biit-solutions.com:BiiT/UserManagerSystem.git</connection>
         <developerConnection>scm:git:git.biit-solutions.com:BiiT/UserManagerSystem.git</developerConnection>
-        <tag>user-manager-system-0.1.5</tag>
+        <tag>UserManagerSystem</tag>
     </scm>
 
     <distributionManagement>
