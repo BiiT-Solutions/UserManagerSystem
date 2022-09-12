@@ -3,11 +3,11 @@
     <test name="UserManager" enabled="true" preserve-order="true">
         <groups>
             <run>
-                <!-- <include name=""/> -->
+                <include name="userRepository"/>
             </run>
         </groups>
         <classes>
-            <!-- <class name="com.biit."/> -->
+            <class name="com.biit.usermanager.persistence.repositories.UserRepositoryTests"/>
         </classes>
     </test>
 </suite>
