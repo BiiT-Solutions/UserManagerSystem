@@ -15,8 +15,6 @@ import java.util.Optional;
 public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     private static String USER_NAME = "TestUser";
     private static String PHONE = "902202122";
-    private static int NUM = 2;
-    private static boolean ACCOUNT_EXPIRED = true;
 
     @Autowired
     private UserRepository userRepository;
@@ -24,16 +22,13 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     @Test
     public void saveUser() {
         User user = new User();
-
         user.setUsername(USER_NAME);
         user.setPhone(PHONE);
-        user.setAccountExpired(ACCOUNT_EXPIRED);
+        user.setAccountExpired(true);
 
-        User user1 = new User();
-        user1.setAccountExpired(ACCOUNT_EXPIRED);
-        user1.setPhone(PHONE);
         User user2 = new User();
-        user2.setAccountExpired(!ACCOUNT_EXPIRED);
+        user2.setAccountExpired(false);
+        userRepository.save(user2);
 
         Assert.assertNull(user.getId());
         user = userRepository.save(user);
@@ -54,5 +49,22 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(user.get().getPhone(), PHONE);
     }
 
+    @Test(dependsOnMethods = "saveUser")
+    public void howManyUsersPhone() {
+        List<User> users = userRepository.findAllByPhone(PHONE);
+        for (User user : users) {
+            Assert.assertNotNull(user);
+            Assert.assertEquals(user.getPhone(), PHONE);
+        }
+    }
 
+    @Test(dependsOnMethods = "saveUser")
+    public void getUsersExpired() {
+        List<User> users = userRepository.findByAccountExpired(true);
+        for (User user : users) {
+            Assert.assertNotNull(user);
+            Assert.assertTrue(user.isAccountExpired());
+        }
+        Assert.assertEquals(users.size(),1);
+    }
 }
