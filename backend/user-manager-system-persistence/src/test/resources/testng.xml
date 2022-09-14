@@ -9,6 +9,8 @@
         </groups>
         <classes>
             <class name="com.biit.usermanager.persistence.repositories.UserRepositoryTests"/>
+            <class name="com.biit.usermanager.persistence.repositories.UserNotDisableTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.UserRoleTest"/>
         </classes>
     </test>
 </suite>

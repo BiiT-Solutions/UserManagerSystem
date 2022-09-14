@@ -64,23 +64,4 @@ public class UserNotDisableTest extends AbstractTestNGSpringContextTests {
             Assert.assertTrue(user.isEnabled());
         }
     }
-
-    //Diferente propuesta
-
-    /*@Test
-    public void getUserAccount(){
-        List<User> res = new List<User>();
-        List<User> userList = userRepository.findAll();
-        Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(user.get().getUsername(), USER_NAME);
-
-        for (User user : userList)
-        {
-           Assert.assertTrue(user.isEnabled());
-        }
-
-        return res;
-    }*/
-
-
 }
