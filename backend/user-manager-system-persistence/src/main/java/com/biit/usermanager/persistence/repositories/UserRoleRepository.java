@@ -8,10 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
     List<UserRole> findByUserAndOrganization(User user, Organization organization);
+    Optional<UserRole> findUserRolesByUser(Optional<User> user);
+    Optional<UserRole> findByRole(Optional<User> user);
 }

@@ -4,6 +4,7 @@
         <groups>
             <run>
                 <include name="userRepository"/>
+                <include name="roleRepository"/>
             </run>
         </groups>
         <classes>
