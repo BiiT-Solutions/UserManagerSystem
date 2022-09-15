@@ -44,6 +44,7 @@ public class UserServices {
         return userController.get(id);
     }
 
+
     @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
     @Operation(summary = "Creates a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.CREATED)
@@ -75,4 +76,6 @@ public class UserServices {
     public UserDTO update(@RequestBody UserDTO userDTO, HttpServletRequest request) {
         return userController.update(userDTO);
     }
+
+
 }
