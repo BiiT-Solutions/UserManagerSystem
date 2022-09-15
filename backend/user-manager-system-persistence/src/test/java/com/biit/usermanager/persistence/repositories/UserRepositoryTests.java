@@ -19,6 +19,8 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     @Autowired
     private UserRepository userRepository;
 
+    private UserRoleRepository userRoleRepository;
+
     @Test
     public void saveUser() {
         User user = new User();
@@ -65,6 +67,6 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
             Assert.assertNotNull(user);
             Assert.assertTrue(user.isAccountExpired());
         }
-        Assert.assertEquals(users.size(),1);
+        Assert.assertEquals(users.size(), 1);
     }
 }
