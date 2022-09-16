@@ -13,6 +13,7 @@
             <class name="com.biit.usermanager.persistence.repositories.UserNotDisableTest"/>
             <class name="com.biit.usermanager.persistence.repositories.UserRoleTest"/>
             <class name="com.biit.usermanager.persistence.repositories.OrganizationRepositoryTest"></class>
+
         </classes>
     </test>
 </suite>

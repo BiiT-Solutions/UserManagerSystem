@@ -10,6 +10,9 @@ import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 public class UserController extends BasicInsertableController<User, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> {
@@ -27,5 +30,8 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     public UserDTO getByUserName(String username) {
         return converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with username '" + username + "' found on the system."))));
+    }
+    public List<UserDTO> getByEnable(Boolean enable) {
+        return provider.findByEnable(enable).parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
     }
 }

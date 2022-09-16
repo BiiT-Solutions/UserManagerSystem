@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
 import javax.naming.Name;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +21,6 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     private static String NAME = "TestUserName";
     private static String LASTNAME = "TestUserLastname";
     private static String USER_IDCARD = "TestUserIdCard";
-
 
     @Autowired
     private UserRepository userRepository;

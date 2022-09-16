@@ -75,4 +75,11 @@ public class UserServices {
     public UserDTO update(@RequestBody UserDTO userDTO, HttpServletRequest request) {
         return userController.update(userDTO);
     }
+
+    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @Operation(summary = "Gets all enable/disable users .", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/enable/{enable}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getEnable( @Parameter(description = "enable/disable", required = true) @PathVariable("enable") boolean enable,HttpServletRequest request) {
+        return userController.getByEnable(enable) ;
+    }
 }

@@ -19,4 +19,6 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
     public Optional<User> findByUsername(String username) {
         return repository.findByUsername(username);
     }
+
+    public List<User> findByEnable(boolean enable){return repository.findAllByEnabled(enable);}
 }
