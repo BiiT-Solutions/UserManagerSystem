@@ -11,7 +11,7 @@ public class OrganizationConverter extends ElementConverter<Organization, Organi
 
 
     @Override
-    public OrganizationDTO convert(OrganizationConverterRequest from) {
+    protected OrganizationDTO convertElement(OrganizationConverterRequest from) {
         final OrganizationDTO organizationDTO = new OrganizationDTO();
         BeanUtils.copyProperties(from.getEntity(), organizationDTO);
         return organizationDTO;

@@ -11,7 +11,7 @@ public class UserConverter extends ElementConverter<User, UserDTO, UserConverter
 
 
     @Override
-    public UserDTO convert(UserConverterRequest from) {
+    protected UserDTO convertElement(UserConverterRequest from) {
         final UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(from.getEntity(), userDTO);
         return userDTO;
