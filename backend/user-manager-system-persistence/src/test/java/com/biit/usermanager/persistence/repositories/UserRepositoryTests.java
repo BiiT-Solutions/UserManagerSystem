@@ -3,24 +3,38 @@ package com.biit.usermanager.persistence.repositories;
 import com.biit.usermanager.persistence.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
 @Test(groups = {"userRepository"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     private static String USER_NAME = "TestUser";
+    private static String PHONE = "902202122";
 
     @Autowired
     private UserRepository userRepository;
+
+    private UserRoleRepository userRoleRepository;
 
     @Test
     public void saveUser() {
         User user = new User();
         user.setUsername(USER_NAME);
+        user.setPhone(PHONE);
+        user.setAccountExpired(true);
+
+        User user2 = new User();
+        user2.setAccountExpired(false);
+        userRepository.save(user2);
+
         Assert.assertNull(user.getId());
         user = userRepository.save(user);
         Assert.assertNotNull(user.getId());
@@ -33,4 +47,35 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
     }
 
+    @Test(dependsOnMethods = "saveUser")
+    public void getUserByPhone() {
+        Optional<User> user = userRepository.findByPhone(PHONE);
+        Assert.assertTrue(user.isPresent());
+        Assert.assertEquals(user.get().getPhone(), PHONE);
+    }
+
+    @Test(dependsOnMethods = "saveUser")
+    public void howManyUsersPhone() {
+        List<User> users = userRepository.findAllByPhone(PHONE);
+        for (User user : users) {
+            Assert.assertNotNull(user);
+            Assert.assertEquals(user.getPhone(), PHONE);
+        }
+    }
+
+    @Test(dependsOnMethods = "saveUser")
+    public void getUsersExpired() {
+        List<User> users = userRepository.findByAccountExpired(true);
+        for (User user : users) {
+            Assert.assertNotNull(user);
+            Assert.assertTrue(user.isAccountExpired());
+        }
+        Assert.assertEquals(users.size(), 1);
+    }
+
+    @AfterClass
+    public void cleanUpUsers(){
+        userRepository.deleteAll();
+        Assert.assertEquals(userRepository.count(), 0);
+    }
 }
