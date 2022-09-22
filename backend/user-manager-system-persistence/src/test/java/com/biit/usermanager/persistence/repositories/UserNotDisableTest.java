@@ -1,8 +1,6 @@
 package com.biit.usermanager.persistence.repositories;
 
-import com.biit.usermanager.persistence.entities.Role;
 import com.biit.usermanager.persistence.entities.User;
-import com.biit.usermanager.persistence.entities.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -11,9 +9,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest
 @Test(groups = {"userRepository"})

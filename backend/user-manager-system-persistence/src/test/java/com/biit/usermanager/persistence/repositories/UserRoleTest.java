@@ -1,12 +1,11 @@
 package com.biit.usermanager.persistence.repositories;
 
 import com.biit.usermanager.persistence.entities.Role;
-import com.biit.usermanager.persistence.entities.User;
-import com.biit.usermanager.persistence.entities.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
@@ -34,6 +33,12 @@ public class UserRoleTest extends AbstractTestNGSpringContextTests {
         Optional<Role> role = roleRepository.findByName(ROLE_NAME);
         Assert.assertTrue(role.isPresent());
         Assert.assertEquals(role.get().getName(), ROLE_NAME);
+    }
+
+    @AfterClass
+    public void cleanUpUsers(){
+        roleRepository.deleteAll();
+        Assert.assertEquals(roleRepository.count(), 0);
     }
 
 

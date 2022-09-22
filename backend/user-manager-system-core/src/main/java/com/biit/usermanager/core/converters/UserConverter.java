@@ -1,5 +1,6 @@
 package com.biit.usermanager.core.converters;
 
+import com.biit.server.controller.converters.ElementConverter;
 import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.persistence.entities.User;

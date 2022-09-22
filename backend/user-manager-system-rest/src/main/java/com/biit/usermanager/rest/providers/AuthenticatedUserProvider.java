@@ -1,6 +1,7 @@
 package com.biit.usermanager.rest.providers;
 
 import com.biit.server.exceptions.BadRequestException;
+import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
@@ -8,7 +9,6 @@ import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserRoleController;
 import com.biit.usermanager.core.controller.models.OrganizationDTO;
 import com.biit.usermanager.core.controller.models.UserDTO;
-import com.biit.usermanager.core.exceptions.NotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.logger.UserManagerLogger;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,6 @@
 package com.biit.usermanager.persistence.repositories;
 
-import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.Role;
-import com.biit.usermanager.persistence.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

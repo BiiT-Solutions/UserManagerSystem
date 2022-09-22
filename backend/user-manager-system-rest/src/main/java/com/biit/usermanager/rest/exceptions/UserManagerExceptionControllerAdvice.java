@@ -1,8 +1,8 @@
 package com.biit.usermanager.rest.exceptions;
 
 import com.biit.server.exceptions.ExceptionControllerAdvice;
+import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.logger.RestServerExceptionLogger;
-import com.biit.usermanager.core.exceptions.NotFoundException;
 import org.modelmapper.spi.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
