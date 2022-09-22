@@ -22,21 +22,21 @@ public class UserRoleServices {
         this.userRoleController = userRoleController;
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_VIEWER')")
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
     @Operation(summary = "Gets all UserRoles.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getAll(HttpServletRequest request) {
         return userRoleController.get();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_VIEWER')")
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
     @Operation(summary = "Counts all UserRoles.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public long count(HttpServletRequest request) {
         return userRoleController.count();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_VIEWER')")
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
     @Operation(summary = "Gets a userRole.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserRoleDTO get(@Parameter(description = "Id of an existing UserRole", required = true) @PathVariable("id") Long id,
@@ -44,7 +44,7 @@ public class UserRoleServices {
         return userRoleController.get(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Creates a UserRole.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,7 +52,7 @@ public class UserRoleServices {
         return userRoleController.create(userRoleDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Deletes a UserRole.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -61,7 +61,7 @@ public class UserRoleServices {
         userRoleController.deleteById(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Deletes a UserRole.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +69,7 @@ public class UserRoleServices {
         userRoleController.delete(userRoleDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Updates a UserRole.", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserRoleDTO update(@RequestBody UserRoleDTO userRoleDTO, HttpServletRequest request) {

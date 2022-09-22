@@ -74,7 +74,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
             final Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
             userRoleController.getByUserAndOrganization(userDTO, organizationDTO).stream()
                     .filter(userRoleDTO -> userRoleDTO.getRole() != null && userRoleDTO.getRole().getName() != null)
-                    .forEach(userRoleDTO -> grantedAuthorities.add(new SimpleGrantedAuthority(userRoleDTO.getRole().getName().toUpperCase())));
+                    .forEach(userRoleDTO -> grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + userRoleDTO.getRole().getName().toUpperCase())));
             userDTO.setGrantedAuthorities(grantedAuthorities);
         }
         return userDTO;

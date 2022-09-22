@@ -15,7 +15,7 @@ public class UserRole extends Element {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "organization", nullable = false)
+    @JoinColumn(name = "organization")
     private Organization organization;
 
     @ManyToOne(fetch = FetchType.EAGER)

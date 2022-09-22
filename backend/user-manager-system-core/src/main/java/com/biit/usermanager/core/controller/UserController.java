@@ -4,6 +4,7 @@ import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.exceptions.ValidateBadRequestException;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;

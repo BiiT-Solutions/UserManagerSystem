@@ -11,7 +11,7 @@ public class RoleConverter extends ElementConverter<Role, RoleDTO, RoleConverter
 
 
     @Override
-    public RoleDTO convert(RoleConverterRequest from) {
+    protected RoleDTO convertElement(RoleConverterRequest from) {
         final RoleDTO roleDTO = new RoleDTO();
         BeanUtils.copyProperties(from.getEntity(), roleDTO);
         return roleDTO;

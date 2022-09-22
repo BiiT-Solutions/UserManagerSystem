@@ -18,7 +18,7 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String idCard;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
     private String username = "";
 

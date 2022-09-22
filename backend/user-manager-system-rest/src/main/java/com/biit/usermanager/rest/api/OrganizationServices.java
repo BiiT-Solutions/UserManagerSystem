@@ -22,21 +22,21 @@ public class OrganizationServices {
         this.organizationController = organizationController;
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_VIEWER')")
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
     @Operation(summary = "Gets all organizations.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<OrganizationDTO> getAll(HttpServletRequest request) {
         return organizationController.get();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_VIEWER')")
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
     @Operation(summary = "Counts all organizations.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public long count(HttpServletRequest request) {
         return organizationController.count();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_VIEWER')")
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
     @Operation(summary = "Gets a organization.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public OrganizationDTO get(@Parameter(description = "Id of an existing organization", required = true) @PathVariable("id") Long id,
@@ -44,7 +44,7 @@ public class OrganizationServices {
         return organizationController.get(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Creates a organization.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,7 +52,7 @@ public class OrganizationServices {
         return organizationController.create(organizationDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Deletes a organization.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -61,7 +61,7 @@ public class OrganizationServices {
         organizationController.deleteById(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Deletes a organization.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +69,7 @@ public class OrganizationServices {
         organizationController.delete(organizationDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Updates a organization.", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public OrganizationDTO update(@RequestBody OrganizationDTO organizationDTO, HttpServletRequest request) {

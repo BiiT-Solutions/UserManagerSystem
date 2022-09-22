@@ -23,7 +23,7 @@ public class UserRoleConverter extends ElementConverter<UserRole, UserRoleDTO, U
 
 
     @Override
-    public UserRoleDTO convert(UserRoleConverterRequest from) {
+    protected UserRoleDTO convertElement(UserRoleConverterRequest from) {
         final UserRoleDTO userRoleDTO = new UserRoleDTO();
         BeanUtils.copyProperties(from.getEntity(), userRoleDTO);
         userRoleDTO.setRole(roleConverter.convert(new RoleConverterRequest(from.getEntity().getRole())));
