@@ -1,5 +1,6 @@
 package com.biit.usermanager.core.controller.models;
 
+import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IRole;
 
 public class UserRoleDTO extends ElementDTO implements IRole<Long> {

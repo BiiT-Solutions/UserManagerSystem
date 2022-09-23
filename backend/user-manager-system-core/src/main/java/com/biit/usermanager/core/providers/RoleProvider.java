@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.providers;
 
-import com.biit.server.converters.providers.CrudProvider;
+import com.biit.server.providers.CrudProvider;
 import com.biit.usermanager.persistence.entities.Role;
 import com.biit.usermanager.persistence.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
