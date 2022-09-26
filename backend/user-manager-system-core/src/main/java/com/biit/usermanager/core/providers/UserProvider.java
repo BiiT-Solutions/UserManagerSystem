@@ -7,6 +7,7 @@ import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,5 +20,10 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
 
     public Optional<User> findByUsername(String username) {
         return repository.findByUsername(username);
+    }
+
+    public List<User> findAllByEnable(boolean enabled) {
+
+        return repository.findAllByEnabled(enabled);
     }
 }
