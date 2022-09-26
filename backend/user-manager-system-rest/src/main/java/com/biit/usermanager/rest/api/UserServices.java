@@ -44,6 +44,15 @@ public class UserServices {
         return userController.get(id);
     }
 
+
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @Operation(summary = "Get user by name", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/name/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO get(@Parameter(description = "Name of an existing user", required = true) @PathVariable("name") String name,
+                       HttpServletRequest request) {
+        return userController.getByUserName(name);
+    }
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Creates a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.CREATED)

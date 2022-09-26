@@ -11,6 +11,7 @@ import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+
 @Controller
 public class UserController extends BasicInsertableController<User, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> {
