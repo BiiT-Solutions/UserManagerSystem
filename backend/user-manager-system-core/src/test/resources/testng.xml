@@ -3,11 +3,11 @@
     <test name="UserManager" enabled="true" preserve-order="true">
         <groups>
             <run>
-                <!-- <include name=""/> -->
+                <include name="passwordTests"/>
             </run>
         </groups>
         <classes>
-            <!-- <class name="com.biit."/> -->
+            <class name="com.biit.usermanager.core.PasswordTests"/>
         </classes>
     </test>
 </suite>

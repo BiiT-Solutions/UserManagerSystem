@@ -6,9 +6,11 @@ import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.UserProvider;
+import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
 
@@ -29,5 +31,17 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     public UserDTO getByUserName(String username) {
         return converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with username '" + username + "' found on the system."))));
+    }
+
+    public UserDTO updatePassword(String username, String oldPassword, String newPassword) {
+        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+        //Check old password.
+        if (!BCrypt.checkpw(oldPassword, userDTO.getPassword())) {
+            throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
+        }
+
+        userDTO.setPassword(newPassword);
+        return converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
     }
 }
