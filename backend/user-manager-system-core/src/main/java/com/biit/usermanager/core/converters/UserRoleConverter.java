@@ -1,5 +1,6 @@
 package com.biit.usermanager.core.converters;
 
+import com.biit.server.controller.converters.ElementConverter;
 import com.biit.usermanager.core.controller.models.UserRoleDTO;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;
@@ -23,7 +24,7 @@ public class UserRoleConverter extends ElementConverter<UserRole, UserRoleDTO, U
 
 
     @Override
-    public UserRoleDTO convert(UserRoleConverterRequest from) {
+    protected UserRoleDTO convertElement(UserRoleConverterRequest from) {
         final UserRoleDTO userRoleDTO = new UserRoleDTO();
         BeanUtils.copyProperties(from.getEntity(), userRoleDTO);
         userRoleDTO.setRole(roleConverter.convert(new RoleConverterRequest(from.getEntity().getRole())));

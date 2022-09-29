@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
+import com.biit.server.controller.BasicInsertableController;
 import com.biit.usermanager.core.controller.models.OrganizationDTO;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;

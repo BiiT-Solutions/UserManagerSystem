@@ -1,15 +1,17 @@
 package com.biit.usermanager.rest.providers;
 
 import com.biit.server.exceptions.BadRequestException;
+import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
+import com.biit.server.security.rest.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserRoleController;
 import com.biit.usermanager.core.controller.models.OrganizationDTO;
 import com.biit.usermanager.core.controller.models.UserDTO;
-import com.biit.usermanager.core.exceptions.NotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
 import com.biit.usermanager.logger.UserManagerLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -56,6 +58,28 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
                 createUserRequest.getLastname(), createUserRequest.getPassword());
     }
 
+    @Override
+    public void updatePassword(String username, String oldPassword, String newPassword) {
+        try {
+            userController.updatePassword(username, oldPassword, newPassword);
+        } catch (InvalidParameterException e) {
+            throw new InvalidPasswordException(this.getClass(), "Provided password is incorrect!");
+        }
+    }
+
+    @Override
+    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
+        final IAuthenticatedUser user = userController.getByUserName(createUserRequest.getUsername());
+        final UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(createUserRequest.getUsername());
+        userDTO.setFirstName(createUserRequest.getName());
+        userDTO.setLastname(createUserRequest.getLastname());
+        userDTO.setIdCard(createUserRequest.getUniqueId());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setGrantedAuthorities((Set<SimpleGrantedAuthority>) user.getAuthorities());
+        return userController.update(userDTO);
+    }
+
     public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password) {
         if (findByUsername(username).isPresent()) {
             throw new BadRequestException(this.getClass(), "Username exists!");
@@ -74,7 +98,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
             final Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
             userRoleController.getByUserAndOrganization(userDTO, organizationDTO).stream()
                     .filter(userRoleDTO -> userRoleDTO.getRole() != null && userRoleDTO.getRole().getName() != null)
-                    .forEach(userRoleDTO -> grantedAuthorities.add(new SimpleGrantedAuthority(userRoleDTO.getRole().getName().toUpperCase())));
+                    .forEach(userRoleDTO -> grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + userRoleDTO.getRole().getName().toUpperCase())));
             userDTO.setGrantedAuthorities(grantedAuthorities);
         }
         return userDTO;

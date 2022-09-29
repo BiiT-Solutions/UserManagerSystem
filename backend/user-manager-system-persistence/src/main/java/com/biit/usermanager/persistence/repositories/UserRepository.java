@@ -1,8 +1,6 @@
 package com.biit.usermanager.persistence.repositories;
 
 import com.biit.usermanager.persistence.entities.User;
-import net.bytebuddy.dynamic.DynamicType;
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,4 +20,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByEnabled(boolean enable);
 
 
+    List<User> findAllByEnabled(Boolean enable);
+
+    Optional<User> findByPhone(String phone);
+
+    List<User> findAllByPhone(String phone);
+
+    List<User> findByAccountExpired(boolean account_expired);
 }

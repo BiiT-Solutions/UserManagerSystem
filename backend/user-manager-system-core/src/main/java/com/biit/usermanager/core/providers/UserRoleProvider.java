@@ -1,5 +1,6 @@
 package com.biit.usermanager.core.providers;
 
+import com.biit.server.providers.CrudProvider;
 import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserRole;

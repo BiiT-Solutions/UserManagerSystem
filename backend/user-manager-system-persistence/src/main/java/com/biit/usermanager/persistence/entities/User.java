@@ -1,6 +1,9 @@
 package com.biit.usermanager.persistence.entities;
 
-import com.biit.database.encryption.*;
+import com.biit.database.encryption.BCryptPasswordConverter;
+import com.biit.database.encryption.BooleanCryptoConverter;
+import com.biit.database.encryption.LocalDateTimeCryptoConverter;
+import com.biit.database.encryption.StringCryptoConverter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -18,7 +21,7 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String idCard;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
     private String username = "";
 

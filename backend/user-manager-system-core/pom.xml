@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.biit</groupId>
         <artifactId>user-manager-system</artifactId>
-        <version>0.1.9-SNAPSHOT</version>
+        <version>0.1.10-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -28,6 +28,10 @@
         <dependency>
             <groupId>com.biit</groupId>
             <artifactId>rest-server-definitions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.biit</groupId>
+            <artifactId>rest-server-dto</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -55,6 +59,11 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

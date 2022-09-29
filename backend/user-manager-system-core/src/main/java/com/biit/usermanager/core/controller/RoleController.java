@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
+import com.biit.server.controller.BasicInsertableController;
 import com.biit.usermanager.core.controller.models.RoleDTO;
 import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;

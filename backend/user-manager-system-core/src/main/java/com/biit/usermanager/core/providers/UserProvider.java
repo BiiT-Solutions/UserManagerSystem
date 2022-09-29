@@ -1,5 +1,7 @@
 package com.biit.usermanager.core.providers;
 
+
+import com.biit.server.providers.CrudProvider;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +22,8 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
         return repository.findByUsername(username);
     }
 
-    public List<User> findByEnable(boolean enable){return repository.findAllByEnabled(enable);}
+    public List<User> findAllByEnable(boolean enabled) {
+
+        return repository.findAllByEnabled(enabled);
+    }
 }

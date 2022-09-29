@@ -1,5 +1,7 @@
 package com.biit.usermanager.core.controller.models;
 
+import com.biit.server.controllers.models.ElementDTO;
+
 public class RoleDTO extends ElementDTO {
     private String name = "";
 

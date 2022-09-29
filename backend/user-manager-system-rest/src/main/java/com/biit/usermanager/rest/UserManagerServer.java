@@ -11,13 +11,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
 @ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client"})
@@ -36,25 +30,26 @@ public class UserManagerServer {
 		return new LoggableDispatcherServlet();
 	}
 
-//	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurer() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
-//			}
-//		};
-//	}
-//
-//	@Bean("threadPoolExecutor")
-//	public TaskExecutor getAsyncExecutor() {
-//		final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//		executor.setCorePoolSize(20);
-//		executor.setMaxPoolSize(100);
-//		executor.setWaitForTasksToCompleteOnShutdown(true);
-//		executor.setThreadNamePrefix("Rest_Async-");
-//		return executor;
-//	}
+   /* @Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+		@Override
+			public void addCorsMappings(CorsRegistry registry) {
+			registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
+		}
+		};
+	}
+
+	@Bean("threadPoolExecutor")
+	public TaskExecutor getAsyncExecutor() {
+	final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(20);
+		executor.setMaxPoolSize(100);
+		executor.setWaitForTasksToCompleteOnShutdown(true);
+		executor.setThreadNamePrefix("Rest_Async-");
+
+		return executor;
+	}*/
 
 	@Bean
 	public ApplicationListener<ContextRefreshedEvent> startupLoggingListener() {
