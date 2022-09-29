@@ -47,6 +47,6 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         return converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
     }
     public List<UserDTO> getByEnable(Boolean enable) {
-        return provider.findByEnable(enable).parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
+        return provider.findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
     }
 }
