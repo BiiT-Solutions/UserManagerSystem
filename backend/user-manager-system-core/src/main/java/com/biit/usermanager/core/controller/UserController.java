@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController extends BasicInsertableController<User, UserDTO, UserRepository,
@@ -43,5 +45,8 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
         userDTO.setPassword(newPassword);
         return converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
+    }
+    public List<UserDTO> getByEnable(Boolean enable) {
+        return provider.findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
     }
 }
