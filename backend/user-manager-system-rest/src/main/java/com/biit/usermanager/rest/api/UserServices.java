@@ -71,6 +71,23 @@ public class UserServices {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Get user by phone number", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getByPhone(@Parameter(description = "Phone of an existing user", required = true) @PathVariable("phone") String phone,
+                       HttpServletRequest request) {
+        return userController.getByPhone(phone);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Gets a list of expired users", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getByAccExpired(@Parameter(description = "Account is expired", required = true)
+                                             @PathVariable("account_expired") boolean accountExpired,
+                              HttpServletRequest request) {
+        return userController.getAllByExpired(accountExpired);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Deletes a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)

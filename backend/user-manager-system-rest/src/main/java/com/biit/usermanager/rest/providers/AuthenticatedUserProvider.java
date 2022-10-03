@@ -32,6 +32,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         this.userRoleController = userRoleController;
     }
 
+
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username) {
         try {

@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,5 +50,19 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     }
     public List<UserDTO> getByEnable(Boolean enable) {
         return provider.findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
+    }
+
+    public UserDTO getByPhone(String phone) {
+        return converter.convert(new UserConverterRequest(provider.findByPhone(phone).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                "No User with username '" + phone + "' found on the system."))));
+    }
+
+    public List<UserDTO> getAllByExpired(boolean accountExpired){
+        final List<User> usersList = provider.findByAccountExpired(accountExpired);
+        final List<UserDTO> usersdtList = new ArrayList<>();
+        for (final User user : usersList){
+            usersdtList.add(converter.convert(new UserConverterRequest(user)));
+        }
+        return usersdtList;
     }
 }
