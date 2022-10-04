@@ -75,4 +75,12 @@ public class OrganizationServices {
     public OrganizationDTO update(@RequestBody OrganizationDTO organizationDTO, HttpServletRequest request) {
         return organizationController.update(organizationDTO);
     }
+    @PreAuthorize("hasRole('ROLE_USER_MANAGER_ADMIN')")
+    @Operation(summary = "Get an organization by name.", security = @SecurityRequirement(name = "bearerAuth"))
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "/oragnaization/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void delete(@Parameter(description = "Name of an existing organization", required = true) @PathVariable("name") String name,
+                       HttpServletRequest request) {
+        organizationController.getByName(name);
+    }
 }
