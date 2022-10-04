@@ -72,7 +72,7 @@ public class UserServices {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Get user by phone number", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/phone/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByPhone(@Parameter(description = "Phone of an existing user", required = true) @PathVariable("phone") String phone,
                        HttpServletRequest request) {
         return userController.getByPhone(phone);
@@ -80,8 +80,8 @@ public class UserServices {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Gets a list of expired users", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> getByAccExpired(@Parameter(description = "Account is expired", required = true)
+    @GetMapping(value = "/account_expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getByAccountExpired(@Parameter(description = "Account is expired", required = true)
                                              @PathVariable("account_expired") boolean accountExpired,
                               HttpServletRequest request) {
         return userController.getAllByExpired(accountExpired);
