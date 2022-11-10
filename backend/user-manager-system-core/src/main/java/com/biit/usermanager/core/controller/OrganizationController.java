@@ -32,6 +32,7 @@ public class OrganizationController extends BasicInsertableController<Organizati
 
     public OrganizationDTO getByName(String name) {
         return converter.convert(new OrganizationConverterRequest(provider.findByName(name).orElseThrow(() -> new UserNotFoundException(this.getClass(),
-                "No User with username '" + name + "' found on the system."))));}
+                "No User with username '" + name + "' found on the system."))));
+    }
 
 }

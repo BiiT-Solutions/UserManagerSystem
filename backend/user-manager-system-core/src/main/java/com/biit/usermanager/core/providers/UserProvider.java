@@ -23,7 +23,6 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
     }
 
 
-
     public List<User> findAllByEnable(boolean enabled) {
 
         return repository.findAllByEnabled(enabled);
@@ -33,7 +32,9 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
         return repository.findByPhone(phone);
     }
 
-    public List<User> findByAccountExpired(boolean accountExpired) { return repository.findByAccountExpired(accountExpired); }
+    public List<User> findByAccountExpired(boolean accountExpired) {
+        return repository.findByAccountExpired(accountExpired);
+    }
 
 
 }
