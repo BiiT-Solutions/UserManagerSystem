@@ -81,6 +81,11 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         return userController.update(userDTO);
     }
 
+    @Override
+    public long count() {
+        return userController.count();
+    }
+
     public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password) {
         if (findByUsername(username).isPresent()) {
             throw new BadRequestException(this.getClass(), "Username exists!");
