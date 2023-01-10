@@ -8,11 +8,13 @@ import javax.transaction.Transactional;
 import java.util.Optional;
 
 
-
 @Repository
 @Transactional
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+
     Optional<Organization> findByName(String name);
+
+    int deleteByName(String name);
 
 
 }

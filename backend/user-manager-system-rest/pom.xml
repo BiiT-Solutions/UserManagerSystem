@@ -26,6 +26,10 @@
             <artifactId>rest-server-defaults</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.biit</groupId>
+            <artifactId>rest-server-rest</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
         </dependency>

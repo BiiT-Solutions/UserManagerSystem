@@ -15,7 +15,12 @@ public class OrganizationProvider extends CrudProvider<Organization, Long, Organ
     public OrganizationProvider(OrganizationRepository repository) {
         super(repository);
     }
+
     public Optional<Organization> findByName(String name) {
         return repository.findByName(name);
+    }
+
+    public int deleteByName(String name) {
+        return repository.deleteByName(name);
     }
 }
