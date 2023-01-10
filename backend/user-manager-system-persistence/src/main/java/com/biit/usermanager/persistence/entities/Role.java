@@ -24,7 +24,7 @@ public class Role extends Element {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "application", nullable = false)
+    @JoinColumn(name = "application")
     private Application application;
 
     public String getName() {

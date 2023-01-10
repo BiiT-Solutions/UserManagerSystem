@@ -27,14 +27,17 @@ public class UserRoleTest extends AbstractTestNGSpringContextTests {
     private Application application;
 
     @BeforeClass
-    public void prepare(){
-
+    public void prepare() {
+        Application roleApplication = new Application();
+        roleApplication.setName("My Application");
+        application = applicationRepository.save(roleApplication);
     }
 
     @Test
     public void saveRole() {
         Role role = new Role();
         role.setName(ROLE_NAME);
+        role.setApplication(application);
         Assert.assertNull(role.getId());
         role = roleRepository.save(role);
         Assert.assertNotNull(role.getId());
@@ -48,7 +51,7 @@ public class UserRoleTest extends AbstractTestNGSpringContextTests {
     }
 
     @AfterClass
-    public void cleanUpUsers(){
+    public void cleanUpUsers() {
         roleRepository.deleteAll();
         Assert.assertEquals(roleRepository.count(), 0);
     }
