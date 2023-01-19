@@ -65,4 +65,12 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         }
         return usersdtList;
     }
+
+    public void delete(User user){
+        provider.delete(user);
+    }
+
+    public List<UserDTO> findAll(){
+        return provider.findAll().parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
+    }
 }

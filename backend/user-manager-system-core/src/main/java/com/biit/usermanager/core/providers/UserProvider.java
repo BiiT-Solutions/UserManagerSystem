@@ -36,5 +36,9 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
         return repository.findByAccountExpired(accountExpired);
     }
 
+    public List<User> findAll() {
+        return repository.findAll();
+    }
+
 
 }

@@ -29,4 +29,9 @@ public class SwaggerConfiguration extends DefaultSwaggerConfiguration {
     public String[] getPackagesToScan() {
         return PACKAGES_TO_SCAN;
     }
+
+    @Override
+    protected String getVersion() {
+        return this.getClass().getPackage().getImplementationVersion();
+    }
 }

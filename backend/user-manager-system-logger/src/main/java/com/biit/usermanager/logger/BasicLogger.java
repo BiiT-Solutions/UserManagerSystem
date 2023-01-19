@@ -10,6 +10,7 @@ public abstract class BasicLogger {
      *
      * @param messageTemplate string with static text as template.
      * @param arguments       parameters to fill up the template
+     * @param logger          the logger
      */
     public static void warning(Logger logger, String messageTemplate, Object... arguments) {
         logger.warn(messageTemplate, arguments);
@@ -34,6 +35,7 @@ public abstract class BasicLogger {
      *
      * @param messageTemplate string with static text as template.
      * @param arguments       parameters to fill up the template
+     * @param logger          the logger
      */
     public static void info(Logger logger, String messageTemplate, Object... arguments) {
         logger.info(messageTemplate, arguments);
@@ -59,6 +61,7 @@ public abstract class BasicLogger {
      *
      * @param messageTemplate string with static text as template.
      * @param arguments       parameters to fill up the template
+     * @param logger the logger
      */
     public static void debug(Logger logger, String messageTemplate, Object... arguments) {
         if (logger.isDebugEnabled()) {
@@ -87,6 +90,7 @@ public abstract class BasicLogger {
      *
      * @param messageTemplate string with static text as template.
      * @param arguments       parameters to fill up the template
+     * @param logger the logger
      */
     protected static void severe(Logger logger, String messageTemplate, Object... arguments) {
         logger.error(messageTemplate, arguments);

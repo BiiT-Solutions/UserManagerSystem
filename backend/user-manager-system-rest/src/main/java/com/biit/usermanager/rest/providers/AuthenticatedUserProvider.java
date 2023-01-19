@@ -13,13 +13,12 @@ import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
 import com.biit.usermanager.logger.UserManagerLogger;
+import com.biit.usermanager.persistence.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
@@ -84,6 +83,26 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Override
     public long count() {
         return userController.count();
+    }
+
+    @Override
+    public Collection<IAuthenticatedUser> findAll() {
+        return new ArrayList<>(userController.findAll());
+    }
+
+    @Override
+    public void deleteUser(String name, String username) {
+        delete(findByUsername(username).orElse(null));
+    }
+
+    @Override
+    public void delete(IAuthenticatedUser authenticatedUser) {
+        userController.delete((UserDTO) authenticatedUser);
+    }
+
+    @Override
+    public Set<String> getRoles(String username) {
+        throw new UnsupportedOperationException("getRoles not implemented yet!");
     }
 
     public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password) {
