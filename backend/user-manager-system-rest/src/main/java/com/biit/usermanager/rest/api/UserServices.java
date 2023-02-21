@@ -2,10 +2,10 @@ package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.BasicServices;
 import com.biit.usermanager.core.controller.UserController;
-import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.providers.UserProvider;
+import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;

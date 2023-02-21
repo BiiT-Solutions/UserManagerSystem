@@ -1,9 +1,9 @@
 package com.biit.usermanager.core;
 
 import com.biit.usermanager.core.controller.UserController;
-import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
+import com.biit.usermanager.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;

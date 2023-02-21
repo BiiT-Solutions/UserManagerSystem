@@ -1,12 +1,12 @@
 package com.biit.usermanager.core.controller;
 
 import com.biit.server.controller.BasicInsertableController;
-import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
+import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -1,8 +1,8 @@
 package com.biit.usermanager.core.converters;
 
 import com.biit.server.controller.converters.ElementConverter;
-import com.biit.usermanager.core.controller.models.RoleDTO;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;
+import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.persistence.entities.Role;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;

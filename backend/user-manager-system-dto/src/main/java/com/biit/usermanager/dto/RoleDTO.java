@@ -1,8 +1,8 @@
-package com.biit.usermanager.core.controller.models;
+package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
 
-public class ApplicationDTO extends ElementDTO {
+public class RoleDTO extends ElementDTO {
     private String name = "";
     private String description = "";
 

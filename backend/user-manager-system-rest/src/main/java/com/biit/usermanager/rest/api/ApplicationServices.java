@@ -2,10 +2,10 @@ package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.BasicServices;
 import com.biit.usermanager.core.controller.ApplicationController;
-import com.biit.usermanager.core.controller.models.ApplicationDTO;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.providers.ApplicationProvider;
+import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.repositories.ApplicationRepository;
 import org.springframework.web.bind.annotation.RequestMapping;

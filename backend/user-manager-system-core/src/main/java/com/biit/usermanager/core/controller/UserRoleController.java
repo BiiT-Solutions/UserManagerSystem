@@ -1,15 +1,16 @@
 package com.biit.usermanager.core.controller;
 
 
+
 import com.biit.server.controller.BasicInsertableController;
-import com.biit.usermanager.core.controller.models.OrganizationDTO;
-import com.biit.usermanager.core.controller.models.UserDTO;
-import com.biit.usermanager.core.controller.models.UserRoleDTO;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.UserRoleConverter;
 import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
 import com.biit.usermanager.core.providers.UserRoleProvider;
+import com.biit.usermanager.dto.OrganizationDTO;
+import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.persistence.entities.UserRole;
 import com.biit.usermanager.persistence.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,19 +8,20 @@ import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.rest.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserRoleController;
-import com.biit.usermanager.core.controller.models.OrganizationDTO;
-import com.biit.usermanager.core.controller.models.UserDTO;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
+import com.biit.usermanager.dto.OrganizationDTO;
+import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
-import com.biit.usermanager.persistence.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
+@Primary
 public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     private final UserController userController;
     private final UserRoleController userRoleController;

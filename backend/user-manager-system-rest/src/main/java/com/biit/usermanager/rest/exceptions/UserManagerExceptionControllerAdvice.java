@@ -1,6 +1,6 @@
 package com.biit.usermanager.rest.exceptions;
 
-import com.biit.server.exceptions.ExceptionControllerAdvice;
+import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.logger.RestServerExceptionLogger;
 import org.modelmapper.spi.ErrorMessage;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class UserManagerExceptionControllerAdvice extends ExceptionControllerAdvice {
+public class UserManagerExceptionControllerAdvice extends ServerExceptionControllerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> notFoundException(Exception ex) {

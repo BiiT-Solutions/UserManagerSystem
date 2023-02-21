@@ -2,10 +2,10 @@ package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.BasicServices;
 import com.biit.usermanager.core.controller.OrganizationController;
-import com.biit.usermanager.core.controller.models.OrganizationDTO;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.providers.OrganizationProvider;
+import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.repositories.OrganizationRepository;
 import io.swagger.v3.oas.annotations.Operation;
