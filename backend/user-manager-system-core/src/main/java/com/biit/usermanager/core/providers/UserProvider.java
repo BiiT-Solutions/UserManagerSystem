@@ -22,6 +22,18 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
         return repository.findByUsername(username);
     }
 
+    public Optional<User> getById(String uuid) {
+        try {
+            return getById(Long.parseLong(uuid));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<User> getById(Long Id) {
+        return repository.findById(Id);
+    }
+
 
     public List<User> findAllByEnable(boolean enabled) {
 
@@ -38,6 +50,10 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
 
     public List<User> findAll() {
         return repository.findAll();
+    }
+
+    public Optional<User> deleteByUsername(String username) {
+        return repository.deleteByUsername(username);
     }
 
 

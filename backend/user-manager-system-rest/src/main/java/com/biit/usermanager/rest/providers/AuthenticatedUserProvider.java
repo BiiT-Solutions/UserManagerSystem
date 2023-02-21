@@ -10,6 +10,7 @@ import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserRoleController;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
+import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
@@ -36,7 +37,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username) {
         try {
-            return Optional.of(setGrantedAuthorities(userController.getByUserName(username), null));
+            return Optional.of(setGrantedAuthorities(userController.getByUsername(username), null, null));
         } catch (UserNotFoundException e) {
             UserManagerLogger.warning(this.getClass(), e.getMessage());
         }
@@ -46,7 +47,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByUID(String uid) {
         try {
-            return Optional.of(setGrantedAuthorities(userController.get(Long.parseLong(uid)), null));
+            return Optional.of(setGrantedAuthorities(userController.get(Long.parseLong(uid)), null, null));
         } catch (NotFoundException e) {
             UserManagerLogger.warning(this.getClass(), e.getMessage());
         }
@@ -70,7 +71,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
-        final IAuthenticatedUser user = userController.getByUserName(createUserRequest.getUsername());
+        final IAuthenticatedUser user = userController.getByUsername(createUserRequest.getUsername());
         final UserDTO userDTO = new UserDTO();
         userDTO.setUsername(createUserRequest.getUsername());
         userDTO.setFirstName(createUserRequest.getName());
@@ -92,17 +93,18 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public void deleteUser(String name, String username) {
-        delete(findByUsername(username).orElse(null));
+    public boolean deleteUser(String name, String username) {
+        return delete(findByUsername(username).orElse(null));
     }
 
     @Override
-    public void delete(IAuthenticatedUser authenticatedUser) {
+    public boolean delete(IAuthenticatedUser authenticatedUser) {
         userController.delete((UserDTO) authenticatedUser);
+        return true;
     }
 
     @Override
-    public Set<String> getRoles(String username) {
+    public Set<String> getRoles(String username, String organizationName, String applicationName) {
         throw new UnsupportedOperationException("getRoles not implemented yet!");
     }
 
@@ -119,10 +121,10 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         return userController.create(user);
     }
 
-    private UserDTO setGrantedAuthorities(UserDTO userDTO, OrganizationDTO organizationDTO) {
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, OrganizationDTO organizationDTO, ApplicationDTO applicationDTO) {
         if (userDTO != null) {
             final Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
-            userRoleController.getByUserAndOrganization(userDTO, organizationDTO).stream()
+            userRoleController.getByUserAndOrganizationAndApplication(userDTO, organizationDTO, applicationDTO).stream()
                     .filter(userRoleDTO -> userRoleDTO.getRole() != null && userRoleDTO.getRole().getName() != null)
                     .forEach(userRoleDTO -> grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + userRoleDTO.getRole().getName().toUpperCase())));
             userDTO.setGrantedAuthorities(grantedAuthorities);

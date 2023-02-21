@@ -21,6 +21,10 @@ public class UserRole extends Element {
     @JoinColumn(name = "organization")
     private Organization organization;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "application")
+    private Application application;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "user", nullable = false)
@@ -54,5 +58,13 @@ public class UserRole extends Element {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
     }
 }

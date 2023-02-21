@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -31,9 +32,14 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         return new UserConverterRequest(entity);
     }
 
-    public UserDTO getByUserName(String username) {
+    public UserDTO getByUsername(String username) {
         return converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with username '" + username + "' found on the system."))));
+    }
+
+    public UserDTO getByUserId(String id) {
+        return converter.convert(new UserConverterRequest(provider.getById(id).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                "No User with id '" + id + "' found on the system."))));
     }
 
     public UserDTO updatePassword(String username, String oldPassword, String newPassword) {
@@ -47,6 +53,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         userDTO.setPassword(newPassword);
         return converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
     }
+
     public List<UserDTO> getByEnable(Boolean enable) {
         return provider.findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
     }
@@ -56,20 +63,25 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
                 "No User with username '" + phone + "' found on the system."))));
     }
 
-    public List<UserDTO> getAllByExpired(boolean accountExpired){
+    public List<UserDTO> getAllByExpired(boolean accountExpired) {
         final List<User> usersList = provider.findByAccountExpired(accountExpired);
         final List<UserDTO> usersdtList = new ArrayList<>();
-        for (final User user : usersList){
+        for (final User user : usersList) {
             usersdtList.add(converter.convert(new UserConverterRequest(user)));
         }
         return usersdtList;
     }
 
-    public void delete(User user){
+    public void delete(User user) {
         provider.delete(user);
     }
 
-    public List<UserDTO> findAll(){
+    public List<UserDTO> findAll() {
         return provider.findAll().parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
+    }
+
+    public UserDTO delete(String username) {
+        final Optional<User> user = provider.deleteByUsername(username);
+        return user.map(value -> converter.convert(new UserConverterRequest(value))).orElse(null);
     }
 }

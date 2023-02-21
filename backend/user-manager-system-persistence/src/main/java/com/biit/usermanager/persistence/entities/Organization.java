@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "organizations")
 public class Organization extends Element {
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 

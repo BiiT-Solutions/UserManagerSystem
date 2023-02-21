@@ -27,4 +27,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByPhone(String phone);
 
     List<User> findByAccountExpired(boolean account_expired);
+
+    Optional<User> deleteByUsername(String username);
 }
