@@ -26,7 +26,6 @@ import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
@@ -65,8 +64,10 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     }
 
     public UserDTO getByUsername(String username) {
-        return converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
-                "No User with username '" + username + "' found on the system."))));
+        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(),
+                        "No User with username '" + username + "' found on the system."))));
+        return setGrantedAuthorities(userDTO, null, null);
     }
 
     public UserDTO getByUserId(String id) {
@@ -76,7 +77,11 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username) {
-        return Optional.of(getByUsername(username));
+        try {
+            return Optional.of(getByUsername(username));
+        } catch (UserNotFoundException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -197,14 +202,14 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     private UserDTO setGrantedAuthorities(UserDTO userDTO, OrganizationDTO organizationDTO, ApplicationDTO applicationDTO) {
         if (userDTO != null) {
-            final Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
+            final Set<String> grantedAuthorities = new HashSet<>();
             userRoleProvider.findByUserAndOrganizationAndApplication(
                             converter.reverse(userDTO),
                             organizationConverter.reverse(organizationDTO),
                             applicationConverter.reverse(applicationDTO)
                     ).stream()
                     .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)
-                    .forEach(userRole -> grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getRole().getName().toUpperCase())));
+                    .forEach(userRole -> grantedAuthorities.add("ROLE_" + userRole.getRole().getName().toUpperCase()));
             userDTO.setGrantedAuthorities(grantedAuthorities);
         }
         return userDTO;

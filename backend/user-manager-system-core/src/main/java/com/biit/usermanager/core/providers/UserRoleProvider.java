@@ -34,6 +34,7 @@ public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepos
                 return repository.findByUser(user);
             }
         }
+//        return repository.findByUserAndOrganizationAndApplication(user, organization, application);
     }
 
 }

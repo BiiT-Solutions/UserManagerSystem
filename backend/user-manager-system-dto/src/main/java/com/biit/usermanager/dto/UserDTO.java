@@ -3,12 +3,14 @@ package com.biit.usermanager.dto;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -47,7 +49,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
         this.idCard = idCard;
     }
 
-    private Set<SimpleGrantedAuthority> grantedAuthorities;
+    private Set<String> grantedAuthorities;
 
     @Override
     public String getUsername() {
@@ -143,13 +145,22 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
         this.locale = locale;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return grantedAuthorities;
+        final Set<GrantedAuthority> authorities = new HashSet<>();
+        if (grantedAuthorities != null) {
+            grantedAuthorities.forEach(grantedAuthority -> authorities.add(new SimpleGrantedAuthority(grantedAuthority)));
+        }
+        return authorities;
     }
 
-    public void setGrantedAuthorities(Set<SimpleGrantedAuthority> grantedAuthorities) {
+    public void setGrantedAuthorities(Set<String> grantedAuthorities) {
         this.grantedAuthorities = grantedAuthorities;
+    }
+
+    public Set<String> getGrantedAuthorities() {
+        return grantedAuthorities;
     }
 
     @Override

@@ -2,10 +2,7 @@ package com.biit.usermanager.core.converters;
 
 
 import com.biit.server.controller.converters.ElementConverter;
-import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
-import com.biit.usermanager.core.converters.models.RoleConverterRequest;
-import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
+import com.biit.usermanager.core.converters.models.*;
 import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.persistence.entities.UserRole;
 import org.springframework.beans.BeanUtils;
@@ -17,10 +14,14 @@ public class UserRoleConverter extends ElementConverter<UserRole, UserRoleDTO, U
     private final UserConverter userConverter;
     private final OrganizationConverter organizationConverter;
 
-    public UserRoleConverter(RoleConverter roleConverter, UserConverter userConverter, OrganizationConverter organizationConverter) {
+    private final ApplicationConverter applicationConverter;
+
+    public UserRoleConverter(RoleConverter roleConverter, UserConverter userConverter,
+                             OrganizationConverter organizationConverter, ApplicationConverter applicationConverter) {
         this.roleConverter = roleConverter;
         this.userConverter = userConverter;
         this.organizationConverter = organizationConverter;
+        this.applicationConverter = applicationConverter;
     }
 
 
@@ -31,6 +32,7 @@ public class UserRoleConverter extends ElementConverter<UserRole, UserRoleDTO, U
         userRoleDTO.setRole(roleConverter.convert(new RoleConverterRequest(from.getEntity().getRole())));
         userRoleDTO.setOrganization(organizationConverter.convert(new OrganizationConverterRequest(from.getEntity().getOrganization())));
         userRoleDTO.setUser(userConverter.convert(new UserConverterRequest(from.getEntity().getUser())));
+        userRoleDTO.setApplication(applicationConverter.convert(new ApplicationConverterRequest(from.getEntity().getApplication())));
         return userRoleDTO;
     }
 
@@ -44,6 +46,7 @@ public class UserRoleConverter extends ElementConverter<UserRole, UserRoleDTO, U
         userRole.setRole(roleConverter.reverse(to.getRole()));
         userRole.setOrganization(organizationConverter.reverse(to.getOrganization()));
         userRole.setUser(userConverter.reverse(to.getUser()));
+        userRole.setApplication(applicationConverter.reverse(to.getApplication()));
         return userRole;
     }
 }

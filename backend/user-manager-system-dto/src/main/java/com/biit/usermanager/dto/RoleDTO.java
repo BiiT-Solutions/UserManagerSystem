@@ -6,6 +6,16 @@ public class RoleDTO extends ElementDTO {
     private String name = "";
     private String description = "";
 
+    public RoleDTO() {
+        super();
+    }
+
+    public RoleDTO(String name, String description) {
+        this();
+        setName(name);
+        setDescription(description);
+    }
+
     public String getName() {
         return name;
     }
