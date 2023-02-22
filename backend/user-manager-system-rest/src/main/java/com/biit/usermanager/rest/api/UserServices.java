@@ -35,13 +35,25 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @PreAuthorize("hasRole('ROLE_VIEWER')")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO get(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
-                       HttpServletRequest request) {
+    public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
+                                 HttpServletRequest request) {
         return controller.getByUsername(username);
     }
 
     @PreAuthorize("hasRole('ROLE_VIEWER')")
-    @Operation(summary = "Get user by name", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get user by username and application", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/username/{username}/application/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getByUsernameAndApplication(@Parameter(description = "Username of an existing user", required = true)
+                                               @PathVariable("username") String username,
+                                               @Parameter(description = "Name of an existing application", required = true)
+                                               @PathVariable("applicationName") String applicationName,
+                                               HttpServletRequest request) {
+        return (UserDTO) controller.findByUsername(username, applicationName).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+    }
+
+    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("id") String id,
                              HttpServletRequest request) {

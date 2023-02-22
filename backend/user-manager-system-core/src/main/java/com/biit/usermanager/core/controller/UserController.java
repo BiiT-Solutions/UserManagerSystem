@@ -1,30 +1,62 @@
 package com.biit.usermanager.core.controller;
 
 import com.biit.server.controller.BasicInsertableController;
+import com.biit.server.security.CreateUserRequest;
+import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.IAuthenticatedUserProvider;
+import com.biit.usermanager.core.converters.ApplicationConverter;
+import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.UserConverter;
+import com.biit.usermanager.core.converters.UserRoleConverter;
+import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
+import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
+import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.providers.ApplicationProvider;
+import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.core.providers.UserProvider;
+import com.biit.usermanager.core.providers.UserRoleProvider;
 import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
+import com.biit.usermanager.dto.ApplicationDTO;
+import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Primary
 @Controller
 public class UserController extends BasicInsertableController<User, UserDTO, UserRepository,
-        UserProvider, UserConverterRequest, UserConverter> {
+        UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
+    private final UserRoleProvider userRoleProvider;
+
+    private final UserRoleConverter userRoleConverter;
+    private final ApplicationProvider applicationProvider;
+    private final ApplicationConverter applicationConverter;
+    private final OrganizationProvider organizationProvider;
+    private final OrganizationConverter organizationConverter;
 
     @Autowired
-    protected UserController(UserProvider provider, UserConverter converter) {
+    protected UserController(UserProvider provider, UserConverter converter,
+                             UserRoleProvider userRoleProvider, UserRoleConverter userRoleConverter,
+                             ApplicationConverter applicationConverter, ApplicationProvider applicationProvider,
+                             OrganizationProvider organizationProvider, OrganizationConverter organizationConverter) {
         super(provider, converter);
+        this.userRoleProvider = userRoleProvider;
+        this.userRoleConverter = userRoleConverter;
+        this.applicationProvider = applicationProvider;
+        this.organizationProvider = organizationProvider;
+        this.applicationConverter = applicationConverter;
+        this.organizationConverter = organizationConverter;
     }
 
     @Override
@@ -42,7 +74,47 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
                 "No User with id '" + id + "' found on the system."))));
     }
 
-    public UserDTO updatePassword(String username, String oldPassword, String newPassword) {
+    @Override
+    public Optional<IAuthenticatedUser> findByUsername(String username) {
+        return Optional.of(getByUsername(username));
+    }
+
+    @Override
+    public Optional<IAuthenticatedUser> findByUsername(String username, String applicationName) {
+        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+        return Optional.of(setGrantedAuthorities(userDTO, null,
+                applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElse(null)))));
+    }
+
+    @Override
+    public Optional<IAuthenticatedUser> findByUID(String uid) {
+        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.get(Long.parseLong(uid)).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
+        return Optional.of(setGrantedAuthorities(userDTO, null, null));
+    }
+
+    @Override
+    public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
+        return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getName(),
+                createUserRequest.getLastname(), createUserRequest.getPassword());
+    }
+
+    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password) {
+        if (findByUsername(username).isPresent()) {
+            throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
+        }
+        final UserDTO user = new UserDTO();
+        user.setUsername(username);
+        user.setFirstName(name);
+        user.setLastname(lastName);
+        user.setIdCard(uniqueId);
+        user.setPassword(password);
+        return converter.convert(new UserConverterRequest(provider.save(converter.reverse(user))));
+    }
+
+    @Override
+    public void updatePassword(String username, String oldPassword, String newPassword) {
         final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         //Check old password.
@@ -51,7 +123,17 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         }
 
         userDTO.setPassword(newPassword);
-        return converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
+        converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
+    }
+
+    @Override
+    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
+        final UserDTO userDTO = getByUsername(createUserRequest.getUsername());
+        userDTO.setUsername(createUserRequest.getUsername());
+        userDTO.setFirstName(createUserRequest.getName());
+        userDTO.setLastname(createUserRequest.getLastname());
+        userDTO.setIdCard(createUserRequest.getUniqueId());
+        return converter.convert(new UserConverterRequest(provider.update(converter.reverse(userDTO))));
     }
 
     public List<UserDTO> getByEnable(Boolean enable) {
@@ -76,12 +158,55 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         provider.delete(user);
     }
 
-    public List<UserDTO> findAll() {
+    @Override
+    public Collection<IAuthenticatedUser> findAll() {
         return provider.findAll().parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean deleteUser(String name, String username) {
+        return delete(username) != null;
+    }
+
+    @Override
+    public boolean delete(IAuthenticatedUser authenticatedUser) {
+        if (authenticatedUser == null) {
+            return false;
+        }
+        return deleteUser(null, authenticatedUser.getUsername());
+    }
+
+    @Override
+    public Set<String> getRoles(String username, String organizationName, String applicationName) {
+        final UserDTO userDTO = getByUsername(username);
+        final OrganizationDTO organizationDTO = organizationConverter.convert(new OrganizationConverterRequest(
+                organizationProvider.findByName(organizationName).orElse(null)));
+        final ApplicationDTO applicationDTO = applicationConverter.convert(new ApplicationConverterRequest(
+                applicationProvider.findByName(applicationName).orElse(null)));
+        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, organizationDTO, applicationDTO);
+        if (userWithRoles != null) {
+            return userWithRoles.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+        }
+        return new HashSet<>();
     }
 
     public UserDTO delete(String username) {
         final Optional<User> user = provider.deleteByUsername(username);
         return user.map(value -> converter.convert(new UserConverterRequest(value))).orElse(null);
+    }
+
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, OrganizationDTO organizationDTO, ApplicationDTO applicationDTO) {
+        if (userDTO != null) {
+            final Set<SimpleGrantedAuthority> grantedAuthorities = new HashSet<>();
+            userRoleProvider.findByUserAndOrganizationAndApplication(
+                            converter.reverse(userDTO),
+                            organizationConverter.reverse(organizationDTO),
+                            applicationConverter.reverse(applicationDTO)
+                    ).stream()
+                    .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)
+                    .forEach(userRole -> grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getRole().getName().toUpperCase())));
+            userDTO.setGrantedAuthorities(grantedAuthorities);
+        }
+        return userDTO;
     }
 }

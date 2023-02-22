@@ -31,7 +31,7 @@ public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepos
             if (application != null) {
                 return repository.findByUserAndApplication(user, application);
             } else {
-                return Collections.singletonList(repository.findByUser(user));
+                return repository.findByUser(user);
             }
         }
     }

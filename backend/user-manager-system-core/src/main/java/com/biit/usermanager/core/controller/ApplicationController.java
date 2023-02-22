@@ -24,4 +24,8 @@ public class ApplicationController extends BasicInsertableController<Application
     protected ApplicationConverterRequest createConverterRequest(Application entity) {
         return new ApplicationConverterRequest(entity);
     }
+
+    public ApplicationDTO getByName(String applicationName) {
+        return converter.convert(new ApplicationConverterRequest(provider.findByName(applicationName).orElse(null)));
+    }
 }

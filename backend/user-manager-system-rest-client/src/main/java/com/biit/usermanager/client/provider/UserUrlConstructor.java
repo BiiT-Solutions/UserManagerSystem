@@ -22,7 +22,11 @@ public class UserUrlConstructor {
     }
 
     public String getUserByName(String username) {
-        return getUsers() + "/name/" + username;
+        return getUsers() + "/username/" + username;
+    }
+
+    public String getUserByNameAndApplication(String username, String applicationName) {
+        return getUsers() + "/username/" + username + "/application/" + applicationName;
     }
 
     public String getUserById(String id) {
