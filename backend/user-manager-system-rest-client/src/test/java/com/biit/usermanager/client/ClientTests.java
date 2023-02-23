@@ -1,7 +1,6 @@
 package com.biit.usermanager.client;
 
 import com.biit.server.security.IAuthenticatedUser;
-import com.biit.usermanager.UserManagerServer;
 import com.biit.usermanager.client.provider.UserManagerClient;
 import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.RoleController;
@@ -11,6 +10,7 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.UserRoleDTO;
+import com.biit.usermanager.rest.UserManagerServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +32,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_FIRST_NAME = "Test";
     private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
-    private static final String[] USER_ROLES = new String[]{"admin", "viewer"};
+    private static final String[] USER_ROLES = new String[]{"ADMIN", "VIEWER"};
 
     @Autowired
     private UserController userController;
@@ -59,14 +59,14 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD);
 
         //Create the application
-        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName, ""));
+        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName.toUpperCase(), ""));
 
         //Set the roles
-        List<RoleDTO> roles = new ArrayList<>();
-        List<RoleDTO> applicationRoles = new ArrayList<>();
+        final List<RoleDTO> roles = new ArrayList<>();
+        final List<RoleDTO> applicationRoles = new ArrayList<>();
         for (final String roleName : USER_ROLES) {
             roles.add(roleController.create(new RoleDTO(roleName, null)));
-            applicationRoles.add(roleController.create(new RoleDTO(applicationName + "_" + roleName, null)));
+            applicationRoles.add(roleController.create(new RoleDTO(applicationName.toUpperCase() + "_" + roleName, null)));
         }
 
         //Assign the basic roles.
@@ -78,20 +78,20 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void findUserByName() {
-        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
+        final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
     }
 
     @Test
     public void findUserByNameAndApplication() {
-        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, applicationName);
+        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, applicationName.toUpperCase());
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
-        Assert.assertEquals(user.get().getAuthorities().size(), 4);
+        Assert.assertEquals(user.get().getAuthorities().size(), 2);
 
         user = userManagerClient.findByUsername(USER_NAME, applicationName + "_bad");
         Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(user.get().getAuthorities().size(), 2);
+        Assert.assertEquals(user.get().getAuthorities().size(), 0);
     }
 }

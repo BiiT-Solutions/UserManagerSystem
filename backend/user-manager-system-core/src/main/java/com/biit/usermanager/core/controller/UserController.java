@@ -11,6 +11,7 @@ import com.biit.usermanager.core.converters.UserRoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
+import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
@@ -86,10 +87,14 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username, String applicationName) {
+        if (applicationName == null) {
+            return findByUsername(username);
+        }
         final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         return Optional.of(setGrantedAuthorities(userDTO, null,
-                applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElse(null)))));
+                applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
+                        new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'."))))));
     }
 
     @Override
@@ -209,7 +214,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
                             applicationConverter.reverse(applicationDTO)
                     ).stream()
                     .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)
-                    .forEach(userRole -> grantedAuthorities.add("ROLE_" + userRole.getRole().getName().toUpperCase()));
+                    .forEach(userRole -> grantedAuthorities.add(userRole.getRole().getName().toUpperCase()));
             userDTO.setGrantedAuthorities(grantedAuthorities);
         }
         return userDTO;

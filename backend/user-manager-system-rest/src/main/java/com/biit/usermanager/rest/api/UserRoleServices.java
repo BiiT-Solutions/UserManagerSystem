@@ -31,7 +31,7 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
     }
 
 
-    @PreAuthorize("hasRole('ROLE_VIEWER')")
+    @PreAuthorize("hasRole(@securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}/organization/{organizationName}/application/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getRolesFromUser(@Parameter(description = "Username of an existing user", required = true)

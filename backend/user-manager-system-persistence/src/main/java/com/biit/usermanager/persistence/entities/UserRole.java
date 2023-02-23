@@ -13,6 +13,7 @@ import javax.persistence.*;
 @Table(name = "user_roles", indexes = {
         @Index(name = "ind_user", columnList = "user"),
         @Index(name = "ind_organization", columnList = "organization"),
+        @Index(name = "ind_application", columnList = "application"),
         @Index(name = "ind_role", columnList = "role"),
 })
 public class UserRole extends Element {
