@@ -66,7 +66,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final List<RoleDTO> applicationRoles = new ArrayList<>();
         for (final String roleName : USER_ROLES) {
             roles.add(roleController.create(new RoleDTO(roleName, null)));
-            applicationRoles.add(roleController.create(new RoleDTO(applicationName.toUpperCase() + "_" + roleName, null)));
+            applicationRoles.add(roleController.create(new RoleDTO(applicationName + "_" + roleName, null)));
         }
 
         //Assign the basic roles.
@@ -85,10 +85,15 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void findUserByNameAndApplication() {
-        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, applicationName.toUpperCase());
+        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, applicationName);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
         Assert.assertEquals(user.get().getAuthorities().size(), 2);
+
+        user = userManagerClient.findByUsername(USER_NAME, null);
+        Assert.assertTrue(user.isPresent());
+        Assert.assertEquals(user.get().getUsername(), USER_NAME);
+        Assert.assertEquals(user.get().getAuthorities().size(), 4);
 
         user = userManagerClient.findByUsername(USER_NAME, applicationName + "_bad");
         Assert.assertTrue(user.isPresent());

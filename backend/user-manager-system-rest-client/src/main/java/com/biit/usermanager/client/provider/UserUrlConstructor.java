@@ -26,6 +26,9 @@ public class UserUrlConstructor {
     }
 
     public String getUserByNameAndApplication(String username, String applicationName) {
+        if (applicationName == null) {
+            return getUserByName(username);
+        }
         return getUsers() + "/username/" + username + "/application/" + applicationName;
     }
 
