@@ -2,11 +2,11 @@ package com.biit.usermanager.core.controller;
 
 
 import com.biit.server.controller.BasicInsertableController;
-import com.biit.usermanager.core.controller.models.OrganizationDTO;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.OrganizationProvider;
+import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.repositories.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;

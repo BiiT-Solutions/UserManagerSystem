@@ -10,13 +10,21 @@ import javax.persistence.*;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "user_roles")
+@Table(name = "user_roles", indexes = {
+        @Index(name = "ind_user", columnList = "user"),
+        @Index(name = "ind_organization", columnList = "organization"),
+        @Index(name = "ind_application", columnList = "application"),
+        @Index(name = "ind_role", columnList = "role"),
+})
 public class UserRole extends Element {
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization")
     private Organization organization;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "application")
+    private Application application;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
@@ -51,5 +59,13 @@ public class UserRole extends Element {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
     }
 }

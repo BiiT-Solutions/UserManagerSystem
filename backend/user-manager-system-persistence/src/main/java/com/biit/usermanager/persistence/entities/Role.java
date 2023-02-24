@@ -11,7 +11,9 @@ import javax.persistence.*;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "roles")
+@Table(name = "roles", indexes = {
+        @Index(name = "ind_application", columnList = "application")
+})
 public class Role extends Element {
 
     @Column(name = "name", nullable = false)
@@ -22,8 +24,7 @@ public class Role extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String description = "";
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application")
     private Application application;
 

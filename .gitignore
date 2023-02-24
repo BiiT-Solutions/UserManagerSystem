@@ -20,5 +20,5 @@ release.properties
 *.jar
 *.iml
 *.swp
-
+.attach_pid*
 
