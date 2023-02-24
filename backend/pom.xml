@@ -19,10 +19,11 @@
     <modules>
         <module>user-manager-system-logger</module>
         <module>user-manager-system-persistence</module>
-	<module>user-manager-system-dto</module>
+        <module>user-manager-system-dto</module>
         <module>user-manager-system-core</module>
         <module>user-manager-system-rest</module>
         <module>user-manager-system-rest-client</module>
+        <module>user-manager-system-rest-server</module>
     </modules>
 
     <scm>

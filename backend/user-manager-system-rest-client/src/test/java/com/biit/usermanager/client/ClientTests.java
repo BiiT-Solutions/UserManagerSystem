@@ -59,7 +59,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD);
 
         //Create the application
-        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName.toUpperCase(), ""));
+        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName, ""));
 
         //Set the roles
         final List<RoleDTO> roles = new ArrayList<>();

@@ -1,3 +1,12 @@
+# User Manager Rest Server
+
+### Rest project and Rest Server
+
+As the rest classes are used by the Rest Client are in a specific package without the spring boot repackage. The Rest
+module must be deployed as a standard one in Artifactory to be use as a test dependency by Rest Client module.
+
+The Rest Server package, includes all spring boot configuration to be run as a server.
+
 # Using User Manager Rest Client
 
 If you want to access to this server, a client is provided to help you. Include on your mvn `pom.xml` file:
