@@ -95,7 +95,9 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
         Assert.assertEquals(user.get().getAuthorities().size(), 4);
 
+        System.out.println(" #------------------------------------ Expected Exception ----------------------------");
         user = userManagerClient.findByUsername(USER_NAME, applicationName + "_bad");
+        System.out.println(" #--------------------------------- End of Expected Exception -------------------------");
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getAuthorities().size(), 0);
     }

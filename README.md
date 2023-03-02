@@ -81,7 +81,13 @@ Include on your mvn `pom.xml` file:
  </dependency>
 ```
 
-Has a custom logger. Add its configuration to the `logback.xml` file:
+And include the correct path on the ComponentScan:
+
+```
+@ComponentScan({"...", "com.biit.usermanager.client"})
+```
+
+It has a custom logger. Add its configuration to the `logback.xml` file:
 
 ```
     <logger name="com.biit.usermanager.logger.UserManagerClientLogger" additivity="false" level="DEBUG">
@@ -95,6 +101,25 @@ As it is using JWT for communication, remember to set the JWT settings on the `a
 ```
 jwt.user=
 jwt.password=
+```
+
+## Testing an external application
+
+If you want to test your application without connecting to the User Manager System, you can use the dependency
+
+```
+ <dependency>
+       <groupId>com.biit</groupId>
+       <artifactId>user-manager-system-test</artifactId>
+       <scope>test</scope>
+ </dependency>
+```
+
+This application include a basic AuthenticatedUserProvided that handle user on memory rather than accessing to the API.
+For defining custom roles of your application, you need to add on the `application.properties` of your test the property:
+
+```
+user.provider.test.authorities=ADMIN,VIEWER
 ```
 
 # Dependencies

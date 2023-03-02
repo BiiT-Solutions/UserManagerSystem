@@ -18,7 +18,7 @@ import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.providers.UserRoleProvider;
-import com.biit.usermanager.core.providers.exceptions.InvalidParameterException;
+import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.UserDTO;

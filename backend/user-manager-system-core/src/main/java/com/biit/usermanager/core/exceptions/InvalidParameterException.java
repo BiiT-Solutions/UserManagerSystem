@@ -1,4 +1,4 @@
-package com.biit.usermanager.core.providers.exceptions;
+package com.biit.usermanager.core.exceptions;
 
 import com.biit.logger.ExceptionType;
 import com.biit.usermanager.logger.LoggedException;
