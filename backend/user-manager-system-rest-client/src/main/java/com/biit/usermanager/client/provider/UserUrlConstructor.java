@@ -1,15 +1,19 @@
 package com.biit.usermanager.client.provider;
 
+import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserUrlConstructor {
 
-    @Value("${usermanager.server.url}")
+    @Value("${usermanager.server.url:null}")
     private String userManagerServerUrl;
 
     public String getUserManagerServerUrl() {
+        if (userManagerServerUrl == null) {
+            throw new InvalidConfigurationException(this.getClass(), "Value 'usermanager.server.url' not set on 'application.properties'!");
+        }
         return userManagerServerUrl;
     }
 

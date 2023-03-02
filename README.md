@@ -87,6 +87,12 @@ And include the correct path on the ComponentScan:
 @ComponentScan({"...", "com.biit.usermanager.client"})
 ```
 
+On the `application.properties` set the next property:
+
+```
+usermanager.server.url=...
+``` 
+
 It has a custom logger. Add its configuration to the `logback.xml` file:
 
 ```
