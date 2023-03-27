@@ -6,7 +6,7 @@ import com.biit.server.client.SecurityClient;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
-import com.biit.server.security.UpdatePasswordRequest;
+import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.client.provider.converters.UserDTOConverter;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.UserRoleDTO;
@@ -104,12 +104,13 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public void updatePassword(String username, String oldPassword, String newPassword) {
+    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword) {
         try {
             try (final Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.updateUserPassword(username),
                     mapper.writeValueAsString(new UpdatePasswordRequest(oldPassword, newPassword)))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.updateUserPassword(username), result.getStatus());
+                return mapper.readValue(result.readEntity(String.class), UserDTO.class);
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);

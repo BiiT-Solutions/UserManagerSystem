@@ -114,6 +114,11 @@ public class AuthenticatedUser implements IAuthenticatedUser {
         return mobilePhone;
     }
 
+    @Override
+    public String getEmailAddress() {
+        return null;
+    }
+
     public void setMobilePhone(String mobilePhone) {
         this.mobilePhone = mobilePhone;
     }

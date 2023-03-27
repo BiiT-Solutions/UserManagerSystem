@@ -2,6 +2,7 @@ package com.biit.usermanager.security;
 
 import com.biit.rest.exceptions.EmptyResultException;
 import com.biit.server.client.SecurityClient;
+import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.entity.IGroup;
 import com.biit.usermanager.entity.IUser;
@@ -87,8 +88,21 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public IUser<Long> getUserById(long userId) throws UserManagementException {
-        return null;
+    public IUser<Long> getUserById(long userId) throws UserManagementException, UserDoesNotExistException {
+        try {
+            try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
+                    authenticationUrlConstructor.getUserById(userId))) {
+                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getUserById(userId),
+                        response.getStatus());
+                if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
+                    throw new UserDoesNotExistException("No user found with id '" + userId + "'");
+                }
+                return mapper.readValue(response.readEntity(String.class), UserDTO.class);
+            }
+        } catch (JsonProcessingException | EmptyResultException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        }
     }
 
     @Override
@@ -97,8 +111,31 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public IUser<Long> updatePassword(IUser<Long> user, String plainTextPassword) throws UserManagementException {
-        return null;
+    public IUser<Long> updatePassword(IUser<Long> user, String plainTextPassword) throws UserDoesNotExistException,
+            InvalidCredentialsException, UserManagementException {
+        // Login fails if either the username or password is null
+        if (user == null || plainTextPassword == null) {
+            throw new UserManagementException("No fields filled up.");
+        }
+
+        try {
+            try (final Response response = securityClient.post(authenticationUrlConstructor.getUserManagerServerUrl(),
+                    authenticationUrlConstructor.updateUserPassword(user.getUniqueName()), mapper.writeValueAsString(new UpdatePasswordRequest(
+                            null, plainTextPassword)))) {
+                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.updateUserPassword(user.getUniqueName()),
+                        response.getStatus());
+                if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
+                    throw new UserDoesNotExistException("No user found with username '" + user.getUniqueName() + "'");
+                }
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                    throw new InvalidCredentialsException("Invalid JWT credentials!");
+                }
+                return mapper.readValue(response.readEntity(String.class), UserDTO.class);
+            }
+        } catch (JsonProcessingException | EmptyResultException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        }
     }
 
     @Override

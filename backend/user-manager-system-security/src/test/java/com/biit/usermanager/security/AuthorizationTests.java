@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,6 +55,7 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
     private final static String USER_FIRST_NAME = "Test";
     private final static String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
+    private static final String USER_NEW_PASSWORD = "asd12356";
     private static final String USER_ID_CARD = "87654321B";
     private static final String[] USER_ROLES = new String[]{"usermanagersystem_viewer"};
 
@@ -189,4 +191,26 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(authenticationService.getUserByEmail(ADMIN_EMAIL).getUniqueName(), ADMIN_USER_NAME);
         Assert.assertEquals(authenticationService.getUserByEmail(USER_EMAIL).getUniqueName(), USER_NAME);
     }
+
+    @Test
+    public void getById() throws UserManagementException, UserDoesNotExistException {
+        final UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        Assert.assertEquals(authenticationService.getUserById(userDTO.getId()).getUniqueName(), USER_NAME);
+    }
+
+    @Test
+    public void updatePassword() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
+        UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, userDTO.getPassword()));
+        Assert.assertFalse(BCrypt.checkpw(USER_NEW_PASSWORD, userDTO.getPassword()));
+
+        authenticationService.updatePassword(userDTO, USER_NEW_PASSWORD);
+
+        userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        Assert.assertTrue(BCrypt.checkpw(USER_NEW_PASSWORD, userDTO.getPassword()));
+        Assert.assertFalse(BCrypt.checkpw(USER_PASSWORD, userDTO.getPassword()));
+
+        authenticationService.updatePassword(userDTO, USER_PASSWORD);
+    }
+
 }

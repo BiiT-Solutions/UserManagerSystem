@@ -33,6 +33,10 @@ public class AuthenticationUrlConstructor {
         return getUsers() + "/email/" + email;
     }
 
+    public String getUserById(Long id) {
+        return getUsers() + "/id/" + id;
+    }
+
     public String checkCredentials() {
         return getUsers() + "/credentials";
     }

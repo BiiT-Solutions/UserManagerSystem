@@ -80,7 +80,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public void updatePassword(String username, String oldPassword, String newPassword) {
+    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword) {
         final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
                 .findAny().orElseThrow(() ->
                         new RuntimeException("User with username '" + username + "' does not exists"));
@@ -92,6 +92,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
         //Update new password.
         user.setPassword(newPassword);
+        return user;
     }
 
 

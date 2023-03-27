@@ -144,16 +144,16 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     }
 
     @Override
-    public void updatePassword(String username, String oldPassword, String newPassword) {
+    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword) {
         final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         //Check old password.
-        if (!BCrypt.checkpw(oldPassword, userDTO.getPassword())) {
+        if (oldPassword != null && !BCrypt.checkpw(oldPassword, userDTO.getPassword())) {
             throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
         }
 
         userDTO.setPassword(newPassword);
-        converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
+        return converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
     }
 
     @Override

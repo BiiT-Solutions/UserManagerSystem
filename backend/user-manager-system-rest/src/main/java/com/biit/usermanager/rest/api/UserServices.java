@@ -1,7 +1,7 @@
 package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.BasicServices;
-import com.biit.server.security.UpdatePasswordRequest;
+import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
@@ -103,7 +103,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByEnable(enable);
     }
 
-    @Operation(summary = "Updates a password.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Updates the password of the current logged in user.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(path = "/password")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void updatePassword(@RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
@@ -118,14 +118,15 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @Operation(summary = "Updates a password.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public void updateUserPassword(@Parameter(description = "username", required = true)
-                                   @PathVariable("username") String username,
-                                   @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
+    public UserDTO updateUserPassword(@Parameter(description = "username", required = true)
+                                      @PathVariable("username") String username,
+                                      @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            controller.updatePassword(username, request.getOldPassword(), request.getNewPassword());
+            return (UserDTO) controller.updatePassword(username, request.getOldPassword(), request.getNewPassword());
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
+        return null;
     }
 
     @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
