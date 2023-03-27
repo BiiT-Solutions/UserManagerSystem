@@ -22,6 +22,11 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
         return repository.findByUsername(username);
     }
 
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
+
     public Optional<User> getById(String uuid) {
         try {
             return getById(Long.parseLong(uuid));

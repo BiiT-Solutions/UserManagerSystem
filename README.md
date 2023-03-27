@@ -67,7 +67,7 @@ module must be deployed as a standard one in Artifactory to be use as a test dep
 
 The Rest Server module, includes all spring boot configuration that allows to be run as a server.
 
-# Using User Manager Rest Client on an external application
+# Using User Manager Rest Client on an external application for API security
 
 If you want to access to this server, a client is provided to help you. It includes all basic information for
 Authentication and Authorization using the User Manager Server.
@@ -109,7 +109,62 @@ jwt.user=
 jwt.password=
 ```
 
-## Testing an external application
+# Using User Manager System Security as an Authentication and Authorization provider
+
+Meanwhile, the `User Manager Rest Client` handles the permissions between systems, this module provides retro
+compatibility to older applications that has used Liferay as an access control application. On this module you will find
+all methods required to get users, roles and organizations as needed on applications as ABCD or USMO. Note that
+internally, it needs to connect to the `User Manager System` by a JWT, therefor a JWT account is needed for accessing.
+
+For example, on the next figure:
+
+![Architecture](documentation/UserManagerSystem%20-%20Authentication%20and%20Authorization.svg)
+
+A user wants to log in on an application (let's say USMO as an example). And wants to access as a doctor on the
+application. USMO first, must access to the User Manager system, and generate its custom JWT token for communicating
+between the User Manager System and itself. Later, when required, use the `user-manager-system-security` library to
+check if the user is a doctor or not using the JWT previously generated. That means that two accounts are involved on
+the process. One account for the communication between USMO and the User manager System and the second account that is
+the one that wants to be checked for RBAC purposes.
+
+What a `doctor` can do on USMO is something that must be implemented on `USMO` and is outside the scope of this
+server.
+
+## Configuration
+
+Include on your mvn `pom.xml` file:
+
+```
+ <dependency>
+       <groupId>com.biit</groupId>
+       <artifactId>user-manager-system-security</artifactId>
+ </dependency>
+```
+
+And include the correct path on the ComponentScan:
+
+```
+@ComponentScan({"...", "com.biit.usermanager.security"})
+```
+
+On the `application.properties` remember to set the JWT user and password for accessing to the service that will check
+the user:
+
+```
+jwt.user=
+jwt.password=
+``` 
+
+It has some loggers. Add their configuration to the `logback.xml` file:
+
+```
+    <logger name="com.biit.usermanager.logger.AuthenticationServiceLogger" additivity="false" level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="DAILY"/>
+    </logger>
+```
+
+# Testing an external application
 
 If you want to test your application without connecting to the User Manager System, you can use the dependency
 
@@ -122,7 +177,8 @@ If you want to test your application without connecting to the User Manager Syst
 ```
 
 This application include a basic AuthenticatedUserProvided that handle user on memory rather than accessing to the API.
-For defining custom roles of your application, you need to add on the `application.properties` of your test the property:
+For defining custom roles of your application, you need to add on the `application.properties` of your test the
+property:
 
 ```
 user.provider.test.authorities=ADMIN,VIEWER

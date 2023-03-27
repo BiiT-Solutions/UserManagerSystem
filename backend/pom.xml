@@ -23,6 +23,7 @@
         <module>user-manager-system-core</module>
         <module>user-manager-system-rest</module>
         <module>user-manager-system-rest-client</module>
+        <module>user-manager-system-security</module>
         <module>user-manager-system-rest-server</module>
         <module>user-manager-system-test</module>
     </modules>

@@ -11,14 +11,11 @@ import com.biit.usermanager.core.converters.UserRoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
-import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
-import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.exceptions.*;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.providers.UserRoleProvider;
-import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.UserDTO;
@@ -70,6 +67,29 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
                         "No User with username '" + username + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
     }
+
+    public UserDTO checkCredentials(String username, String email, String password) {
+        final User user;
+        if (username != null) {
+            user = provider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                    "No User with username '" + username + "' found on the system."));
+        } else {
+            user = provider.findByEmail(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                    "No User with email '" + email + "' found on the system."));
+        }
+        if (!BCrypt.checkpw(password, user.getPassword())) {
+            throw new InvalidPasswordException(this.getClass(), "Password '" + password + "' does not match the correct one!");
+        }
+        return setGrantedAuthorities(converter.convert(new UserConverterRequest(user)), null, null);
+    }
+
+    public UserDTO getByEmail(String email) {
+        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByEmail(email).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(),
+                        "No User with email '" + email + "' found on the system."))));
+        return setGrantedAuthorities(userDTO, null, null);
+    }
+
 
     public UserDTO getByUserId(String id) {
         return converter.convert(new UserConverterRequest(provider.getById(id).orElseThrow(() -> new UserNotFoundException(this.getClass(),

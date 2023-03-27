@@ -11,6 +11,7 @@ import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
+import com.biit.usermanager.rest.api.models.CheckCredentialsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -39,6 +40,22 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
                                  HttpServletRequest request) {
         return controller.getByUsername(username);
+    }
+
+    @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
+    @Operation(summary = "Get user by email", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/email/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @PathVariable("email") String email,
+                              HttpServletRequest request) {
+        return controller.getByEmail(email);
+    }
+
+    @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
+    @Operation(summary = "Check user and password", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/credentials", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO checkCredentials(@RequestBody CheckCredentialsRequest credentialsRequest,
+                                    HttpServletRequest request) {
+        return controller.checkCredentials(credentialsRequest.getUsername(), credentialsRequest.getEmail(), credentialsRequest.getPassword());
     }
 
     @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
@@ -99,7 +116,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Updates a password.", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping(path = "/{username}/password")
+    @PostMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void updateUserPassword(@Parameter(description = "username", required = true)
                                    @PathVariable("username") String username,
