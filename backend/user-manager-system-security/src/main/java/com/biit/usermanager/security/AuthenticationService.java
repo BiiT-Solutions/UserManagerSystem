@@ -14,7 +14,10 @@ import com.biit.usermanager.security.models.CheckCredentialsRequest;
 import com.biit.usermanager.security.providers.AuthenticationUrlConstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
@@ -34,6 +37,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         this.mapper = mapper;
     }
 
+    @Cacheable("users")
     @Override
     public IUser<Long> authenticate(String email, String password) throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         // Login fails if either the username or password is null
@@ -65,6 +69,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         return null;
     }
 
+    @Cacheable("users")
     @Override
     public IUser<Long> getUserByEmail(String email) throws UserManagementException, UserDoesNotExistException {
         if (email == null) {
@@ -87,6 +92,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
+    @Cacheable("users")
     @Override
     public IUser<Long> getUserById(long userId) throws UserManagementException, UserDoesNotExistException {
         try {
@@ -110,6 +116,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         return false;
     }
 
+    @CacheEvict(allEntries = true, value = {"users"})
     @Override
     public IUser<Long> updatePassword(IUser<Long> user, String plainTextPassword) throws UserDoesNotExistException,
             InvalidCredentialsException, UserManagementException {
@@ -138,14 +145,18 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
+    @CacheEvict(allEntries = true, value = {"users"})
     @Override
     public IUser<Long> updateUser(IUser<Long> user) throws UserManagementException {
         return null;
     }
 
+
+    @CacheEvict(allEntries = true, value = {"users"})
+    @Scheduled(fixedDelay = 60 * 10 * 1000)
     @Override
     public void reset() {
-
+        //Only for handling Spring cache.
     }
 
     @Override
@@ -154,6 +165,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         return null;
     }
 
+    @CacheEvict(allEntries = true, value = {"users"})
     @Override
     public void deleteUser(IUser<Long> user) throws UserManagementException {
 

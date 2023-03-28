@@ -164,6 +164,20 @@ It has some loggers. Add their configuration to the `logback.xml` file:
     </logger>
 ```
 
+Last thing, this packet uses caching to temporally store the information of a user on memory. Remember to
+add `@EnableCaching` in yoir `@SpringBootApplication` application file.
+
+```
+@EnableCaching
+@SpringBootApplication
+public class MyServer {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyServer.class, args);
+    }
+}
+```
+
 # Testing an external application
 
 If you want to test your application without connecting to the User Manager System, you can use the dependency
