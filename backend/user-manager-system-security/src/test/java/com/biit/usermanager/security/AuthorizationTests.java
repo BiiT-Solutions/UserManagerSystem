@@ -1,14 +1,8 @@
 package com.biit.usermanager.security;
 
 import com.biit.server.security.model.AuthRequest;
-import com.biit.usermanager.core.controller.ApplicationController;
-import com.biit.usermanager.core.controller.RoleController;
-import com.biit.usermanager.core.controller.UserController;
-import com.biit.usermanager.core.controller.UserRoleController;
-import com.biit.usermanager.dto.ApplicationDTO;
-import com.biit.usermanager.dto.RoleDTO;
-import com.biit.usermanager.dto.UserDTO;
-import com.biit.usermanager.dto.UserRoleDTO;
+import com.biit.usermanager.core.controller.*;
+import com.biit.usermanager.dto.*;
 import com.biit.usermanager.security.exceptions.InvalidCredentialsException;
 import com.biit.usermanager.security.exceptions.UserDoesNotExistException;
 import com.biit.usermanager.security.exceptions.UserManagementException;
@@ -69,6 +63,8 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
     private static final String NEW_USER_ID_CARD = "1233123123P";
     private static final String[] NEW_USER_ROLES = new String[]{"usermanagersystem_viewer"};
 
+    private static final String ORGANIZATION_NAME = "Organization1";
+
     @Autowired
     private WebApplicationContext context;
 
@@ -83,6 +79,9 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private UserRoleController userRoleController;
+
+    @Autowired
+    private OrganizationController organizationController;
 
     @Autowired
     private ApplicationController applicationController;
@@ -154,8 +153,13 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
             roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
         }
 
+        OrganizationDTO organizationDTO = new OrganizationDTO();
+        organizationDTO.setName(ORGANIZATION_NAME);
+        organizationDTO = organizationController.create(organizationDTO);
+
         //Assign user roles
-        roles.values().forEach(roleDTO -> userRoleController.create(new UserRoleDTO(testUser, roleDTO, null, applicationDTO)));
+        final OrganizationDTO finalOrganizationDTO = organizationDTO;
+        roles.values().forEach(roleDTO -> userRoleController.create(new UserRoleDTO(testUser, roleDTO, finalOrganizationDTO, applicationDTO)));
     }
 
 
@@ -258,6 +262,19 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
         UserDTO userDTO = (UserDTO) userController.findByUsername(NEW_USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         authenticationService.deleteUser(userDTO);
         Assert.assertNull(userController.findByUsername(NEW_USER_NAME).orElse(null));
+    }
+
+    @Test
+    public void isInGroup() throws UserManagementException, InvalidCredentialsException {
+        OrganizationDTO organizationDTO = organizationController.getByName(ORGANIZATION_NAME);
+        UserDTO userDTO = userController.getByUsername(USER_NAME);
+        Assert.assertTrue(authenticationService.isInGroup(organizationDTO, userDTO));
+
+        OrganizationDTO otherOrganization = new OrganizationDTO();
+        otherOrganization.setName("Other Name");
+        organizationController.create(otherOrganization);
+
+        Assert.assertFalse(authenticationService.isInGroup(otherOrganization, userDTO));
     }
 
 }

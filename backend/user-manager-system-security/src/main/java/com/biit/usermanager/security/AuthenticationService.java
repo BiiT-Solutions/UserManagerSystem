@@ -7,6 +7,7 @@ import com.biit.rest.exceptions.UnprocessableEntityException;
 import com.biit.server.client.SecurityClient;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.entity.IGroup;
 import com.biit.usermanager.entity.IUser;
 import com.biit.usermanager.logger.AuthenticationServiceLogger;
@@ -16,7 +17,9 @@ import com.biit.usermanager.security.exceptions.UserManagementException;
 import com.biit.usermanager.security.models.CheckCredentialsRequest;
 import com.biit.usermanager.security.providers.AuthenticationUrlConstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AuthenticationService implements IAuthenticationService<Long, Long> {
@@ -33,6 +38,9 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     private final SecurityClient securityClient;
 
     private final ObjectMapper mapper;
+
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     public AuthenticationService(AuthenticationUrlConstructor authenticationUrlConstructor, SecurityClient securityClient, ObjectMapper mapper) {
         this.authenticationUrlConstructor = authenticationUrlConstructor;
@@ -72,7 +80,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public IGroup<Long> getDefaultGroup(IUser<Long> user) throws UserManagementException {
+    public IGroup<Long> getDefaultGroup(IUser<Long> organization) throws UserManagementException {
         return null;
     }
 
@@ -127,8 +135,26 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public boolean isInGroup(IGroup<Long> group, IUser<Long> user) throws UserManagementException {
-        return false;
+    public boolean isInGroup(IGroup<Long> organization, IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
+        try {
+            try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
+                    authenticationUrlConstructor.getRolesByUserAndOrganizationAndApplication(user.getUniqueName(),
+                            organization.getUniqueName(), applicationName))) {
+                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getRolesByUserAndOrganizationAndApplication(
+                                user.getUniqueName(), organization.getUniqueName(), applicationName),
+                        response.getStatus());
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                    throw new InvalidCredentialsException("Invalid JWT credentials!");
+                }
+                return !(new ArrayList<>(mapper.readValue(response.readEntity(String.class), new TypeReference<List<UserRoleDTO>>() {
+                }))).isEmpty();
+            }
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
     @CacheEvict(allEntries = true, value = {"users"})

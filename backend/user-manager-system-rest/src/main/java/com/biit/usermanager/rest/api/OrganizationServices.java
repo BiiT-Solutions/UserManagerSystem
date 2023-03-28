@@ -27,7 +27,7 @@ public class OrganizationServices extends BasicServices<Organization, Organizati
         super(organizationController);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets an organization by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @GetMapping(value = "/name/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,7 +36,7 @@ public class OrganizationServices extends BasicServices<Organization, Organizati
         return controller.getByName(name);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes an organization by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/name/{name}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -34,7 +34,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     //@PreAuthorize("hasAuthority('USERMANAGERSYSTEM_VIEWER')")
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
@@ -42,7 +42,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByUsername(username);
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by email", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/email/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @PathVariable("email") String email,
@@ -50,7 +50,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByEmail(email);
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Check user and password", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/credentials", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO checkCredentials(@RequestBody CheckCredentialsRequest credentialsRequest,
@@ -58,7 +58,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.checkCredentials(credentialsRequest.getUsername(), credentialsRequest.getEmail(), credentialsRequest.getPassword());
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username and application", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}/application/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndApplication(@Parameter(description = "Username of an existing user", required = true)
@@ -70,7 +70,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("id") String id,
@@ -103,7 +103,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByEnable(enable);
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Updates the password of the current logged in user.", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(path = "/password")
     @ResponseStatus(value = HttpStatus.ACCEPTED)

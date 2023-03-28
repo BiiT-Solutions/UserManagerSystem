@@ -21,6 +21,10 @@ public class AuthenticationUrlConstructor {
         return "/users";
     }
 
+    public String getRoles() {
+        return "/roles";
+    }
+
     public String getUserRoles() {
         return "/roles/users";
     }
