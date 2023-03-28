@@ -63,6 +63,9 @@ public class AuthenticationUrlConstructor {
         return getUsers();
     }
 
+    public String addUser() {
+        return getUsers();
+    }
 
     public String updatePassword() {
         return getUsers() + "/password";
@@ -80,8 +83,8 @@ public class AuthenticationUrlConstructor {
         return getUsers();
     }
 
-    public String delete() {
-        return getUsers() + "/delete";
+    public String delete(Long userId) {
+        return getUsers() + "/" + userId;
     }
 
     public String deleteByUsername(String username) {

@@ -52,7 +52,6 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
 
     private static final String USER_NAME = "test";
 
-    private static final String USER_NAME_UPDATED = "test2";
     private static final String USER_EMAIL = "test@test.com";
     private final static String USER_FIRST_NAME = "Test";
     private final static String USER_LAST_NAME = "User";
@@ -60,6 +59,15 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
     private static final String USER_NEW_PASSWORD = "asd12356";
     private static final String USER_ID_CARD = "87654321B";
     private static final String[] USER_ROLES = new String[]{"usermanagersystem_viewer"};
+
+    private static final String NEW_USER_NAME = "NewUser";
+    private static final String NEW_USER_NAME_UPDATED = "NewUser2";
+    private static final String NEW_USER_EMAIL = "new@test.com";
+    private final static String NEW_USER_FIRST_NAME = "New";
+    private final static String NEW_USER_LAST_NAME = "User";
+    private static final String NEW_USER_PASSWORD = "asd123";
+    private static final String NEW_USER_ID_CARD = "1233123123P";
+    private static final String[] NEW_USER_ROLES = new String[]{"usermanagersystem_viewer"};
 
     @Autowired
     private WebApplicationContext context;
@@ -216,18 +224,40 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
     }
 
     @Test
+    public void addUser() throws UserManagementException, InvalidCredentialsException {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setPassword(NEW_USER_PASSWORD);
+        userDTO.setUsername(NEW_USER_NAME);
+        userDTO.setEmail(NEW_USER_EMAIL);
+        userDTO.setFirstName(NEW_USER_FIRST_NAME);
+        userDTO.setLastName(NEW_USER_LAST_NAME);
+        userDTO.setIdCard(NEW_USER_ID_CARD);
+
+        userDTO = (UserDTO) authenticationService.addUser(userDTO);
+        Assert.assertNotNull(userDTO.getId());
+        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME);
+    }
+
+    @Test(dependsOnMethods = {"addUser"})
     public void updateUser() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
-        UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
-        userDTO.setUsername(USER_NAME_UPDATED);
+        UserDTO userDTO = (UserDTO) userController.findByUsername(NEW_USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        userDTO.setUsername(NEW_USER_NAME_UPDATED);
 
         authenticationService.updateUser(userDTO);
 
-        userDTO = (UserDTO) userController.findByUsername(USER_NAME_UPDATED).orElseThrow(() -> new UserDoesNotExistException(""));
-        Assert.assertEquals(userDTO.getUsername(), USER_NAME_UPDATED);
+        userDTO = (UserDTO) userController.findByUsername(NEW_USER_NAME_UPDATED).orElseThrow(() -> new UserDoesNotExistException(""));
+        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME_UPDATED);
 
-        userDTO.setUsername(USER_NAME);
+        userDTO.setUsername(NEW_USER_NAME);
         userDTO = (UserDTO) authenticationService.updateUser(userDTO);
-        Assert.assertEquals(userDTO.getUsername(), USER_NAME);
+        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME);
+    }
+
+    @Test(dependsOnMethods = {"updateUser"})
+    public void deleteUser() throws UserDoesNotExistException, UserManagementException, InvalidCredentialsException {
+        UserDTO userDTO = (UserDTO) userController.findByUsername(NEW_USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        authenticationService.deleteUser(userDTO);
+        Assert.assertNull(userController.findByUsername(NEW_USER_NAME).orElse(null));
     }
 
 }

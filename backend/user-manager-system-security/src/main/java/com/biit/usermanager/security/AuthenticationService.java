@@ -204,15 +204,52 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public IUser<Long> addUser(IGroup<Long> company, String password, String screenName, String emailAddress, String locale, String firstName,
-                               String middleName, String lastName) throws UserManagementException {
-        return null;
+    public IUser<Long> addUser(IGroup<Long> organization, String password, String screenName, String emailAddress, String locale, String firstName,
+                               String middleName, String lastName) throws UserManagementException, InvalidCredentialsException {
+        final UserDTO userDTO = new UserDTO();
+        userDTO.setPassword(password);
+        userDTO.setUsername(screenName);
+        userDTO.setEmail(emailAddress);
+        userDTO.setFirstName(firstName);
+        userDTO.setLastName(lastName);
+
+        return addUser(userDTO);
+    }
+
+    @Override
+    public IUser<Long> addUser(IUser<Long> userDTO) throws UserManagementException, InvalidCredentialsException {
+        try (final Response response = securityClient.post(authenticationUrlConstructor.getUserManagerServerUrl(),
+                authenticationUrlConstructor.addUser(), mapper.writeValueAsString(userDTO))) {
+            AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                    authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.updateUser(),
+                    response.getStatus());
+            if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                throw new InvalidCredentialsException("Invalid JWT credentials!");
+            }
+            return mapper.readValue(response.readEntity(String.class), UserDTO.class);
+        } catch (JsonProcessingException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
     @CacheEvict(allEntries = true, value = {"users"})
     @Override
-    public void deleteUser(IUser<Long> user) throws UserManagementException {
-
+    public void deleteUser(IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
+        try (final Response response = securityClient.delete(authenticationUrlConstructor.getUserManagerServerUrl(),
+                authenticationUrlConstructor.delete(user.getUniqueId()))) {
+            AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                    authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.updateUser(),
+                    response.getStatus());
+            if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                throw new InvalidCredentialsException("Invalid JWT credentials!");
+            }
+        } catch (UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
     @Override
