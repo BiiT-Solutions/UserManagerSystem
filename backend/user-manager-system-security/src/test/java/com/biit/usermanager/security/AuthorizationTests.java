@@ -51,6 +51,8 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
     private static final String[] ADMIN_ROLES = new String[]{"usermanagersystem_admin", "usermanagersystem_viewer"};
 
     private static final String USER_NAME = "test";
+
+    private static final String USER_NAME_UPDATED = "test2";
     private static final String USER_EMAIL = "test@test.com";
     private final static String USER_FIRST_NAME = "Test";
     private final static String USER_LAST_NAME = "User";
@@ -187,13 +189,13 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
     }
 
     @Test
-    public void getByEmail() throws UserManagementException, UserDoesNotExistException {
+    public void getByEmail() throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         Assert.assertEquals(authenticationService.getUserByEmail(ADMIN_EMAIL).getUniqueName(), ADMIN_USER_NAME);
         Assert.assertEquals(authenticationService.getUserByEmail(USER_EMAIL).getUniqueName(), USER_NAME);
     }
 
     @Test
-    public void getById() throws UserManagementException, UserDoesNotExistException {
+    public void getById() throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         final UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         Assert.assertEquals(authenticationService.getUserById(userDTO.getId()).getUniqueName(), USER_NAME);
     }
@@ -211,6 +213,21 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
         Assert.assertFalse(BCrypt.checkpw(USER_PASSWORD, userDTO.getPassword()));
 
         authenticationService.updatePassword(userDTO, USER_PASSWORD);
+    }
+
+    @Test
+    public void updateUser() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
+        UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        userDTO.setUsername(USER_NAME_UPDATED);
+
+        authenticationService.updateUser(userDTO);
+
+        userDTO = (UserDTO) userController.findByUsername(USER_NAME_UPDATED).orElseThrow(() -> new UserDoesNotExistException(""));
+        Assert.assertEquals(userDTO.getUsername(), USER_NAME_UPDATED);
+
+        userDTO.setUsername(USER_NAME);
+        userDTO = (UserDTO) authenticationService.updateUser(userDTO);
+        Assert.assertEquals(userDTO.getUsername(), USER_NAME);
     }
 
 }

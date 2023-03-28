@@ -59,6 +59,11 @@ public class AuthenticationUrlConstructor {
         return getUsers() + "/id/" + id;
     }
 
+    public String updateUser() {
+        return getUsers();
+    }
+
+
     public String updatePassword() {
         return getUsers() + "/password";
     }

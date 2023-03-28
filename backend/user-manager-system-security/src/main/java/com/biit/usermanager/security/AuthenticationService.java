@@ -1,6 +1,9 @@
 package com.biit.usermanager.security;
 
 import com.biit.rest.exceptions.EmptyResultException;
+import com.biit.rest.exceptions.NotAuthorizedException;
+import com.biit.rest.exceptions.NotFoundException;
+import com.biit.rest.exceptions.UnprocessableEntityException;
 import com.biit.server.client.SecurityClient;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.dto.UserDTO;
@@ -59,8 +62,12 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
                 }
                 return mapper.readValue(response.readEntity(String.class), UserDTO.class);
             }
-        } catch (JsonProcessingException | EmptyResultException e) {
+        } catch (NotFoundException e) {
+            throw new UserDoesNotExistException("Error connection to the User Manager System", e);
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
         }
     }
 
@@ -71,7 +78,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
 
     @Cacheable("users")
     @Override
-    public IUser<Long> getUserByEmail(String email) throws UserManagementException, UserDoesNotExistException {
+    public IUser<Long> getUserByEmail(String email) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (email == null) {
             throw new UserDoesNotExistException("No fields filled up.");
         }
@@ -87,14 +94,18 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
                 }
                 return mapper.readValue(response.readEntity(String.class), UserDTO.class);
             }
-        } catch (JsonProcessingException | EmptyResultException e) {
+        } catch (NotFoundException e) {
+            throw new UserDoesNotExistException("Error connection to the User Manager System", e);
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
         }
     }
 
     @Cacheable("users")
     @Override
-    public IUser<Long> getUserById(long userId) throws UserManagementException, UserDoesNotExistException {
+    public IUser<Long> getUserById(long userId) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         try {
             try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.getUserById(userId))) {
@@ -106,8 +117,12 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
                 }
                 return mapper.readValue(response.readEntity(String.class), UserDTO.class);
             }
-        } catch (JsonProcessingException | EmptyResultException e) {
+        } catch (NotFoundException e) {
+            throw new UserDoesNotExistException("Error connection to the User Manager System", e);
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
         }
     }
 
@@ -122,11 +137,11 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
             InvalidCredentialsException, UserManagementException {
         // Login fails if either the username or password is null
         if (user == null || plainTextPassword == null) {
-            throw new UserManagementException("No fields filled up.");
+            throw new UserManagementException("Nothing to update.");
         }
 
         try {
-            try (final Response response = securityClient.post(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (final Response response = securityClient.put(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.updateUserPassword(user.getUniqueName()), mapper.writeValueAsString(new UpdatePasswordRequest(
                             null, plainTextPassword)))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
@@ -140,15 +155,44 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
                 }
                 return mapper.readValue(response.readEntity(String.class), UserDTO.class);
             }
-        } catch (JsonProcessingException | EmptyResultException e) {
+        } catch (NotFoundException e) {
+            throw new UserDoesNotExistException("Error connection to the User Manager System", e);
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
         }
     }
 
     @CacheEvict(allEntries = true, value = {"users"})
     @Override
-    public IUser<Long> updateUser(IUser<Long> user) throws UserManagementException {
-        return null;
+    public IUser<Long> updateUser(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
+        // Login fails if either the username or password is null
+        if (user == null) {
+            throw new UserManagementException("No user to update.");
+        }
+
+        try {
+            try (final Response response = securityClient.put(authenticationUrlConstructor.getUserManagerServerUrl(),
+                    authenticationUrlConstructor.updateUser(), mapper.writeValueAsString(user))) {
+                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.updateUser(),
+                        response.getStatus());
+                if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
+                    throw new UserDoesNotExistException("User '" + user.getUniqueName() + "' cannot be updated as does not exists.");
+                }
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                    throw new InvalidCredentialsException("Invalid JWT credentials!");
+                }
+                return mapper.readValue(response.readEntity(String.class), UserDTO.class);
+            }
+        } catch (NotFoundException e) {
+            throw new UserDoesNotExistException("Error connection to the User Manager System", e);
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
 

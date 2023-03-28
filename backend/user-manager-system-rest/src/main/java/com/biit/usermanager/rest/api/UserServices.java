@@ -34,7 +34,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     //@PreAuthorize("hasAuthority('USERMANAGERSYSTEM_VIEWER')")
-    @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
@@ -42,7 +42,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByUsername(username);
     }
 
-    @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Get user by email", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/email/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @PathVariable("email") String email,
@@ -50,7 +50,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByEmail(email);
     }
 
-    @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Check user and password", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/credentials", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO checkCredentials(@RequestBody CheckCredentialsRequest credentialsRequest,
@@ -58,7 +58,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.checkCredentials(credentialsRequest.getUsername(), credentialsRequest.getEmail(), credentialsRequest.getPassword());
     }
 
-    @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Get user by username and application", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}/application/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndApplication(@Parameter(description = "Username of an existing user", required = true)
@@ -70,7 +70,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
 
-    @PreAuthorize("hasAuthority(@securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("id") String id,
@@ -78,7 +78,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByUserId(id);
     }
 
-    @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Get user by phone number", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/phone/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByPhone(@Parameter(description = "Phone of an existing user", required = true) @PathVariable("phone") String phone,
@@ -86,7 +86,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByPhone(phone);
     }
 
-    @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets a list of expired users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/account_expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getByAccountExpired(@Parameter(description = "Account is expired", required = true)
@@ -95,7 +95,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getAllByExpired(accountExpired);
     }
 
-    @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets all enable/disable users .", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/enable/{enable}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getEnabled(@Parameter(description = "enable/disable", required = true)
@@ -103,8 +103,9 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return controller.getByEnable(enable);
     }
 
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Updates the password of the current logged in user.", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping(path = "/password")
+    @PutMapping(path = "/password")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void updatePassword(@RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
@@ -114,9 +115,9 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         }
     }
 
-    @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Updates a password.", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public UserDTO updateUserPassword(@Parameter(description = "username", required = true)
                                       @PathVariable("username") String username,
@@ -129,7 +130,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return null;
     }
 
-    @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/{username}/")
     @ResponseStatus(value = HttpStatus.ACCEPTED)

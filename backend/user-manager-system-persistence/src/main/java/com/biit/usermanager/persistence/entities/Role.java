@@ -20,7 +20,7 @@ public class Role extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
     private String description = "";
 
