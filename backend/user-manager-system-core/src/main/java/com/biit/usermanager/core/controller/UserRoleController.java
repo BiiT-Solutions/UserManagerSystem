@@ -11,6 +11,7 @@ import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
+import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.OrganizationProvider;
@@ -67,6 +68,12 @@ public class UserRoleController extends BasicInsertableController<UserRole, User
         final User user = userProvider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(getClass(),
                 "User with username '" + username + "' not found.", ExceptionType.INFO));
         return converter.convertAll(provider.findByUser(user).stream().map(this::createConverterRequest).collect(Collectors.toList()));
+    }
+
+    public List<UserRoleDTO> getByOrganization(String organizationName) {
+        final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() -> new OrganizationNotFoundException(getClass(),
+                "Organization with name '" + organizationName + "' not found.", ExceptionType.INFO));
+        return converter.convertAll(provider.findByOrganization(organization).stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
     public List<UserRoleDTO> getByUserAndOrganizationAndApplication(String username, String organizationName, String applicationName) {

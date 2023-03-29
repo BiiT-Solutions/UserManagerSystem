@@ -79,6 +79,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
+    @Cacheable("organizations")
     @Override
     public IGroup<Long> getDefaultGroup(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (user == null) {
@@ -155,6 +156,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
+    @Cacheable("organizations")
     @Override
     public boolean isInGroup(IGroup<Long> organization, IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
         try {
@@ -243,7 +245,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
 
-    @CacheEvict(allEntries = true, value = {"users"})
+    @CacheEvict(allEntries = true, value = {"users", "organizations"})
     @Scheduled(fixedDelay = 60 * 10 * 1000)
     @Override
     public void reset() {
@@ -281,7 +283,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @CacheEvict(allEntries = true, value = {"users"})
+    @CacheEvict(allEntries = true, value = {"users", "organizations"})
     @Override
     public void deleteUser(IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
         try (final Response response = securityClient.delete(authenticationUrlConstructor.getUserManagerServerUrl(),

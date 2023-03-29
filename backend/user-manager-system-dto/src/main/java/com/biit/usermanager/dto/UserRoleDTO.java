@@ -3,7 +3,7 @@ package com.biit.usermanager.dto;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IRole;
 
-public class UserRoleDTO extends ElementDTO implements IRole<Long> {
+public class UserRoleDTO extends ElementDTO {
 
     private OrganizationDTO organization;
 
@@ -55,15 +55,5 @@ public class UserRoleDTO extends ElementDTO implements IRole<Long> {
 
     public void setRole(RoleDTO role) {
         this.role = role;
-    }
-
-    @Override
-    public String getUniqueName() {
-        return getOrganization().getUniqueName() + "_" + getRole().getName();
-    }
-
-    @Override
-    public Long getUniqueId() {
-        return getId();
     }
 }

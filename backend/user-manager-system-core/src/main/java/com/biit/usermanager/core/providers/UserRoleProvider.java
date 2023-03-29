@@ -9,7 +9,6 @@ import com.biit.usermanager.persistence.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -37,8 +36,13 @@ public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepos
 //        return repository.findByUserAndOrganizationAndApplication(user, organization, application);
     }
 
-    public List<UserRole> findByUser(User user){
+    public List<UserRole> findByUser(User user) {
         return repository.findByUser(user);
     }
+
+    public List<UserRole> findByOrganization(Organization organization) {
+        return repository.findByOrganization(organization);
+    }
+
 
 }

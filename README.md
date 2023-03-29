@@ -164,8 +164,10 @@ It has some loggers. Add their configuration to the `logback.xml` file:
     </logger>
 ```
 
+### Cache
+
 Last thing, this packet uses caching to temporally store the information of a user on memory. Remember to
-add `@EnableCaching` in yoir `@SpringBootApplication` application file.
+add `@EnableCaching` in your `@SpringBootApplication` application file.
 
 ```
 @EnableCaching
@@ -176,6 +178,50 @@ public class MyServer {
         SpringApplication.run(MyServer.class, args);
     }
 }
+```
+
+And generate a `ehcache.xml` file in your project where you define the regiones `users` and `organizations`.
+
+```
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://www.ehcache.org/ehcache.xsd"
+         updateCheck="true"
+         monitoring="autodetect"
+         dynamicConfig="true">
+
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="true"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            overflowToDisk="true"
+            maxElementsOnDisk="10000000"
+            diskPersistent="true"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU" />
+
+    <cache
+            name="users"
+            maxElementsInMemory="50"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="1"
+            memoryStoreEvictionPolicy="LFU" />
+    <cache
+            name="organizations"
+            maxElementsInMemory="100"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="1"
+            memoryStoreEvictionPolicy="LFU" />
+
+</ehcache>
 ```
 
 # Testing an external application

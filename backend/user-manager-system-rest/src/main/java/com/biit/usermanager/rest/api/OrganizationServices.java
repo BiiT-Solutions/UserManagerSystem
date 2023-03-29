@@ -29,7 +29,6 @@ public class OrganizationServices extends BasicServices<Organization, Organizati
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets an organization by name.", security = @SecurityRequirement(name = "bearerAuth"))
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @GetMapping(value = "/name/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public OrganizationDTO get(@Parameter(description = "Name of an existing organization", required = true) @PathVariable("name") String name,
                                HttpServletRequest request) {

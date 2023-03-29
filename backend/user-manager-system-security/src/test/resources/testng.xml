@@ -3,10 +3,12 @@
     <test name="UserManager" enabled="true" preserve-order="true">
         <groups>
             <run>
+                <include name="authenticationTests"/>
                 <include name="authorizationTests"/>
             </run>
         </groups>
         <classes>
+            <class name="com.biit.usermanager.security.AuthenticationTests"/>
             <class name="com.biit.usermanager.security.AuthorizationTests"/>
         </classes>
     </test>

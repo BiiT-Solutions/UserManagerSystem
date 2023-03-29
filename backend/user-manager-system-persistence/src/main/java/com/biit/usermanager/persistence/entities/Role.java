@@ -3,8 +3,6 @@ package com.biit.usermanager.persistence.entities;
 import com.biit.database.encryption.StringCryptoConverter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 
@@ -12,21 +10,17 @@ import javax.persistence.*;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "roles", indexes = {
-        @Index(name = "ind_application", columnList = "application")
+        @Index(name = "ind_name", columnList = "name")
 })
 public class Role extends Element {
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
     private String description = "";
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "application")
-    private Application application;
 
     public String getName() {
         return name;
@@ -36,11 +30,11 @@ public class Role extends Element {
         this.name = name;
     }
 
-    public Application getApplication() {
-        return application;
+    public String getDescription() {
+        return description;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -17,15 +17,11 @@ public class AuthenticationUrlConstructor {
         return userManagerServerUrl;
     }
 
-    public String getUsers() {
+    private String getUsers() {
         return "/users";
     }
 
-    public String getRoles() {
-        return "/roles";
-    }
-
-    public String getUserRoles() {
+    private String getUserRoles() {
         return "/roles/users";
     }
 
