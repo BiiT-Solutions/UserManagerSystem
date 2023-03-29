@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuthenticationService implements IAuthenticationService<Long, Long> {
@@ -95,7 +96,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
                     throw new UserDoesNotExistException("No roles found for user '" + user + "'");
                 }
                 return mapper.readValue(response.readEntity(String.class), new TypeReference<List<UserRoleDTO>>() {
-                }).stream().map(UserRoleDTO::getOrganization).findFirst().orElse(null);
+                }).stream().map(UserRoleDTO::getOrganization).filter(Objects::nonNull).findFirst().orElse(null);
             }
         } catch (NotFoundException e) {
             throw new UserDoesNotExistException("Error connection to the User Manager System", e);

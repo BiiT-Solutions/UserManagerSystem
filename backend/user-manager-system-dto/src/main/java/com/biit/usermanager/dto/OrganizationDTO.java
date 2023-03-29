@@ -7,6 +7,15 @@ public class OrganizationDTO extends ElementDTO implements IGroup<Long> {
 
     private String name = "";
 
+    public OrganizationDTO() {
+        super();
+    }
+
+    public OrganizationDTO(String name) {
+        this();
+        setName(name);
+    }
+
     public String getName() {
         return name;
     }
