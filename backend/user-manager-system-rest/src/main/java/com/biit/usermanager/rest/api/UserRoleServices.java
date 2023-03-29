@@ -34,13 +34,22 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}/organization/{organizationName}/application/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserRoleDTO> getRolesFromUserOrganizationAndApplication(@Parameter(description = "Username of an existing user", required = true)
+                                                                        @PathVariable("username") String username,
+                                                                        @Parameter(description = "Organization name")
+                                                                        @PathVariable("organizationName") String organizationName,
+                                                                        @Parameter(description = "Application name")
+                                                                        @PathVariable("applicationName") String applicationName,
+                                                                        HttpServletRequest request) {
+        return controller.getByUserAndOrganizationAndApplication(username, organizationName, applicationName);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getRolesFromUser(@Parameter(description = "Username of an existing user", required = true)
                                               @PathVariable("username") String username,
-                                              @Parameter(description = "Organization name")
-                                              @PathVariable("organizationName") String organizationName,
-                                              @Parameter(description = "Application name")
-                                              @PathVariable("applicationName") String applicationName,
                                               HttpServletRequest request) {
-        return controller.getByUserAndOrganizationAndApplication(username, organizationName, applicationName);
+        return controller.getByUser(username);
     }
 }

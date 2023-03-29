@@ -80,8 +80,29 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public IGroup<Long> getDefaultGroup(IUser<Long> organization) throws UserManagementException {
-        return null;
+    public IGroup<Long> getDefaultGroup(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
+        if (user == null) {
+            throw new UserDoesNotExistException("No user selected.");
+        }
+        try {
+            try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
+                    authenticationUrlConstructor.getRolesByUser(user.getUniqueName()))) {
+                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getRolesByUser(user.getUniqueName()),
+                        response.getStatus());
+                if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
+                    throw new UserDoesNotExistException("No roles found for user '" + user + "'");
+                }
+                return mapper.readValue(response.readEntity(String.class), new TypeReference<List<UserRoleDTO>>() {
+                }).stream().map(UserRoleDTO::getOrganization).findFirst().orElse(null);
+            }
+        } catch (NotFoundException e) {
+            throw new UserDoesNotExistException("Error connection to the User Manager System", e);
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
     @Cacheable("users")

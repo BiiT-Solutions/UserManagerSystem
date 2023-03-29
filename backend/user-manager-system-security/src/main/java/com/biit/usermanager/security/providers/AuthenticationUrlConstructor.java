@@ -95,6 +95,10 @@ public class AuthenticationUrlConstructor {
         return getUsers() + "/" + username;
     }
 
+    public String getRolesByUser(String username) {
+        return getUserRoles() + "/username/" + username;
+    }
+
     public String getRolesByUserAndOrganizationAndApplication(String username, String organizationName, String applicationName) {
         return getUserRoles() + "/username/" + username + "/organization/" + organizationName + "/application/" + applicationName;
     }

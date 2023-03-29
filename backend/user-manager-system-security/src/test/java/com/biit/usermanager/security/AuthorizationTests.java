@@ -277,4 +277,11 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
         Assert.assertFalse(authenticationService.isInGroup(otherOrganization, userDTO));
     }
 
+    @Test
+    public void getDefaultGroup() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
+        UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        OrganizationDTO organizationDTO = (OrganizationDTO) authenticationService.getDefaultGroup(userDTO);
+        Assert.assertNotNull(organizationDTO);
+    }
+
 }

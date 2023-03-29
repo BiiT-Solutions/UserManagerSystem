@@ -63,6 +63,12 @@ public class UserRoleController extends BasicInsertableController<UserRole, User
         return new UserRoleConverterRequest(entity);
     }
 
+    public List<UserRoleDTO> getByUser(String username) {
+        final User user = userProvider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(getClass(),
+                "User with username '" + username + "' not found.", ExceptionType.INFO));
+        return converter.convertAll(provider.findByUser(user).stream().map(this::createConverterRequest).collect(Collectors.toList()));
+    }
+
     public List<UserRoleDTO> getByUserAndOrganizationAndApplication(String username, String organizationName, String applicationName) {
         final User user = userProvider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(getClass(),
                 "User with username '" + username + "' not found.",
