@@ -348,16 +348,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
     @Override
-    public Set<IGroup<Long>> getUserParentOrganizations(IUser<Long> user) throws UserManagementException {
-        return null;
-    }
-
-    @Override
-    public Set<IGroup<Long>> getUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) throws UserManagementException {
-        return null;
-    }
-
-    @Override
     public void addUserRole(IUser<Long> user, IRole<Long> role) throws UserManagementException, UserDoesNotExistException,
             RoleDoesNotExistsException, InvalidCredentialsException {
         if (user == null) {
@@ -432,29 +422,12 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
     @Override
-    public boolean isAuthorizedActivity(IUser<Long> user, IActivity activity) throws UserManagementException {
-        return false;
-    }
-
-    @Override
-    public boolean isAuthorizedActivity(IUser<Long> user, IGroup<Long> organization, IActivity activity) throws UserManagementException {
-        return false;
-    }
-
-    @Override
-    public Set<IActivity> getRoleActivities(IRole<Long> role) {
+    public Set<IGroup<Long>> getUserParentOrganizations(IUser<Long> user) throws UserManagementException {
         return null;
     }
 
-
     @Override
-    public IRoleActivities getRoleActivities() {
+    public Set<IGroup<Long>> getUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) throws UserManagementException {
         return null;
-    }
-
-
-    @Override
-    public void setRoleActivities(IRoleActivities roleActivities) {
-
     }
 }
