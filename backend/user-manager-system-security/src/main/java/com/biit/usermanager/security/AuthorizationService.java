@@ -202,11 +202,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
     @Override
-    public Set<IActivity> getRoleActivities(IRole<Long> role) {
-        return null;
-    }
-
-    @Override
     public Set<IRole<Long>> getUserGroupRoles(IGroup<Long> organization) throws UserManagementException {
         return null;
     }
@@ -247,8 +242,27 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
     @Override
-    public Set<IRole<Long>> getUserRoles(IUser<Long> user) throws UserManagementException {
-        return null;
+    public Set<IRole<Long>> getUserRoles(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
+        if (user == null) {
+            throw new UserDoesNotExistException("No user selected.");
+        }
+        try {
+            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+                    authorizationUrlConstructor.getUserRolesByUser(user.getUniqueName()))) {
+                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
+                                .getUserRolesByUser(user.getUniqueName()), response.getStatus());
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                    throw new InvalidCredentialsException("Invalid JWT credentials!");
+                }
+                return mapper.readValue(response.readEntity(String.class), new TypeReference<Set<UserRoleDTO>>() {
+                }).stream().map(UserRoleDTO::getRole).filter(Objects::nonNull).collect(Collectors.toSet());
+            }
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
     @Override
@@ -265,7 +279,8 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
                     authorizationUrlConstructor.getUserRolesFromUserOrganizationAndApplication(user.getUniqueName(), organization.getUniqueName(), null))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesFromUserOrganizationAndApplication(user.getUniqueName(), organization.getUniqueName(), null), response.getStatus());
+                                .getUserRolesFromUserOrganizationAndApplication(user.getUniqueName(), organization.getUniqueName(), null),
+                        response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -280,7 +295,8 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
     @Override
-    public Set<IRole<Long>> getAllRoles(IGroup<Long> organization) throws UserManagementException, OrganizationDoesNotExistException, InvalidCredentialsException {
+    public Set<IRole<Long>> getAllRoles(IGroup<Long> organization) throws UserManagementException, OrganizationDoesNotExistException,
+            InvalidCredentialsException {
         if (organization == null) {
             throw new OrganizationDoesNotExistException("No organization selected.");
         }
@@ -304,23 +320,31 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
     @Override
-    public boolean isAuthorizedActivity(IUser<Long> user, IActivity activity) throws UserManagementException {
-        return false;
-    }
-
-    @Override
-    public boolean isAuthorizedActivity(IUser<Long> user, IGroup<Long> organization, IActivity activity) throws UserManagementException {
-        return false;
-    }
-
-    @Override
-    public void reset() {
-
-    }
-
-    @Override
-    public Set<IUser<Long>> getUsers(IRole<Long> role, IGroup<Long> organization) throws UserManagementException {
-        return null;
+    public Set<IUser<Long>> getUsers(IRole<Long> role, IGroup<Long> organization) throws UserManagementException, RoleDoesNotExistsException,
+            OrganizationDoesNotExistException, InvalidCredentialsException {
+        if (role == null) {
+            throw new RoleDoesNotExistsException("No role selected.");
+        }
+        if (organization == null) {
+            throw new OrganizationDoesNotExistException("No organization selected.");
+        }
+        try {
+            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+                    authorizationUrlConstructor.getUserByOrganizationAndRole(organization.getUniqueName(), role.getUniqueName()))) {
+                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
+                                .getUserByOrganizationAndRole(organization.getUniqueName(), role.getUniqueName()), response.getStatus());
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                    throw new InvalidCredentialsException("Invalid JWT credentials!");
+                }
+                return mapper.readValue(response.readEntity(String.class), new TypeReference<Set<UserRoleDTO>>() {
+                }).stream().map(UserRoleDTO::getUser).filter(Objects::nonNull).collect(Collectors.toSet());
+            }
+        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
     @Override
@@ -334,22 +358,66 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
     @Override
-    public void addUserRole(IUser<Long> user, IRole<Long> role) throws UserManagementException {
-
+    public void addUserRole(IUser<Long> user, IRole<Long> role) throws UserManagementException, UserDoesNotExistException,
+            RoleDoesNotExistsException, InvalidCredentialsException {
+        if (user == null) {
+            throw new UserDoesNotExistException("No user selected.");
+        }
+        if (role == null) {
+            throw new RoleDoesNotExistsException("No role selected.");
+        }
+        final UserRoleDTO userRoleDTO = new UserRoleDTO();
+        userRoleDTO.setUser((UserDTO) user);
+        userRoleDTO.setRole((RoleDTO) role);
+        try (final Response response = securityClient.post(authorizationUrlConstructor.getUserManagerServerUrl(),
+                authorizationUrlConstructor.addUserRoles(), mapper.writeValueAsString(userRoleDTO))) {
+            AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                    authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor.addUserRoles(),
+                    response.getStatus());
+            if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                throw new InvalidCredentialsException("Invalid JWT credentials!");
+            }
+        } catch (JsonProcessingException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
     @Override
-    public void addUserOrganizationRole(IUser<Long> user, IGroup<Long> organization, IRole<Long> role) throws UserManagementException {
-
+    public void addUserOrganizationRole(IUser<Long> user, IGroup<Long> organization, IRole<Long> role) throws UserManagementException,
+            UserDoesNotExistException, RoleDoesNotExistsException, InvalidCredentialsException, OrganizationDoesNotExistException {
+        if (user == null) {
+            throw new UserDoesNotExistException("No user selected.");
+        }
+        if (role == null) {
+            throw new RoleDoesNotExistsException("No role selected.");
+        }
+        if (organization == null) {
+            throw new OrganizationDoesNotExistException("No role selected.");
+        }
+        final UserRoleDTO userRoleDTO = new UserRoleDTO();
+        userRoleDTO.setUser((UserDTO) user);
+        userRoleDTO.setRole((RoleDTO) role);
+        userRoleDTO.setOrganization((OrganizationDTO) organization);
+        try (final Response response = securityClient.post(authorizationUrlConstructor.getUserManagerServerUrl(),
+                authorizationUrlConstructor.addUserRoles(), mapper.writeValueAsString(userRoleDTO))) {
+            AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                    authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor.addUserRoles(),
+                    response.getStatus());
+            if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                throw new InvalidCredentialsException("Invalid JWT credentials!");
+            }
+        } catch (JsonProcessingException | UnprocessableEntityException e) {
+            throw new UserManagementException("Error connection to the User Manager System", e);
+        } catch (NotAuthorizedException e) {
+            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
+        }
     }
 
-    @Override
-    public IRoleActivities getRoleActivities() {
-        return null;
-    }
 
     @Override
-    public void setRoleActivities(IRoleActivities roleActivities) {
+    public void reset() {
 
     }
 
@@ -360,6 +428,33 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
 
     @Override
     public void cleanUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) {
+
+    }
+
+    @Override
+    public boolean isAuthorizedActivity(IUser<Long> user, IActivity activity) throws UserManagementException {
+        return false;
+    }
+
+    @Override
+    public boolean isAuthorizedActivity(IUser<Long> user, IGroup<Long> organization, IActivity activity) throws UserManagementException {
+        return false;
+    }
+
+    @Override
+    public Set<IActivity> getRoleActivities(IRole<Long> role) {
+        return null;
+    }
+
+
+    @Override
+    public IRoleActivities getRoleActivities() {
+        return null;
+    }
+
+
+    @Override
+    public void setRoleActivities(IRoleActivities roleActivities) {
 
     }
 }

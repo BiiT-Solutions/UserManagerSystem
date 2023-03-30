@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -22,7 +23,7 @@ import java.util.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Test(groups = {"authenticationTests"})
-public class AuthorizationTests extends AbstractTestNGSpringContextTests {
+public class AuthorizationTests extends AbstractTransactionalTestNGSpringContextTests {
     private static final String ADMIN_USER_NAME = "admin";
     private static final String ADMIN_EMAIL = "admin@test.com";
     private final static String ADMIN_FIRST_NAME = "Admin";
@@ -46,15 +47,6 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
     private static final String OTHER_USER_PASSWORD = "456123";
     private static final String OTHER_USER_ID_CARD = "6667778P";
     private static final String[] OTHER_USER_ROLES = new String[]{"usermanagersystem_viewer", "usermanagersystem_editor"};
-
-    private static final String NEW_USER_NAME = "NewUser";
-    private static final String NEW_USER_NAME_UPDATED = "NewUser2";
-    private static final String NEW_USER_EMAIL = "new@test.com";
-    private final static String NEW_USER_FIRST_NAME = "New";
-    private final static String NEW_USER_LAST_NAME = "User";
-    private static final String NEW_USER_PASSWORD = "asd123";
-    private static final String NEW_USER_ID_CARD = "1233123123P";
-    private static final String[] NEW_USER_ROLES = new String[]{"usermanagersystem_viewer"};
 
     private static final String ORGANIZATION_NAME = "Organization1";
 
@@ -130,7 +122,6 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
         for (String roleName : roleNames) {
             roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
         }
-
     }
 
     @BeforeClass(dependsOnMethods = {"createApplication", "createRoles"})
@@ -251,10 +242,67 @@ public class AuthorizationTests extends AbstractTestNGSpringContextTests {
         OrganizationDTO organizationDTO = organizationController.getByName(ORGANIZATION_NAME);
         UserDTO userDTO = userController.getByUsername(USER_NAME);
         Assert.assertEquals(authorizationService.getUserRoles(userDTO, organizationDTO).size(), USER_ROLES.length);
+
+
+        UserDTO adminDTO = userController.getByUsername(ADMIN_USER_NAME);
+        Assert.assertEquals(authorizationService.getUserRoles(adminDTO, organizationDTO).size(), 0);
     }
 
     @Test
-    public void getUserRolesInOrganization() throws UserManagementException, OrganizationDoesNotExistException, InvalidCredentialsException, UserDoesNotExistException {
+    public void getUserRolesInOrganization() throws UserManagementException, OrganizationDoesNotExistException, InvalidCredentialsException {
         Assert.assertEquals(authorizationService.getAllRoles(organizationDTO).size(), OTHER_USER_ROLES.length);
+    }
+
+    @Test
+    public void getUserRoles() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
+        UserDTO userDTO = userController.getByUsername(USER_NAME);
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO).size(), USER_ROLES.length);
+
+        UserDTO adminDTO = userController.getByUsername(ADMIN_USER_NAME);
+        Assert.assertEquals(authorizationService.getUserRoles(adminDTO).size(), ADMIN_ROLES.length);
+    }
+
+    @Test
+    public void getUsersWithRoleOnOrganization() throws UserManagementException, OrganizationDoesNotExistException,
+            RoleDoesNotExistsException, InvalidCredentialsException {
+        OrganizationDTO organizationDTO = organizationController.getByName(ORGANIZATION_NAME);
+        RoleDTO roleDTO = roleController.getByName(USER_ROLES[0]);
+
+        Assert.assertEquals(authorizationService.getUsers(roleDTO, organizationDTO).size(), 2);
+
+        roleDTO = roleController.getByName(OTHER_USER_ROLES[1]);
+        Assert.assertEquals(authorizationService.getUsers(roleDTO, organizationDTO).size(), 1);
+    }
+
+    @Test(priority = 2) //Execute after any other test
+    public void addUserRole() throws UserManagementException, RoleDoesNotExistsException, InvalidCredentialsException,
+            UserDoesNotExistException, OrganizationDoesNotExistException {
+        UserDTO userDTO = userController.getByUsername(USER_NAME);
+        RoleDTO roleDTO = roleController.getByName(OTHER_USER_ROLES[1]);
+        authorizationService.addUserRole(userDTO, roleDTO);
+
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO).size(), USER_ROLES.length + 1);
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO, organizationDTO).size(), USER_ROLES.length);
+    }
+
+    @Test(dependsOnMethods = "addUserRole")
+    public void addOrganizationUserRole() throws UserManagementException, RoleDoesNotExistsException, InvalidCredentialsException,
+            UserDoesNotExistException, OrganizationDoesNotExistException {
+        UserDTO userDTO = userController.getByUsername(USER_NAME);
+        RoleDTO roleDTO = roleController.getByName(ADMIN_ROLES[0]);
+        OrganizationDTO organizationDTO = organizationController.getByName(ORGANIZATION_NAME);
+        authorizationService.addUserOrganizationRole(userDTO, organizationDTO, roleDTO);
+
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO).size(), USER_ROLES.length + 2);
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO, organizationDTO).size(), USER_ROLES.length + 1);
+    }
+
+    @AfterClass
+    public void dropTables() {
+        userRoleController.deleteAll();
+        applicationController.deleteAll();
+        organizationController.deleteAll();
+        roleController.deleteAll();
+        userController.deleteAll();
     }
 }

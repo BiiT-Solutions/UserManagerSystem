@@ -1,10 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.CrudProvider;
-import com.biit.usermanager.persistence.entities.Application;
-import com.biit.usermanager.persistence.entities.Organization;
-import com.biit.usermanager.persistence.entities.User;
-import com.biit.usermanager.persistence.entities.UserRole;
+import com.biit.usermanager.persistence.entities.*;
 import com.biit.usermanager.persistence.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +39,10 @@ public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepos
 
     public List<UserRole> findByOrganization(Organization organization) {
         return repository.findByOrganization(organization);
+    }
+
+    public List<UserRole> findByOrganizationAndRole(Organization organization, Role role) {
+        return repository.findByOrganizationAndRole(organization, role);
     }
 
 

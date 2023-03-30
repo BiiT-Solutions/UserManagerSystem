@@ -22,12 +22,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -98,6 +98,10 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     private ApplicationDTO applicationDTO;
 
+    private OrganizationDTO organizationDTO;
+
+    private Map<String, RoleDTO> roles;
+
     private <T> String toJson(T object) throws JsonProcessingException {
         return objectMapper.writeValueAsString(object);
     }
@@ -113,7 +117,22 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         this.applicationDTO = applicationController.create(applicationDTO);
     }
 
-    @BeforeClass(dependsOnMethods = {"createApplication"})
+    @BeforeClass
+    private void createOrganizations() {
+        this.organizationDTO = organizationController.create(new OrganizationDTO(ORGANIZATION_NAME));
+    }
+
+    @BeforeClass
+    private void createRoles() {
+        roles = new HashMap<>();
+        Set<String> roleNames = new HashSet<>(Arrays.asList(ADMIN_ROLES));
+        roleNames.addAll(Arrays.asList(USER_ROLES));
+        for (String roleName : roleNames) {
+            roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
+        }
+    }
+
+    @BeforeClass(dependsOnMethods = {"createApplication", "createRoles"})
     private void createAdminAccount() {
         //Create the admin user
         UserDTO userDTO = new UserDTO();
@@ -125,14 +144,10 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         userDTO.setPassword(ADMIN_PASSWORD);
         final UserDTO adminUser = userController.create(userDTO);
 
-        //Create admin roles
-        final Map<String, RoleDTO> roles = new HashMap<>();
-        for (String roleName : ADMIN_ROLES) {
-            roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
-        }
-
         //Assign admin roles
-        roles.values().forEach(roleDTO -> userRoleController.create(new UserRoleDTO(adminUser, roleDTO, null, applicationDTO)));
+        for (String adminRole : ADMIN_ROLES) {
+            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO));
+        }
     }
 
     @BeforeClass(dependsOnMethods = {"createApplication"})
@@ -147,21 +162,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         userDTO.setPassword(USER_PASSWORD);
         final UserDTO testUser = userController.create(userDTO);
 
-        //Create user roles
-        final Map<String, RoleDTO> roles = new HashMap<>();
-        for (String roleName : USER_ROLES) {
-            roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
-        }
-
-        OrganizationDTO organizationDTO = new OrganizationDTO();
-        organizationDTO.setName(ORGANIZATION_NAME);
-        organizationDTO = organizationController.create(organizationDTO);
-
         //Assign user roles
-        final OrganizationDTO finalOrganizationDTO = organizationDTO;
-        roles.values().forEach(roleDTO -> userRoleController.create(new UserRoleDTO(testUser, roleDTO, finalOrganizationDTO, applicationDTO)));
+        for (String userRoles : USER_ROLES) {
+            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), organizationDTO, applicationDTO));
+        }
     }
-
 
     @BeforeClass
     public void setUp() {
@@ -220,7 +225,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         authenticationService.updatePassword(userDTO, USER_NEW_PASSWORD);
 
-        userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        userDTO = (UserDTO) authenticationService.getUserByEmail(USER_EMAIL);
         Assert.assertTrue(BCrypt.checkpw(USER_NEW_PASSWORD, userDTO.getPassword()));
         Assert.assertFalse(BCrypt.checkpw(USER_PASSWORD, userDTO.getPassword()));
 
@@ -249,7 +254,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         authenticationService.updateUser(userDTO);
 
-        userDTO = (UserDTO) userController.findByUsername(NEW_USER_NAME_UPDATED).orElseThrow(() -> new UserDoesNotExistException(""));
+        userDTO = (UserDTO) authenticationService.getUserByEmail(NEW_USER_EMAIL);
         Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME_UPDATED);
 
         userDTO.setUsername(NEW_USER_NAME);
@@ -272,7 +277,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         OrganizationDTO otherOrganization = new OrganizationDTO();
         otherOrganization.setName("Other Name");
-        organizationController.create(otherOrganization);
+        otherOrganization = organizationController.create(otherOrganization);
 
         Assert.assertFalse(authenticationService.isInGroup(otherOrganization, userDTO));
     }
@@ -282,6 +287,15 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         OrganizationDTO organizationDTO = (OrganizationDTO) authenticationService.getDefaultGroup(userDTO);
         Assert.assertNotNull(organizationDTO);
+    }
+
+    @AfterClass
+    public void dropTables() {
+        userRoleController.deleteAll();
+        applicationController.deleteAll();
+        organizationController.deleteAll();
+        roleController.deleteAll();
+        userController.deleteAll();
     }
 
 }

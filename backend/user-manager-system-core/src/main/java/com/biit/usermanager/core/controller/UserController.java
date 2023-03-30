@@ -63,8 +63,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     public UserDTO getByUsername(String username) {
         final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(),
-                        "No User with username '" + username + "' found on the system."))));
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
     }
 

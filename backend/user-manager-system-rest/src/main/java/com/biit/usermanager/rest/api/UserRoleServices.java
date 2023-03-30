@@ -61,4 +61,15 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
                                                       HttpServletRequest request) {
         return controller.getByOrganization(organizationName);
     }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/organization/{organizationName}/role/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserRoleDTO> getUsersWithRoleOnOrganization(@Parameter(description = "Name of an existing organization", required = true)
+                                                            @PathVariable("organizationName") String organizationName,
+                                                            @Parameter(description = "Role name", required = true)
+                                                            @PathVariable("roleName") String roleName,
+                                                            HttpServletRequest request) {
+        return controller.getByUserAndRole(organizationName, roleName);
+    }
 }

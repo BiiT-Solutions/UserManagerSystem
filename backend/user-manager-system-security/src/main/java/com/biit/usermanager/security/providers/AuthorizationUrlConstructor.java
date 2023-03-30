@@ -45,6 +45,10 @@ public class AuthorizationUrlConstructor {
         return getUserRoles() + "/organization/" + organizationName;
     }
 
+    public String getUserByOrganizationAndRole(String organizationName, String roleName) {
+        return getUserRoles() + "/organization/" + organizationName + "/role/" + roleName;
+    }
+
     public String getUserRolesByUser(String username) {
         return getUserRoles() + "/username/" + username;
     }
@@ -75,5 +79,9 @@ public class AuthorizationUrlConstructor {
 
     public String getUserRolesFromUserOrganizationAndApplication(String username, String organizationName, String applicationName) {
         return getUserRoles() + "/username/" + username + "/organization/" + organizationName + "/application/" + applicationName;
+    }
+
+    public String addUserRoles() {
+        return getUserRoles();
     }
 }
