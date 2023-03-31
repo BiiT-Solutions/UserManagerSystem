@@ -220,6 +220,16 @@ And generate a `ehcache.xml` file in your project where you define the regiones 
             diskPersistent="false"
             diskExpiryThreadIntervalSeconds="1"
             memoryStoreEvictionPolicy="LFU" />
+    <cache
+            name="roles"
+            maxElementsInMemory="250"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="1"
+            memoryStoreEvictionPolicy="LFU" />
 
 </ehcache>
 ```
