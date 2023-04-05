@@ -69,6 +69,24 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         return authenticatedUser;
     }
 
+    public IAuthenticatedUser createUser(String username, String name, String password) {
+        if (findByUsername(username).isPresent()) {
+            throw new RuntimeException("Username exists!");
+        }
+
+        final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
+        authenticatedUser.setUsername(username);
+        authenticatedUser.setUID(idCounter++ + "");
+        authenticatedUser.setAuthorities(authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+        authenticatedUser.setName(name);
+        authenticatedUser.setPassword(password);
+
+        usersOnMemory.add(authenticatedUser);
+
+        return authenticatedUser;
+    }
+
+
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
         final AuthenticatedUser user = (AuthenticatedUser) usersOnMemory.stream().filter(iAuthenticatedUser ->
