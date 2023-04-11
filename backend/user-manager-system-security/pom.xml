@@ -4,6 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <name>User Manager System (Security)</name>
     <artifactId>user-manager-system-security</artifactId>
+    <description>User Manager Authorization and Authentication system</description>
 
     <parent>
         <groupId>com.biit</groupId>

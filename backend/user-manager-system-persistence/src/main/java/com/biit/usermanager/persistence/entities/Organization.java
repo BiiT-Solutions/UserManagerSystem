@@ -17,7 +17,7 @@ public class Organization extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
-    //A subOrganization is a company in USMO.
+    //A subOrganization is a company in test.
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "parent")
     private Set<Organization> subOrganizations;
 
