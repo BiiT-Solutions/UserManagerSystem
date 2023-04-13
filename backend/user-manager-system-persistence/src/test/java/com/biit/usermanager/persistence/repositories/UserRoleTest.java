@@ -40,7 +40,7 @@ public class UserRoleTest extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(role.get().getName(), ROLE_NAME);
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void cleanUpUsers() {
         roleRepository.deleteAll();
         Assert.assertEquals(roleRepository.count(), 0);

@@ -101,7 +101,7 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(users.size(), 1);
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void cleanUpUsers(){
         userRepository.deleteAll();
         Assert.assertEquals(userRepository.count(), 0);

@@ -196,7 +196,9 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test(expectedExceptions = UserDoesNotExistException.class)
     public void checkWrongUserWithAdminCredentials() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
+        System.out.println(" ---------------------- EXPECTED EXCEPTIONS ---------------------------");
         authenticationService.authenticate(USER_EMAIL + "_wrong", USER_PASSWORD);
+        System.out.println(" -------------------- END EXPECTED EXCEPTIONS -------------------------");
     }
 
     @Test
@@ -289,7 +291,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         Assert.assertNotNull(organizationDTO);
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void dropTables() {
         userRoleController.deleteAll();
         applicationController.deleteAll();

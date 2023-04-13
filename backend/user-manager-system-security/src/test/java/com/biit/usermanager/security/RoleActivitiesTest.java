@@ -171,10 +171,10 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     @Test
     public void checkPermission() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         Assert.assertTrue(activityManager.isAuthorizedActivity(user, roleActivities.getByTag("appointments_manager")));
-        Assert.assertFalse(activityManager.isAuthorizedActivity(user, roleActivities.getByTag("examinate_patient")));
+        Assert.assertFalse(activityManager.isAuthorizedActivity(user, roleActivities.getByTag("examine_patient")));
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void dropTables() {
         userRoleController.deleteAll();
         applicationController.deleteAll();
