@@ -11,7 +11,7 @@ import org.springframework.util.StopWatch;
  */
 @Aspect
 @Component
-public class BasicLogging extends AbstractLogging {
+public class UserManagerBasicLogging extends AbstractLogging {
 
     /**
      * Following is the definition for a pointcut to select all the methods

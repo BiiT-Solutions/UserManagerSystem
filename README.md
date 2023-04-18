@@ -190,7 +190,7 @@ public class MyServer {
 }
 ```
 
-And generate a `ehcache.xml` file in your project where you define the regiones `users` and `organizations`.
+And generate a `ehcache.xml` file in your project where you define the regions `users` and `organizations`.
 
 ```
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
