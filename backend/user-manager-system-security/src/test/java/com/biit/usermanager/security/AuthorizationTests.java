@@ -274,7 +274,9 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         Assert.assertEquals(authorizationService.getUsers(roleDTO, organizationDTO).size(), 1);
     }
 
-    @Test(priority = 2) //Execute after any other test
+    //@Test(priority = 2) //Execute after any other test
+    @Test(dependsOnMethods = {"getUsersWithRoleOnOrganization", "getUserRoles", "getUserRolesInOrganization",
+            "getUserRolesInOrganizationByUser", "getUserOrganizations", "getRoleById", "getRoleByName", "getAllOrganizations", "getAllUsersByOrganization"})
     public void addUserRole() throws UserManagementException, RoleDoesNotExistsException, InvalidCredentialsException,
             UserDoesNotExistException, OrganizationDoesNotExistException {
         UserDTO userDTO = userController.getByUsername(USER_NAME);
@@ -297,7 +299,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         Assert.assertEquals(authorizationService.getUserRoles(userDTO, organizationDTO).size(), USER_ROLES.length + 1);
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void dropTables() {
         userRoleController.deleteAll();
         applicationController.deleteAll();

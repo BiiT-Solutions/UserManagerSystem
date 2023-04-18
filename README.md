@@ -127,8 +127,18 @@ check if the user is a doctor or not using the JWT previously generated. That me
 the process. One account for the communication between USMO and the User manager System and the second account that is
 the one that wants to be checked for RBAC purposes.
 
-What a `doctor` can do on USMO is something that must be implemented on `USMO` and is outside the scope of this
-server.
+What a `doctor` can do on USMO is something that must be implemented on `USMO` and for this scope, we provide the
+bean `RoleActivities`. For using this bean, you need to provide a `roleActivities.conf` file where the matching role
+with a set of activities is defined:
+
+```
+my-role.permissions=use_web_service, delete_cache, hide_browser_history
+my-role.translation=role.web
+```
+
+Where `my-role` is the name of the role used on the `AuthorizationService`, `permissions` are a comma separated list of
+activities that are allowed on the application and `translation` is the json tag used on the translations to show the
+role on the UX. The tag `translation` is optional.
 
 ## Configuration
 
@@ -180,7 +190,7 @@ public class MyServer {
 }
 ```
 
-And generate a `ehcache.xml` file in your project where you define the regiones `users` and `organizations`.
+And generate a `ehcache.xml` file in your project where you define the regions `users` and `organizations`.
 
 ```
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

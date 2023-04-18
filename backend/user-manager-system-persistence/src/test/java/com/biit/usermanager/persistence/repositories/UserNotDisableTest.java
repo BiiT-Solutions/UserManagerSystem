@@ -94,7 +94,7 @@ public class UserNotDisableTest extends AbstractTestNGSpringContextTests {
         }
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void cleanUpUsers(){
         userRepository.deleteAll();
         Assert.assertEquals(userRepository.count(), 0);

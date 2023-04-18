@@ -5,11 +5,13 @@
             <run>
                 <include name="authenticationTests"/>
                 <include name="authorizationTests"/>
+                <include name="activitiesTests"/>
             </run>
         </groups>
         <classes>
             <class name="com.biit.usermanager.security.AuthenticationTests"/>
             <class name="com.biit.usermanager.security.AuthorizationTests"/>
+            <class name="com.biit.usermanager.security.RoleActivitiesTest"/>
         </classes>
     </test>
 </suite>
