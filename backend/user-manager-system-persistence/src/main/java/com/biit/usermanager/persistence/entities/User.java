@@ -1,13 +1,11 @@
 package com.biit.usermanager.persistence.entities;
 
-import com.biit.database.encryption.BCryptPasswordConverter;
-import com.biit.database.encryption.BooleanCryptoConverter;
-import com.biit.database.encryption.LocalDateTimeCryptoConverter;
-import com.biit.database.encryption.StringCryptoConverter;
+import com.biit.database.encryption.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -29,6 +27,10 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
+    @Column(length = MAX_UNIQUE_COLUMN_LENGTH)
+    @Convert(converter = StringCryptoConverter.class)
+    private String initials;
+
     @Column(name = "lastname", nullable = false)
     @Convert(converter = StringCryptoConverter.class)
     private String lastname = "";
@@ -37,9 +39,25 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String email = "";
 
+    @Column(nullable = false)
+    @Convert(converter = LocalDateCryptoConverter.class)
+    private LocalDate birthdate;
+
     @Column(name = "phone", nullable = false)
     @Convert(converter = StringCryptoConverter.class)
     private String phone = "";
+
+    @Column(length = MAX_UNIQUE_COLUMN_LENGTH, nullable = false)
+    @Convert(converter = StringCryptoConverter.class)
+    private String address;
+
+    @Column(name = "postal_code", length = MAX_UNIQUE_COLUMN_LENGTH, nullable = false)
+    @Convert(converter = StringCryptoConverter.class)
+    private String postalCode;
+
+    @Column(length = MAX_UNIQUE_COLUMN_LENGTH, nullable = false)
+    @Convert(converter = StringCryptoConverter.class)
+    private String city;
 
     @Column(name = "locale")
     @Convert(converter = StringCryptoConverter.class)
@@ -173,28 +191,43 @@ public class User extends Element {
         this.phone = phone;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof User)) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        final User user = (User) o;
-        return isAccountLocked() == user.isAccountLocked() && isAccountBlocked() == user.isAccountBlocked() &&
-                Objects.equals(getIdCard(), user.getIdCard()) && getUsername().equals(user.getUsername()) &&
-                getName().equals(user.getName()) && getLastname().equals(user.getLastname()) && getEmail().equals(user.getEmail()) &&
-                Objects.equals(getLocale(), user.getLocale()) &&
-                getPassword().equals(user.getPassword()) && Objects.equals(getPasswordModifiedDate(), user.getPasswordModifiedDate());
+    public String getInitials() {
+        return initials;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getIdCard(), getUsername(), getName(), getLastname(), getEmail(), getLocale(),
-                getPassword(), getPasswordModifiedDate(), isAccountLocked(), isAccountBlocked());
+    public void setInitials(String initials) {
+        this.initials = initials;
+    }
+
+    public LocalDate getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(LocalDate birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }
