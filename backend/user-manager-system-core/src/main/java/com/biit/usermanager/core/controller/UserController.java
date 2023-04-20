@@ -5,19 +5,19 @@ import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.usermanager.core.converters.ApplicationConverter;
-import com.biit.usermanager.core.converters.OrganizationConverter;
+import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.UserRoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
-import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
+import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.*;
 import com.biit.usermanager.core.providers.ApplicationProvider;
-import com.biit.usermanager.core.providers.OrganizationProvider;
+import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.providers.UserRoleProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
-import com.biit.usermanager.dto.OrganizationDTO;
+import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
@@ -39,21 +39,21 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     private final UserRoleConverter userRoleConverter;
     private final ApplicationProvider applicationProvider;
     private final ApplicationConverter applicationConverter;
-    private final OrganizationProvider organizationProvider;
-    private final OrganizationConverter organizationConverter;
+    private final GroupProvider groupProvider;
+    private final GroupConverter groupConverter;
 
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
                              UserRoleProvider userRoleProvider, UserRoleConverter userRoleConverter,
                              ApplicationConverter applicationConverter, ApplicationProvider applicationProvider,
-                             OrganizationProvider organizationProvider, OrganizationConverter organizationConverter) {
+                             GroupProvider groupProvider, GroupConverter groupConverter) {
         super(provider, converter);
         this.userRoleProvider = userRoleProvider;
         this.userRoleConverter = userRoleConverter;
         this.applicationProvider = applicationProvider;
-        this.organizationProvider = organizationProvider;
+        this.groupProvider = groupProvider;
         this.applicationConverter = applicationConverter;
-        this.organizationConverter = organizationConverter;
+        this.groupConverter = groupConverter;
     }
 
     @Override
@@ -206,13 +206,13 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     }
 
     @Override
-    public Set<String> getRoles(String username, String organizationName, String applicationName) {
+    public Set<String> getRoles(String username, String groupName, String applicationName) {
         final UserDTO userDTO = getByUsername(username);
-        final OrganizationDTO organizationDTO = organizationConverter.convert(new OrganizationConverterRequest(
-                organizationProvider.findByName(organizationName).orElse(null)));
+        final GroupDTO groupDTO = groupConverter.convert(new GroupConverterRequest(
+                groupProvider.findByName(groupName).orElse(null)));
         final ApplicationDTO applicationDTO = applicationConverter.convert(new ApplicationConverterRequest(
                 applicationProvider.findByName(applicationName).orElse(null)));
-        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, organizationDTO, applicationDTO);
+        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, groupDTO, applicationDTO);
         if (userWithRoles != null) {
             return userWithRoles.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         }
@@ -224,12 +224,12 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         return user.map(value -> converter.convert(new UserConverterRequest(value))).orElse(null);
     }
 
-    private UserDTO setGrantedAuthorities(UserDTO userDTO, OrganizationDTO organizationDTO, ApplicationDTO applicationDTO) {
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, GroupDTO groupDTO, ApplicationDTO applicationDTO) {
         if (userDTO != null) {
             final Set<String> grantedAuthorities = new HashSet<>();
-            userRoleProvider.findByUserAndOrganizationAndApplication(
+            userRoleProvider.findByUserAndGroupAndApplication(
                             converter.reverse(userDTO),
-                            organizationConverter.reverse(organizationDTO),
+                            groupConverter.reverse(groupDTO),
                             applicationConverter.reverse(applicationDTO)
                     ).stream()
                     .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)

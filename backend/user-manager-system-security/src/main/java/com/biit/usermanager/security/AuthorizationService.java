@@ -4,7 +4,7 @@ import com.biit.rest.exceptions.EmptyResultException;
 import com.biit.rest.exceptions.NotAuthorizedException;
 import com.biit.rest.exceptions.UnprocessableEntityException;
 import com.biit.server.client.SecurityClient;
-import com.biit.usermanager.dto.OrganizationDTO;
+import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.UserRoleDTO;
@@ -68,17 +68,17 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
 
     @Cacheable("users")
     @Override
-    public Set<IUser<Long>> getAllUsers(IGroup<Long> organization) throws UserManagementException, OrganizationDoesNotExistException,
+    public Set<IUser<Long>> getAllUsers(IGroup<Long> group) throws UserManagementException, OrganizationDoesNotExistException,
             InvalidCredentialsException {
-        if (organization == null) {
-            throw new OrganizationDoesNotExistException("No organization selected.");
+        if (group == null) {
+            throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
             try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesByOrganization(organization.getUniqueName()))) {
+                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesByOrganization(organization.getUniqueName()), response.getStatus());
+                                .getUserRolesByGroup(group.getUniqueName()), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -92,22 +92,22 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
-    public IGroup<Long> getOrganization(Long organizationId) throws UserManagementException, OrganizationDoesNotExistException, InvalidCredentialsException {
-        if (organizationId == null) {
+    public IGroup<Long> getOrganization(Long groupId) throws UserManagementException, OrganizationDoesNotExistException, InvalidCredentialsException {
+        if (groupId == null) {
             throw new OrganizationDoesNotExistException("No Id provided.");
         }
         try {
             try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getOrganization(organizationId))) {
+                    authorizationUrlConstructor.getGroups(groupId))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getOrganization(organizationId), response.getStatus());
+                                .getGroups(groupId), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return mapper.readValue(response.readEntity(String.class), OrganizationDTO.class);
+                return mapper.readValue(response.readEntity(String.class), GroupDTO.class);
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
@@ -116,23 +116,23 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
-    public IGroup<Long> getOrganization(String organizationName) throws UserManagementException, InvalidCredentialsException,
+    public IGroup<Long> getOrganization(String groupName) throws UserManagementException, InvalidCredentialsException,
             OrganizationDoesNotExistException {
-        if (organizationName == null) {
+        if (groupName == null) {
             throw new OrganizationDoesNotExistException("No name provided.");
         }
         try {
             try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getOrganizationByName(organizationName))) {
+                    authorizationUrlConstructor.getGroupByName(groupName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getOrganizationByName(organizationName), response.getStatus());
+                                .getGroupByName(groupName), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return mapper.readValue(response.readEntity(String.class), OrganizationDTO.class);
+                return mapper.readValue(response.readEntity(String.class), GroupDTO.class);
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
@@ -141,19 +141,19 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getAllAvailableOrganizations() throws UserManagementException, InvalidCredentialsException {
         try {
             try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getAllOrganizations())) {
+                    authorizationUrlConstructor.getAllGroupsWithoutParent())) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getAllOrganizations(), response.getStatus());
+                                .getAllGroups(), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return new HashSet<>(mapper.readValue(response.readEntity(String.class), new TypeReference<Set<OrganizationDTO>>() {
+                return new HashSet<>(mapper.readValue(response.readEntity(String.class), new TypeReference<Set<GroupDTO>>() {
                 }));
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
@@ -218,7 +218,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         return getAllRoles(organization);
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserGroups(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (user == null) {
@@ -234,7 +234,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
                 return mapper.readValue(response.readEntity(String.class), new TypeReference<Set<UserRoleDTO>>() {
-                }).stream().map(UserRoleDTO::getOrganization).filter(Objects::nonNull).collect(Collectors.toSet());
+                }).stream().map(UserRoleDTO::getGroup).filter(Objects::nonNull).collect(Collectors.toSet());
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
@@ -282,14 +282,14 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new UserDoesNotExistException("No user selected.");
         }
         if (organization == null) {
-            throw new OrganizationDoesNotExistException("No organization selected.");
+            throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
             try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesFromUserOrganizationAndApplication(user.getUniqueName(), organization.getUniqueName(), null))) {
+                    authorizationUrlConstructor.getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), null))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesFromUserOrganizationAndApplication(user.getUniqueName(), organization.getUniqueName(), null),
+                                .getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), null),
                         response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
@@ -306,17 +306,17 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
 
     @Cacheable("roles")
     @Override
-    public Set<IRole<Long>> getAllRoles(IGroup<Long> organization) throws UserManagementException, OrganizationDoesNotExistException,
+    public Set<IRole<Long>> getAllRoles(IGroup<Long> group) throws UserManagementException, OrganizationDoesNotExistException,
             InvalidCredentialsException {
-        if (organization == null) {
-            throw new OrganizationDoesNotExistException("No organization selected.");
+        if (group == null) {
+            throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
             try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesByOrganization(organization.getUniqueName()))) {
+                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesByOrganization(organization.getUniqueName()), response.getStatus());
+                                .getUserRolesByGroup(group.getUniqueName()), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -332,20 +332,20 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
 
     @Cacheable("users")
     @Override
-    public Set<IUser<Long>> getUsers(IRole<Long> role, IGroup<Long> organization) throws UserManagementException, RoleDoesNotExistsException,
+    public Set<IUser<Long>> getUsers(IRole<Long> role, IGroup<Long> group) throws UserManagementException, RoleDoesNotExistsException,
             OrganizationDoesNotExistException, InvalidCredentialsException {
         if (role == null) {
             throw new RoleDoesNotExistsException("No role selected.");
         }
-        if (organization == null) {
-            throw new OrganizationDoesNotExistException("No organization selected.");
+        if (group == null) {
+            throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
             try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserByOrganizationAndRole(organization.getUniqueName(), role.getUniqueName()))) {
+                    authorizationUrlConstructor.getUserByGroupAndRole(group.getUniqueName(), role.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserByOrganizationAndRole(organization.getUniqueName(), role.getUniqueName()), response.getStatus());
+                                .getUserByGroupAndRole(group.getUniqueName(), role.getUniqueName()), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -403,7 +403,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         final UserRoleDTO userRoleDTO = new UserRoleDTO();
         userRoleDTO.setUser((UserDTO) user);
         userRoleDTO.setRole((RoleDTO) role);
-        userRoleDTO.setOrganization((OrganizationDTO) organization);
+        userRoleDTO.setGroup((GroupDTO) organization);
         try (final Response response = securityClient.post(authorizationUrlConstructor.getUserManagerServerUrl(),
                 authorizationUrlConstructor.addUserRoles(), mapper.writeValueAsString(userRoleDTO))) {
             AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
@@ -420,7 +420,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     }
 
 
-    @CacheEvict(allEntries = true, value = {"users", "roles", "organizations"})
+    @CacheEvict(allEntries = true, value = {"users", "roles", "groups"})
     @Scheduled(fixedDelay = 60 * 10 * 1000)
     @Override
     public void reset() {
@@ -432,27 +432,27 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
 
     }
 
-    @CacheEvict(allEntries = true, value = {"organizations"})
+    @CacheEvict(allEntries = true, value = {"groups"})
     @Override
     public void cleanUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) {
         //Only for handling Spring cache.
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserParentOrganizations(IUser<Long> user) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
-        return getUserOrganizations(user).stream().filter(organization -> ((OrganizationDTO) organization).getParent() == null).collect(Collectors.toSet());
+        return getUserGroups(user).stream().filter(group -> ((GroupDTO) group).getParent() == null).collect(Collectors.toSet());
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
-        return getUserOrganizations(user).stream().filter(organization -> ((OrganizationDTO) organization).getParent() != null).collect(Collectors.toSet());
+        return getUserGroups(user).stream().filter(group -> ((GroupDTO) group).getParent() != null).collect(Collectors.toSet());
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserOrganizations(IUser<Long> user, IGroup<Long> site) throws UserManagementException {
         return null;

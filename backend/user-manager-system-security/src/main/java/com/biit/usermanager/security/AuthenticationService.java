@@ -80,7 +80,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
     public IGroup<Long> getDefaultGroup(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (user == null) {
@@ -96,7 +96,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
                     throw new UserDoesNotExistException("No roles found for user '" + user + "'");
                 }
                 return mapper.readValue(response.readEntity(String.class), new TypeReference<List<UserRoleDTO>>() {
-                }).stream().map(UserRoleDTO::getOrganization).filter(Objects::nonNull).findFirst().orElse(null);
+                }).stream().map(UserRoleDTO::getGroup).filter(Objects::nonNull).findFirst().orElse(null);
             }
         } catch (NotFoundException e) {
             throw new UserDoesNotExistException("Error connection to the User Manager System", e);
@@ -157,16 +157,16 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @Cacheable("organizations")
+    @Cacheable("groups")
     @Override
-    public boolean isInGroup(IGroup<Long> organization, IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
+    public boolean isInGroup(IGroup<Long> group, IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
         try {
             try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
-                    authenticationUrlConstructor.getRolesByUserAndOrganizationAndApplication(user.getUniqueName(),
-                            organization.getUniqueName(), applicationName))) {
+                    authenticationUrlConstructor.getRolesByUserAndGroupAndApplication(user.getUniqueName(),
+                            group.getUniqueName(), applicationName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getRolesByUserAndOrganizationAndApplication(
-                                user.getUniqueName(), organization.getUniqueName(), applicationName),
+                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getRolesByUserAndGroupAndApplication(
+                                user.getUniqueName(), group.getUniqueName(), applicationName),
                         response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
@@ -246,7 +246,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
 
-    @CacheEvict(allEntries = true, value = {"users", "organizations"})
+    @CacheEvict(allEntries = true, value = {"users", "groups"})
     @Scheduled(fixedDelay = 60 * 10 * 1000)
     @Override
     public void reset() {
@@ -254,7 +254,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public IUser<Long> addUser(IGroup<Long> organization, String password, String screenName, String emailAddress, String locale, String firstName,
+    public IUser<Long> addUser(IGroup<Long> group, String password, String screenName, String emailAddress, String locale, String firstName,
                                String middleName, String lastName) throws UserManagementException, InvalidCredentialsException {
         final UserDTO userDTO = new UserDTO();
         userDTO.setPassword(password);
@@ -284,7 +284,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @CacheEvict(allEntries = true, value = {"users", "organizations"})
+    @CacheEvict(allEntries = true, value = {"users", "groups"})
     @Override
     public void deleteUser(IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
         try (final Response response = securityClient.delete(authenticationUrlConstructor.getUserManagerServerUrl(),

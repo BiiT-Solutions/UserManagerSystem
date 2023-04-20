@@ -130,7 +130,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Set<String> getRoles(String username, String organizationName, String application) {
+    public Set<String> getRoles(String username, String groupName, String application) {
         return null;
     }
 

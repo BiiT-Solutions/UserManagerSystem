@@ -113,7 +113,7 @@ jwt.password=
 
 Meanwhile, the `User Manager Rest Client` handles the permissions between systems, this module provides retro
 compatibility to older applications that has used Liferay as an access control application. On this module you will find
-all methods required to get users, roles and organizations as needed on applications as ABCD or USMO. Note that
+all methods required to get users, roles and groups as needed on applications as ABCD or USMO. Note that
 internally, it needs to connect to the `User Manager System` by a JWT, therefor a JWT account is needed for accessing.
 
 For example, on the next figure:
@@ -190,7 +190,7 @@ public class MyServer {
 }
 ```
 
-And generate a `ehcache.xml` file in your project where you define the regions `users` and `organizations`.
+And generate a `ehcache.xml` file in your project where you define the regions `users` and `groups`.
 
 ```
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -221,7 +221,7 @@ And generate a `ehcache.xml` file in your project where you define the regions `
             diskExpiryThreadIntervalSeconds="1"
             memoryStoreEvictionPolicy="LFU" />
     <cache
-            name="organizations"
+            name="groups"
             maxElementsInMemory="100"
             eternal="false"
             overflowToDisk="false"

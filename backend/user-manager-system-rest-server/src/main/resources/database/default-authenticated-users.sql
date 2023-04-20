@@ -2,8 +2,8 @@ INSERT IGNORE INTO users (id, username, email, name, lastname, password, phone, 
 INSERT IGNORE INTO applications (id, name) VALUES (-5, 'UserManagerSystem');
 INSERT IGNORE INTO roles (id, name, description, application) VALUES (-2, 'usermanagersystem_admin', '', -5);
 INSERT IGNORE INTO roles (id, name, description, application) VALUES (-3, 'usermanagersystem_viewer', '', -5);
-INSERT IGNORE INTO organizations (id, name) VALUES (-4, 'localhost');
-INSERT IGNORE INTO user_roles (id, organization, role, `user`, `application`) VALUES (-6, -4 , -2, -1, -5);
-INSERT IGNORE INTO user_roles (id, organization, role, `user`, `application`) VALUES (-7, -4 , -3, -1, -5);
-INSERT IGNORE INTO user_roles (id, organization, role, `user`, `application`) VALUES (-8, null, -2, -1, null);
-INSERT IGNORE INTO user_roles (id, organization, role, `user`, `application`) VALUES (-9, null, -3, -1, null);
+INSERT IGNORE INTO groups (id, name) VALUES (-4, 'localhost');
+INSERT IGNORE INTO user_roles (id, group, role, `user`, `application`) VALUES (-6, -4 , -2, -1, -5);
+INSERT IGNORE INTO user_roles (id, group, role, `user`, `application`) VALUES (-7, -4 , -3, -1, -5);
+INSERT IGNORE INTO user_roles (id, group, role, `user`, `application`) VALUES (-8, null, -2, -1, null);
+INSERT IGNORE INTO user_roles (id, group, role, `user`, `application`) VALUES (-9, null, -3, -1, null);

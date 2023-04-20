@@ -29,7 +29,7 @@ public class RoleServices extends BasicServices<Role, RoleDTO, RoleRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets a role by name.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/name/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/names/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RoleDTO getByName(@Parameter(description = "Name of an existing role", required = true) @PathVariable("name") String name,
                        HttpServletRequest request) {
         return controller.getByName(name);

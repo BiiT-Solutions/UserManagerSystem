@@ -50,21 +50,21 @@ public class ActivityManager implements IActivityManager<Long, Long, Long> {
     }
 
     @Override
-    public boolean isAuthorizedActivity(IUser<Long> user, IGroup<Long> organization, IActivity activity) throws UserManagementException,
-            UserDoesNotExistException, OrganizationDoesNotExistException, InvalidCredentialsException {
+    public boolean isAuthorizedActivity(IUser<Long> user, IGroup<Long> group, IActivity activity) throws UserManagementException,
+            UserDoesNotExistException, InvalidCredentialsException, OrganizationDoesNotExistException {
         if (user == null) {
             UserManagerLogger.warning(this.getClass().getName(), "Provided user is null.");
             return false;
         }
-        // If user has the permission... no need to check the organization.
+        // If user has the permission... no need to check the group.
         if (isAuthorizedActivity(user, activity)) {
-            UserManagerLogger.debug(this.getClass().getName(), "User  '" + user + "' is authorized for '" + activity + "' in any organization.");
+            UserManagerLogger.debug(this.getClass().getName(), "User  '" + user + "' is authorized for '" + activity + "' in any group.");
             return true;
         }
 
-        final boolean authorized = getUserActivitiesAllowed(user, organization).contains(activity);
+        final boolean authorized = getUserActivitiesAllowed(user, group).contains(activity);
         UserManagerLogger.debug(this.getClass().getName(),
-                "User  '" + user + "' authorized '" + authorized + "' for '" + activity + "' in organization '" + organization + "'.");
+                "User  '" + user + "' authorized '" + authorized + "' for '" + activity + "' in group '" + group + "'.");
         return authorized;
     }
 
@@ -75,7 +75,7 @@ public class ActivityManager implements IActivityManager<Long, Long, Long> {
             final Set<IRole<Long>> roles = authorizationService.getUserRoles(user);
 
             // Add roles obtained by group.
-            final Set<IGroup<Long>> userGroups = authorizationService.getUserOrganizations(user);
+            final Set<IGroup<Long>> userGroups = authorizationService.getUserGroups(user);
             for (final IGroup<Long> group : userGroups) {
                 try {
                     roles.addAll(authorizationService.getUserGroupRoles(group));
@@ -94,16 +94,16 @@ public class ActivityManager implements IActivityManager<Long, Long, Long> {
         return activities;
     }
 
-    private Set<IActivity> getUserActivitiesAllowed(IUser<Long> user, IGroup<Long> organization) throws UserManagementException, InvalidCredentialsException,
-            OrganizationDoesNotExistException, UserDoesNotExistException {
-        final Set<IActivity> organizationActivities = new HashSet<>();
-        if (user != null && organization != null) {
-            // Add roles obtained by organization.
-            for (final IRole<Long> role : authorizationService.getUserRoles(user, organization)) {
-                organizationActivities.addAll(getRoleActivities(role));
+    private Set<IActivity> getUserActivitiesAllowed(IUser<Long> user, IGroup<Long> group) throws UserManagementException, InvalidCredentialsException,
+            UserDoesNotExistException, OrganizationDoesNotExistException {
+        final Set<IActivity> groupActivities = new HashSet<>();
+        if (user != null && group != null) {
+            // Add roles obtained by group.
+            for (final IRole<Long> role : authorizationService.getUserRoles(user, group)) {
+                groupActivities.addAll(getRoleActivities(role));
             }
         }
-        return organizationActivities;
+        return groupActivities;
     }
 
     @Override

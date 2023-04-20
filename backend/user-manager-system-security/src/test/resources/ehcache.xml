@@ -27,7 +27,7 @@
             memoryStoreEvictionPolicy="LFU" />
 
     <cache
-            name="organizations"
+            name="groups"
             maxElementsInMemory="100"
             eternal="false"
             overflowToDisk="false"

@@ -5,19 +5,19 @@ import com.biit.usermanager.entity.IGroup;
 
 import java.util.Set;
 
-public class OrganizationDTO extends ElementDTO implements IGroup<Long> {
+public class GroupDTO extends ElementDTO implements IGroup<Long> {
 
     private String name = "";
 
-    private Set<OrganizationDTO> subOrganizations;
+    private Set<GroupDTO> subGroups;
 
-    private OrganizationDTO parent;
+    private GroupDTO parent;
 
-    public OrganizationDTO() {
+    public GroupDTO() {
         super();
     }
 
-    public OrganizationDTO(String name) {
+    public GroupDTO(String name) {
         this();
         setName(name);
     }
@@ -40,19 +40,19 @@ public class OrganizationDTO extends ElementDTO implements IGroup<Long> {
         return getId();
     }
 
-    public Set<OrganizationDTO> getSubOrganizations() {
-        return subOrganizations;
+    public Set<GroupDTO> getSubGroups() {
+        return subGroups;
     }
 
-    public void setSubOrganizations(Set<OrganizationDTO> subOrganizations) {
-        this.subOrganizations = subOrganizations;
+    public void setSubGroups(Set<GroupDTO> subGroups) {
+        this.subGroups = subGroups;
     }
 
-    public OrganizationDTO getParent() {
+    public GroupDTO getParent() {
         return parent;
     }
 
-    public void setParent(OrganizationDTO parent) {
+    public void setParent(GroupDTO parent) {
         this.parent = parent;
     }
 }

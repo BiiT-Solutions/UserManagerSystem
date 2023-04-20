@@ -10,20 +10,20 @@ import java.util.Set;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "organizations")
-public class Organization extends Element {
+@Table(name = "groups")
+public class Group extends Element {
 
     @Column(name = "name", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
-    //A subOrganization is a company in test.
+    //A subGroup is a company in test.
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "parent")
-    private Set<Organization> subOrganizations;
+    private Set<Group> subGroups;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Organization parent;
+    private Group parent;
 
     public String getName() {
         return name;
@@ -33,19 +33,19 @@ public class Organization extends Element {
         this.name = name;
     }
 
-    public Set<Organization> getSubOrganizations() {
-        return subOrganizations;
+    public Set<Group> getSubGroups() {
+        return subGroups;
     }
 
-    public void setSubOrganizations(Set<Organization> subOrganizations) {
-        this.subOrganizations = subOrganizations;
+    public void setSubGroups(Set<Group> subGroups) {
+        this.subGroups = subGroups;
     }
 
-    public Organization getParent() {
+    public Group getParent() {
         return parent;
     }
 
-    public void setParent(Organization parentOrganization) {
-        this.parent = parentOrganization;
+    public void setParent(Group parentGroup) {
+        this.parent = parentGroup;
     }
 }

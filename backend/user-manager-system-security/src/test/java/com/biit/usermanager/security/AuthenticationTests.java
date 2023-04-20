@@ -63,7 +63,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private static final String NEW_USER_ID_CARD = "1233123123P";
     private static final String[] NEW_USER_ROLES = new String[]{"usermanagersystem_viewer"};
 
-    private static final String ORGANIZATION_NAME = "Organization1";
+    private static final String GROUP_NAME = "Group1";
 
     @Autowired
     private WebApplicationContext context;
@@ -81,7 +81,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private UserRoleController userRoleController;
 
     @Autowired
-    private OrganizationController organizationController;
+    private GroupController groupController;
 
     @Autowired
     private ApplicationController applicationController;
@@ -98,7 +98,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     private ApplicationDTO applicationDTO;
 
-    private OrganizationDTO organizationDTO;
+    private GroupDTO groupDTO;
 
     private Map<String, RoleDTO> roles;
 
@@ -118,8 +118,8 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     }
 
     @BeforeClass
-    private void createOrganizations() {
-        this.organizationDTO = organizationController.create(new OrganizationDTO(ORGANIZATION_NAME));
+    private void createGroups() {
+        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME));
     }
 
     @BeforeClass
@@ -164,7 +164,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         //Assign user roles
         for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), organizationDTO, applicationDTO));
+            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO, applicationDTO));
         }
     }
 
@@ -273,29 +273,29 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void isInGroup() throws UserManagementException, InvalidCredentialsException {
-        OrganizationDTO organizationDTO = organizationController.getByName(ORGANIZATION_NAME);
+        GroupDTO groupDTO = groupController.getByName(GROUP_NAME);
         UserDTO userDTO = userController.getByUsername(USER_NAME);
-        Assert.assertTrue(authenticationService.isInGroup(organizationDTO, userDTO));
+        Assert.assertTrue(authenticationService.isInGroup(groupDTO, userDTO));
 
-        OrganizationDTO otherOrganization = new OrganizationDTO();
-        otherOrganization.setName("Other Name");
-        otherOrganization = organizationController.create(otherOrganization);
+        GroupDTO otherGroup = new GroupDTO();
+        otherGroup.setName("Other Name");
+        otherGroup = groupController.create(otherGroup);
 
-        Assert.assertFalse(authenticationService.isInGroup(otherOrganization, userDTO));
+        Assert.assertFalse(authenticationService.isInGroup(otherGroup, userDTO));
     }
 
     @Test
     public void getDefaultGroup() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
-        OrganizationDTO organizationDTO = (OrganizationDTO) authenticationService.getDefaultGroup(userDTO);
-        Assert.assertNotNull(organizationDTO);
+        GroupDTO groupDTO = (GroupDTO) authenticationService.getDefaultGroup(userDTO);
+        Assert.assertNotNull(groupDTO);
     }
 
     @AfterClass(alwaysRun = true)
     public void dropTables() {
         userRoleController.deleteAll();
         applicationController.deleteAll();
-        organizationController.deleteAll();
+        groupController.deleteAll();
         roleController.deleteAll();
         userController.deleteAll();
     }

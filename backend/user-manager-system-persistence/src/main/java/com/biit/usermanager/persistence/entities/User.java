@@ -7,7 +7,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Cacheable
@@ -39,7 +38,7 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String email = "";
 
-    @Column(nullable = false)
+    @Column(name = "birthdate")
     @Convert(converter = LocalDateCryptoConverter.class)
     private LocalDate birthdate;
 
@@ -47,15 +46,15 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String phone = "";
 
-    @Column(length = MAX_UNIQUE_COLUMN_LENGTH, nullable = false)
+    @Column(name = "address", length = MAX_UNIQUE_COLUMN_LENGTH)
     @Convert(converter = StringCryptoConverter.class)
     private String address;
 
-    @Column(name = "postal_code", length = MAX_UNIQUE_COLUMN_LENGTH, nullable = false)
+    @Column(name = "postal_code", length = MAX_UNIQUE_COLUMN_LENGTH)
     @Convert(converter = StringCryptoConverter.class)
     private String postalCode;
 
-    @Column(length = MAX_UNIQUE_COLUMN_LENGTH, nullable = false)
+    @Column(name = "city", length = MAX_UNIQUE_COLUMN_LENGTH)
     @Convert(converter = StringCryptoConverter.class)
     private String city;
 

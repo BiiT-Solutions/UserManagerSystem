@@ -1,6 +1,6 @@
 package com.biit.usermanager.persistence.repositories;
 
-import com.biit.usermanager.persistence.entities.Organization;
+import com.biit.usermanager.persistence.entities.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,11 +11,15 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+public interface GroupRepository extends JpaRepository<Group, Long> {
 
-    Optional<Organization> findByName(String name);
+    Optional<Group> findByName(String name);
 
     int deleteByName(String name);
+
+    List<Group> findByParentIsNull();
+
+    List<Group> findByParentIsNotNull();
 
 
 }

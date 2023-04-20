@@ -26,15 +26,15 @@ public class AuthenticationUrlConstructor {
     }
 
     public String getUserByName(String username) {
-        return getUsers() + "/username/" + username;
+        return getUsers() + "/usernames/" + username;
     }
 
     public String getUserByEmail(String email) {
-        return getUsers() + "/email/" + email;
+        return getUsers() + "/emails/" + email;
     }
 
     public String getUserById(Long id) {
-        return getUsers() + "/id/" + id;
+        return getUsers() + "/ids/" + id;
     }
 
     public String checkCredentials() {
@@ -45,18 +45,18 @@ public class AuthenticationUrlConstructor {
         if (applicationName == null) {
             return getUserByName(username);
         }
-        return getUsers() + "/username/" + username + "/application/" + applicationName;
+        return getUsers() + "/usernames/" + username + "/applications/" + applicationName;
     }
 
     public String getUserByEmailAndApplication(String email, String applicationName) {
         if (applicationName == null) {
             return getUserByEmail(email);
         }
-        return getUsers() + "/email/" + email + "/application/" + applicationName;
+        return getUsers() + "/emails/" + email + "/applications/" + applicationName;
     }
 
     public String getUserById(String id) {
-        return getUsers() + "/id/" + id;
+        return getUsers() + "/ids/" + id;
     }
 
     public String updateUser() {
@@ -92,11 +92,11 @@ public class AuthenticationUrlConstructor {
     }
 
     public String getRolesByUser(String username) {
-        return getUserRoles() + "/username/" + username;
+        return getUserRoles() + "/usernames/" + username;
     }
 
-    public String getRolesByUserAndOrganizationAndApplication(String username, String organizationName, String applicationName) {
-        return getUserRoles() + "/username/" + username + "/organization/" + organizationName + "/application/" + applicationName;
+    public String getRolesByUserAndGroupAndApplication(String username, String groupName, String applicationName) {
+        return getUserRoles() + "/usernames/" + username + "/groups/" + groupName + "/applications/" + applicationName;
     }
 
 }

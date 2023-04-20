@@ -33,20 +33,20 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/username/{username}/organization/{organizationName}/application/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserRoleDTO> getRolesFromUserOrganizationAndApplication(@Parameter(description = "Username of an existing user", required = true)
+    @GetMapping(value = "/usernames/{username}/groups/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserRoleDTO> getRolesFromUserGroupAndApplication(@Parameter(description = "Username of an existing user", required = true)
                                                                         @PathVariable("username") String username,
-                                                                        @Parameter(description = "Organization name")
-                                                                        @PathVariable("organizationName") String organizationName,
+                                                                        @Parameter(description = "Group name")
+                                                                        @PathVariable("groupName") String groupName,
                                                                         @Parameter(description = "Application name")
                                                                         @PathVariable("applicationName") String applicationName,
                                                                         HttpServletRequest request) {
-        return controller.getByUserAndOrganizationAndApplication(username, organizationName, applicationName);
+        return controller.getByUserAndGroupAndApplication(username, groupName, applicationName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getRolesFromUser(@Parameter(description = "Username of an existing user", required = true)
                                               @PathVariable("username") String username,
                                               HttpServletRequest request) {
@@ -54,22 +54,22 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get roles by organization name", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/organization/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserRoleDTO> getRolesFromOrganization(@Parameter(description = "Name of an existing organization", required = true)
-                                                      @PathVariable("organizationName") String organizationName,
+    @Operation(summary = "Get roles by group name", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/groups/{groupName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserRoleDTO> getRolesFromGroup(@Parameter(description = "Name of an existing group", required = true)
+                                                      @PathVariable("groupName") String groupName,
                                                       HttpServletRequest request) {
-        return controller.getByOrganization(organizationName);
+        return controller.getByGroup(groupName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/organization/{organizationName}/role/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserRoleDTO> getUsersWithRoleOnOrganization(@Parameter(description = "Name of an existing organization", required = true)
-                                                            @PathVariable("organizationName") String organizationName,
+    @GetMapping(value = "/groups/{groupName}/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserRoleDTO> getUsersWithRoleOnGroup(@Parameter(description = "Name of an existing group", required = true)
+                                                            @PathVariable("groupName") String groupName,
                                                             @Parameter(description = "Role name", required = true)
                                                             @PathVariable("roleName") String roleName,
                                                             HttpServletRequest request) {
-        return controller.getByUserAndRole(organizationName, roleName);
+        return controller.getByUserAndRole(groupName, roleName);
     }
 }

@@ -26,18 +26,18 @@ public class UserUrlConstructor {
     }
 
     public String getUserByName(String username) {
-        return getUsers() + "/username/" + username;
+        return getUsers() + "/usernames/" + username;
     }
 
     public String getUserByNameAndApplication(String username, String applicationName) {
         if (applicationName == null) {
             return getUserByName(username);
         }
-        return getUsers() + "/username/" + username + "/application/" + applicationName;
+        return getUsers() + "/usernames/" + username + "/applications/" + applicationName;
     }
 
     public String getUserById(String id) {
-        return getUsers() + "/id/" + id;
+        return getUsers() + "/ids/" + id;
     }
 
     public String updatePassword() {
@@ -64,8 +64,8 @@ public class UserUrlConstructor {
         return getUsers() + "/" + username;
     }
 
-    public String getRolesByUserAndOrganizationAndApplication(String username, String organizationName, String applicationName) {
-        return getUserRoles() + "/username/" + username + "/organization/" + organizationName + "/application/" + applicationName;
+    public String getRolesByUserAndGroupAndApplication(String username, String groupName, String applicationName) {
+        return getUserRoles() + "/usernames/" + username + "/groups/" + groupName + "/applications/" + applicationName;
     }
 
 }

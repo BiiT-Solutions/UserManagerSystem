@@ -44,7 +44,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private static final String USER_ID_CARD = "87654321B";
     private static final String[] USER_ROLES = new String[]{"test_receptionist"};
 
-    private static final String ORGANIZATION_NAME = "Organization1";
+    private static final String GROUP_NAME = "Group1";
 
 
     @Autowired
@@ -63,7 +63,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private UserRoleController userRoleController;
 
     @Autowired
-    private OrganizationController organizationController;
+    private GroupController groupController;
 
     @Autowired
     private ApplicationController applicationController;
@@ -82,8 +82,8 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
     private Map<String, RoleDTO> roles;
 
-    private OrganizationDTO organizationDTO;
-    private OrganizationDTO organizationDTO2;
+    private GroupDTO groupDTO;
+    private GroupDTO groupDTO2;
 
     @Autowired
     private RoleActivities roleActivities;
@@ -102,8 +102,8 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     }
 
     @BeforeClass
-    private void createOrganizations() {
-        this.organizationDTO = organizationController.create(new OrganizationDTO(ORGANIZATION_NAME));
+    private void createGroups() {
+        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME));
     }
 
     @BeforeClass
@@ -134,7 +134,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         }
     }
 
-    @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createOrganizations"})
+    @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createGroups"})
     private void createUserAccount() {
         //Create the test user
         UserDTO userDTO = new UserDTO();
@@ -148,8 +148,8 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
         //Assign user roles
         for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), organizationDTO, applicationDTO));
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), organizationDTO2, applicationDTO));
+            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO, applicationDTO));
+            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO2, applicationDTO));
         }
     }
 
@@ -178,7 +178,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     public void dropTables() {
         userRoleController.deleteAll();
         applicationController.deleteAll();
-        organizationController.deleteAll();
+        groupController.deleteAll();
         roleController.deleteAll();
         userController.deleteAll();
     }

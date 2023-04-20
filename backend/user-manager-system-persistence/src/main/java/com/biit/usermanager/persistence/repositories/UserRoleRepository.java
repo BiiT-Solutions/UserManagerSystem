@@ -11,17 +11,17 @@ import java.util.List;
 @Transactional
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
-    List<UserRole> findByUserAndOrganization(User user, Organization organization);
+    List<UserRole> findByUserAndGroup(User user, Group group);
 
-    List<UserRole> findByUserAndOrganizationAndApplication(User user, Organization organization, Application application);
+    List<UserRole> findByUserAndGroupAndApplication(User user, Group group, Application application);
 
     List<UserRole> findByUserAndApplication(User user, Application application);
 
     List<UserRole> findByUser(User user);
 
-    List<UserRole> findByOrganizationAndRole(Organization organization, Role role);
+    List<UserRole> findByGroupAndRole(Group group, Role role);
 
-    List<UserRole> findByOrganization(Organization organization);
+    List<UserRole> findByGroup(Group group);
 
     List<UserRole> findByRole(Role role);
 }

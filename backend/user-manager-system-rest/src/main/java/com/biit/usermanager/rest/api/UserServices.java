@@ -36,7 +36,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     //@PreAuthorize("hasAuthority('USERMANAGERSYSTEM_VIEWER')")
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
                                  HttpServletRequest request) {
         return controller.getByUsername(username);
@@ -44,7 +44,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by email", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/email/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/emails/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @PathVariable("email") String email,
                               HttpServletRequest request) {
         return controller.getByEmail(email);
@@ -60,7 +60,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username and application", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/username/{username}/application/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/usernames/{username}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndApplication(@Parameter(description = "Username of an existing user", required = true)
                                                @PathVariable("username") String username,
                                                @Parameter(description = "Name of an existing application", required = true)
@@ -72,7 +72,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/ids/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("id") String id,
                              HttpServletRequest request) {
         return controller.getByUserId(id);
@@ -80,7 +80,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Get user by phone number", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/phone/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/phones/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByPhone(@Parameter(description = "Phone of an existing user", required = true) @PathVariable("phone") String phone,
                               HttpServletRequest request) {
         return controller.getByPhone(phone);

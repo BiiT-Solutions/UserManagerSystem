@@ -1,11 +1,10 @@
 package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
-import com.biit.usermanager.entity.IRole;
 
 public class UserRoleDTO extends ElementDTO {
 
-    private OrganizationDTO organization;
+    private GroupDTO group;
 
     private ApplicationDTO application;
 
@@ -17,20 +16,20 @@ public class UserRoleDTO extends ElementDTO {
         super();
     }
 
-    public UserRoleDTO(UserDTO user, RoleDTO role, OrganizationDTO organization, ApplicationDTO application) {
+    public UserRoleDTO(UserDTO user, RoleDTO role, GroupDTO group, ApplicationDTO application) {
         this();
         setUser(user);
         setRole(role);
-        setOrganization(organization);
+        setGroup(group);
         setApplication(application);
     }
 
-    public OrganizationDTO getOrganization() {
-        return organization;
+    public GroupDTO getGroup() {
+        return group;
     }
 
-    public void setOrganization(OrganizationDTO organization) {
-        this.organization = organization;
+    public void setGroup(GroupDTO group) {
+        this.group = group;
     }
 
     public ApplicationDTO getApplication() {

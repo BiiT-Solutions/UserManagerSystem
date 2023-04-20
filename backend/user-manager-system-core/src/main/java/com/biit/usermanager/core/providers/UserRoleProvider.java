@@ -16,12 +16,12 @@ public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepos
         super(repository);
     }
 
-    public List<UserRole> findByUserAndOrganizationAndApplication(User user, Organization organization, Application application) {
-        if (organization != null) {
+    public List<UserRole> findByUserAndGroupAndApplication(User user, Group group, Application application) {
+        if (group != null) {
             if (application != null) {
-                return repository.findByUserAndOrganizationAndApplication(user, organization, application);
+                return repository.findByUserAndGroupAndApplication(user, group, application);
             } else {
-                return repository.findByUserAndOrganization(user, organization);
+                return repository.findByUserAndGroup(user, group);
             }
         } else {
             if (application != null) {
@@ -30,19 +30,19 @@ public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepos
                 return repository.findByUser(user);
             }
         }
-//        return repository.findByUserAndOrganizationAndApplication(user, organization, application);
+//        return repository.findByUserAndGroupAndApplication(user, group, application);
     }
 
     public List<UserRole> findByUser(User user) {
         return repository.findByUser(user);
     }
 
-    public List<UserRole> findByOrganization(Organization organization) {
-        return repository.findByOrganization(organization);
+    public List<UserRole> findByGroup(Group group) {
+        return repository.findByGroup(group);
     }
 
-    public List<UserRole> findByOrganizationAndRole(Organization organization, Role role) {
-        return repository.findByOrganizationAndRole(organization, role);
+    public List<UserRole> findByGroupAndRole(Group group, Role role) {
+        return repository.findByGroupAndRole(group, role);
     }
 
 
