@@ -103,14 +103,14 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     private void createApplication() {
         ApplicationDTO applicationDTO = new ApplicationDTO();
         applicationDTO.setName(applicationName);
-        this.applicationDTO = applicationController.create(applicationDTO);
+        this.applicationDTO = applicationController.create(applicationDTO, null);
     }
 
     @BeforeClass
     private void createGroups() {
-        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME));
-        this.groupDTO2 = groupController.create(new GroupDTO(OTHER_GROUP_NAME));
-        groupController.create(new GroupDTO(EMPTY_GROUP_NAME));
+        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME), null);
+        this.groupDTO2 = groupController.create(new GroupDTO(OTHER_GROUP_NAME), null);
+        groupController.create(new GroupDTO(EMPTY_GROUP_NAME), null);
     }
 
     @BeforeClass
@@ -120,7 +120,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         roleNames.addAll(Arrays.asList(USER_ROLES));
         roleNames.addAll(Arrays.asList(OTHER_USER_ROLES));
         for (String roleName : roleNames) {
-            roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
+            roles.put(roleName, roleController.create(new RoleDTO(roleName, null), null));
         }
     }
 
@@ -134,11 +134,11 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         userDTO.setLastName(ADMIN_LAST_NAME);
         userDTO.setEmail(ADMIN_EMAIL);
         userDTO.setPassword(ADMIN_PASSWORD);
-        final UserDTO adminUser = userController.create(userDTO);
+        final UserDTO adminUser = userController.create(userDTO, null);
 
         //Assign admin roles
         for (String adminRole : ADMIN_ROLES) {
-            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO));
+            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO), null);
         }
     }
 
@@ -152,12 +152,12 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         userDTO.setLastName(USER_LAST_NAME);
         userDTO.setEmail(USER_EMAIL);
         userDTO.setPassword(USER_PASSWORD);
-        final UserDTO testUser = userController.create(userDTO);
+        final UserDTO testUser = userController.create(userDTO, null);
 
         //Assign user roles
         for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO, applicationDTO));
-            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO2, applicationDTO));
+            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO, applicationDTO), null);
+            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO2, applicationDTO), null);
         }
     }
 
@@ -171,11 +171,11 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         userDTO.setLastName(OTHER_USER_LAST_NAME);
         userDTO.setEmail(OTHER_USER_EMAIL);
         userDTO.setPassword(OTHER_USER_PASSWORD);
-        final UserDTO testUser = userController.create(userDTO);
+        final UserDTO testUser = userController.create(userDTO, null);
 
         //Assign user roles
         for (String otherUserRoles : OTHER_USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(testUser, roles.get(otherUserRoles), groupDTO, applicationDTO));
+            userRoleController.create(new UserRoleDTO(testUser, roles.get(otherUserRoles), groupDTO, applicationDTO), null);
         }
     }
 

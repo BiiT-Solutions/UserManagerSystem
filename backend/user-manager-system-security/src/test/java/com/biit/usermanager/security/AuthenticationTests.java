@@ -114,12 +114,12 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private void createApplication() {
         ApplicationDTO applicationDTO = new ApplicationDTO();
         applicationDTO.setName(applicationName);
-        this.applicationDTO = applicationController.create(applicationDTO);
+        this.applicationDTO = applicationController.create(applicationDTO, null);
     }
 
     @BeforeClass
     private void createGroups() {
-        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME));
+        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME), null);
     }
 
     @BeforeClass
@@ -128,7 +128,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         Set<String> roleNames = new HashSet<>(Arrays.asList(ADMIN_ROLES));
         roleNames.addAll(Arrays.asList(USER_ROLES));
         for (String roleName : roleNames) {
-            roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
+            roles.put(roleName, roleController.create(new RoleDTO(roleName, null), null));
         }
     }
 
@@ -142,11 +142,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         userDTO.setLastName(ADMIN_LAST_NAME);
         userDTO.setEmail(ADMIN_EMAIL);
         userDTO.setPassword(ADMIN_PASSWORD);
-        final UserDTO adminUser = userController.create(userDTO);
+        final UserDTO adminUser = userController.create(userDTO, null);
 
         //Assign admin roles
         for (String adminRole : ADMIN_ROLES) {
-            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO));
+            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO), null);
         }
     }
 
@@ -160,11 +160,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         userDTO.setLastName(USER_LAST_NAME);
         userDTO.setEmail(USER_EMAIL);
         userDTO.setPassword(USER_PASSWORD);
-        final UserDTO testUser = userController.create(userDTO);
+        final UserDTO testUser = userController.create(userDTO, null);
 
         //Assign user roles
         for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO, applicationDTO));
+            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO, applicationDTO), null);
         }
     }
 
@@ -279,7 +279,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         GroupDTO otherGroup = new GroupDTO();
         otherGroup.setName("Other Name");
-        otherGroup = groupController.create(otherGroup);
+        otherGroup = groupController.create(otherGroup, null);
 
         Assert.assertFalse(authenticationService.isInGroup(otherGroup, userDTO));
     }

@@ -41,7 +41,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
-        return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getName(),
+        return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getFirstname(),
                 createUserRequest.getLastname(), createUserRequest.getPassword());
     }
 
@@ -92,7 +92,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         final AuthenticatedUser user = (AuthenticatedUser) usersOnMemory.stream().filter(iAuthenticatedUser ->
                 iAuthenticatedUser.getUsername().equals(createUserRequest.getUsername())).findAny().orElseThrow(() ->
                 new RuntimeException("User with username '" + createUserRequest.getUsername() + "' does not exists"));
-        user.setName(createUserRequest.getName());
+        user.setName(createUserRequest.getFirstname());
         user.setLastname(createUserRequest.getLastname());
         return user;
     }

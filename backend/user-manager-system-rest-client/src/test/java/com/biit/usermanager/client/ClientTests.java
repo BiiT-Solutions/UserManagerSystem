@@ -63,21 +63,21 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD);
 
         //Create the application
-        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName, ""));
+        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName, ""), null);
 
         //Set the roles
         final List<RoleDTO> roles = new ArrayList<>();
         final List<RoleDTO> applicationRoles = new ArrayList<>();
         for (final String roleName : USER_ROLES) {
-            roles.add(roleController.create(new RoleDTO(roleName, null)));
-            applicationRoles.add(roleController.create(new RoleDTO(applicationName + "_" + roleName, null)));
+            roles.add(roleController.create(new RoleDTO(roleName, null), null));
+            applicationRoles.add(roleController.create(new RoleDTO(applicationName + "_" + roleName, null), null));
         }
 
         //Assign the basic roles.
-        roles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null, null)));
+        roles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null, null), null));
 
         //Assign application roles.
-        applicationRoles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null, applicationDTO)));
+        applicationRoles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null, applicationDTO), null));
     }
 
     @Test

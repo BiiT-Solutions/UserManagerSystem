@@ -19,7 +19,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
 
     private String username = "";
 
-    private String name = "";
+    private String firstname = "";
 
     private String lastname = "";
 
@@ -92,12 +92,12 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
         this.username = username;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
     public String getLastname() {
@@ -123,7 +123,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
 
     @Override
     public String getFirstName() {
-        return getName();
+        return getFirstname();
     }
 
     @Override
@@ -170,7 +170,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
 
     @Override
     public void setFirstName(String firstName) {
-        setName(firstName);
+        setFirstname(firstName);
     }
 
     @Override

@@ -125,7 +125,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
-        return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getName(),
+        return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getFirstname(),
                 createUserRequest.getLastname(), createUserRequest.getPassword());
     }
 
@@ -159,7 +159,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
         final UserDTO userDTO = getByUsername(createUserRequest.getUsername());
         userDTO.setUsername(createUserRequest.getUsername());
-        userDTO.setFirstName(createUserRequest.getName());
+        userDTO.setFirstName(createUserRequest.getFirstname());
         userDTO.setLastname(createUserRequest.getLastname());
         userDTO.setIdCard(createUserRequest.getUniqueId());
         return converter.convert(new UserConverterRequest(provider.update(converter.reverse(userDTO))));

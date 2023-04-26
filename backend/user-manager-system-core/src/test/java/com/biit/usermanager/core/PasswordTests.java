@@ -1,5 +1,6 @@
 package com.biit.usermanager.core;
 
+import com.biit.server.security.CreateUserRequest;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
@@ -27,12 +28,12 @@ public class PasswordTests extends AbstractTestNGSpringContextTests {
 
     @BeforeClass
     public void setUp() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(USER_NAME);
-        userDTO.setFirstName(USER_FIRST_NAME);
-        userDTO.setLastname(USER_LAST_NAME);
-        userDTO.setPassword(USER_PASSWORD);
-        userController.create(userDTO);
+        CreateUserRequest createUserRequest = new CreateUserRequest();
+        createUserRequest.setUsername(USER_NAME);
+        createUserRequest.setFirstname(USER_FIRST_NAME);
+        createUserRequest.setLastname(USER_LAST_NAME);
+        createUserRequest.setPassword(USER_PASSWORD);
+        userController.create(createUserRequest);
     }
 
     @Test(expectedExceptions = UserNotFoundException.class)

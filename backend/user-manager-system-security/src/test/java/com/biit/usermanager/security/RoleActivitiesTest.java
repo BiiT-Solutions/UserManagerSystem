@@ -98,12 +98,12 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private void createApplication() {
         ApplicationDTO applicationDTO = new ApplicationDTO();
         applicationDTO.setName(applicationName);
-        this.applicationDTO = applicationController.create(applicationDTO);
+        this.applicationDTO = applicationController.create(applicationDTO, null);
     }
 
     @BeforeClass
     private void createGroups() {
-        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME));
+        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME), null);
     }
 
     @BeforeClass
@@ -112,7 +112,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         Set<String> roleNames = new HashSet<>(Arrays.asList(ADMIN_ROLES));
         roleNames.addAll(Arrays.asList(USER_ROLES));
         for (String roleName : roleNames) {
-            roles.put(roleName, roleController.create(new RoleDTO(roleName, null)));
+            roles.put(roleName, roleController.create(new RoleDTO(roleName, null), null));
         }
     }
 
@@ -126,11 +126,11 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         userDTO.setLastName(ADMIN_LAST_NAME);
         userDTO.setEmail(ADMIN_EMAIL);
         userDTO.setPassword(ADMIN_PASSWORD);
-        final UserDTO adminUser = userController.create(userDTO);
+        final UserDTO adminUser = userController.create(userDTO, null);
 
         //Assign admin roles
         for (String adminRole : ADMIN_ROLES) {
-            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO));
+            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO), null);
         }
     }
 
@@ -144,12 +144,12 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         userDTO.setLastName(USER_LAST_NAME);
         userDTO.setEmail(USER_EMAIL);
         userDTO.setPassword(USER_PASSWORD);
-        user = userController.create(userDTO);
+        user = userController.create(userDTO, null);
 
         //Assign user roles
         for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO, applicationDTO));
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO2, applicationDTO));
+            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO, applicationDTO), null);
+            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO2, applicationDTO), null);
         }
     }
 

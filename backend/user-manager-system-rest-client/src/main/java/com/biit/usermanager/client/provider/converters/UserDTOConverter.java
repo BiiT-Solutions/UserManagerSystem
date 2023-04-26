@@ -10,7 +10,7 @@ public class UserDTOConverter {
 
     public static UserDTO convert(CreateUserRequest createUserRequest) {
         final UserDTO userDTO = new UserDTO();
-        userDTO.setName(createUserRequest.getName());
+        userDTO.setFirstname(createUserRequest.getFirstname());
         userDTO.setLastName(createUserRequest.getLastname());
         userDTO.setUsername(createUserRequest.getUsername());
         userDTO.setPassword(createUserRequest.getPassword());
