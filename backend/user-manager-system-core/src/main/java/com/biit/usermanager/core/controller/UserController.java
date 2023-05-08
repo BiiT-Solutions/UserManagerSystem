@@ -104,6 +104,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         }
     }
 
+
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username, String applicationName) {
         if (applicationName == null) {
@@ -111,6 +112,25 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         }
         final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+        return Optional.of(setGrantedAuthorities(userDTO, null,
+                applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
+                        new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'."))))));
+    }
+
+    @Override
+    public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
+        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByEmail(email).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
+        return Optional.of(setGrantedAuthorities(userDTO, null, null));
+    }
+
+    @Override
+    public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
+        if (applicationName == null) {
+            return findByEmailAddress(email);
+        }
+        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByEmail(email).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
         return Optional.of(setGrantedAuthorities(userDTO, null,
                 applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
                         new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'."))))));

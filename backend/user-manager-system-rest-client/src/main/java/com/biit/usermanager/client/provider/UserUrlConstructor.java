@@ -29,11 +29,22 @@ public class UserUrlConstructor {
         return getUsers() + "/usernames/" + username;
     }
 
+    public String getUserByEmail(String email) {
+        return getUsers() + "/emails/" + email;
+    }
+
     public String getUserByNameAndApplication(String username, String applicationName) {
         if (applicationName == null) {
             return getUserByName(username);
         }
         return getUsers() + "/usernames/" + username + "/applications/" + applicationName;
+    }
+
+    public String getUserByEmailAndApplication(String email, String applicationName) {
+        if (applicationName == null) {
+            return getUserByEmail(email);
+        }
+        return getUsers() + "/emails/" + email + "/applications/" + applicationName;
     }
 
     public String getUserById(String id) {

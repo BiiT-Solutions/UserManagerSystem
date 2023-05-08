@@ -35,6 +35,16 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     @Override
+    public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
+        return usersOnMemory.stream().filter(user -> Objects.equals(email, user.getEmailAddress())).findAny();
+    }
+
+    @Override
+    public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
+        return findByEmailAddress(email);
+    }
+
+    @Override
     public Optional<IAuthenticatedUser> findByUID(String uid) {
         return usersOnMemory.stream().filter(user -> Objects.equals(uid, user.getUID())).findAny();
     }

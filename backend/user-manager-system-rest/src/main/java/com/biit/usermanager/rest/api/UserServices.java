@@ -47,7 +47,8 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @GetMapping(value = "/emails/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @PathVariable("email") String email,
                               HttpServletRequest request) {
-        return controller.getByEmail(email);
+        return (UserDTO) controller.findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                "No User with email '" + email + "' found on the system."));
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
@@ -68,6 +69,18 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
                                                HttpServletRequest request) {
         return (UserDTO) controller.findByUsername(username, applicationName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get user by email and application", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/emails/{email}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getByEmailAndApplication(@Parameter(description = "Email of an existing user", required = true)
+                                            @PathVariable("email") String email,
+                                            @Parameter(description = "Name of an existing application", required = true)
+                                            @PathVariable("applicationName") String applicationName,
+                                            HttpServletRequest request) {
+        return (UserDTO) controller.findByEmailAddress(email, applicationName).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                "No User with email '" + email + "' found on the system."));
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")

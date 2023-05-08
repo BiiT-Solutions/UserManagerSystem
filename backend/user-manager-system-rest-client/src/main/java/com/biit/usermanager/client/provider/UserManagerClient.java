@@ -8,6 +8,8 @@ import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.client.provider.converters.UserDTOConverter;
+import com.biit.usermanager.client.provider.models.Email;
+import com.biit.usermanager.client.validators.EmailValidator;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.logger.UserManagerClientLogger;
@@ -58,6 +60,55 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     userUrlConstructor.getUserByNameAndApplication(username, applicationName))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByNameAndApplication(username, applicationName),
+                        response.getStatus());
+                return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
+        try {
+            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUserByEmail(email))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmail(email), response.getStatus());
+                return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
+        try {
+            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUserByEmailAndApplication(EmailValidator.validate(email), applicationName))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmailAndApplication(email, applicationName),
+                        response.getStatus());
+                return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<IAuthenticatedUser> findByEmailAddress(Email email, String applicationName) {
+        try {
+            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUserByEmailAndApplication(email.getEmail(), applicationName))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmailAndApplication(email.getEmail(), applicationName),
                         response.getStatus());
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
