@@ -86,6 +86,21 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         }
     }
 
+    public Optional<IAuthenticatedUser> findByEmailAddress(Email email) {
+        try {
+            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUserByEmail(email.getEmail()))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmail(email.getEmail()), response.getStatus());
+                return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
         try {
