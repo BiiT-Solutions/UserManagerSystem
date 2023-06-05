@@ -14,12 +14,20 @@ import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.GroupNotFoundException;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
-import com.biit.usermanager.core.providers.*;
+import com.biit.usermanager.core.providers.ApplicationProvider;
+import com.biit.usermanager.core.providers.GroupProvider;
+import com.biit.usermanager.core.providers.RoleProvider;
+import com.biit.usermanager.core.providers.UserProvider;
+import com.biit.usermanager.core.providers.UserRoleProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.UserRoleDTO;
-import com.biit.usermanager.persistence.entities.*;
+import com.biit.usermanager.persistence.entities.Application;
+import com.biit.usermanager.persistence.entities.Group;
+import com.biit.usermanager.persistence.entities.Role;
+import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.entities.UserRole;
 import com.biit.usermanager.persistence.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -66,7 +74,7 @@ public class UserRoleController extends BasicInsertableController<UserRole, User
     public List<UserRoleDTO> getByUser(String username) {
         final User user = userProvider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(getClass(),
                 "User with username '" + username + "' not found.", ExceptionType.WARNING));
-        return converter.convertAll(provider.findByUser(user).stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByUser(user).stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
     public List<UserRoleDTO> getByGroup(String groupName) {
@@ -75,7 +83,7 @@ public class UserRoleController extends BasicInsertableController<UserRole, User
         System.out.println(groupProvider.findByName(groupName));
         final Group group = groupProvider.findByName(groupName).orElseThrow(() -> new GroupNotFoundException(getClass(),
                 "Group with name '" + groupName + "' not found.", ExceptionType.WARNING));
-        return converter.convertAll(provider.findByGroup(group).stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByGroup(group).stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
     public List<UserRoleDTO> getByUserAndGroupAndApplication(String username, String groupName, String applicationName) {
@@ -90,7 +98,7 @@ public class UserRoleController extends BasicInsertableController<UserRole, User
     }
 
     public List<UserRoleDTO> getByUserAndGroupAndApplication(UserDTO userDTO, GroupDTO groupDTO, ApplicationDTO applicationDTO) {
-        return converter.convertAll(provider.findByUserAndGroupAndApplication(userConverter.reverse(userDTO),
+        return getConverter().convertAll(getProvider().findByUserAndGroupAndApplication(userConverter.reverse(userDTO),
                         groupConverter.reverse(groupDTO), applicationConverter.reverse(applicationDTO)).stream()
                 .map(this::createConverterRequest).collect(Collectors.toList()));
     }
@@ -100,7 +108,7 @@ public class UserRoleController extends BasicInsertableController<UserRole, User
                 "Group with name '" + roleName + "' not found.", ExceptionType.WARNING));
         final Role role = roleProvider.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(getClass(),
                 "Role with name '" + roleName + "' not found.", ExceptionType.WARNING));
-        return converter.convertAll(provider.findByGroupAndRole(group, role)
+        return getConverter().convertAll(getProvider().findByGroupAndRole(group, role)
                 .stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 }

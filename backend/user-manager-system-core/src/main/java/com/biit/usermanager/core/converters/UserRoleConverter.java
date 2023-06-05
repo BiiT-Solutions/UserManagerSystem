@@ -2,7 +2,11 @@ package com.biit.usermanager.core.converters;
 
 
 import com.biit.server.controller.converters.ElementConverter;
-import com.biit.usermanager.core.converters.models.*;
+import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
+import com.biit.usermanager.core.converters.models.GroupConverterRequest;
+import com.biit.usermanager.core.converters.models.RoleConverterRequest;
+import com.biit.usermanager.core.converters.models.UserConverterRequest;
+import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.dto.UserRoleDTO;

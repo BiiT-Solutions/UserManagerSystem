@@ -4,7 +4,11 @@ import com.biit.usermanager.client.exceptions.InvalidValueException;
 
 import java.util.regex.Pattern;
 
-public class EmailValidator {
+public final class EmailValidator {
+
+    private EmailValidator() {
+
+    }
 
     private static final String EMAIL_PATTERN = "^(?=.{1,64}@)[\\p{L}0-9_-]+(\\.[\\p{L}0-9_-]+)*@"
             + "[^-][\\p{L}0-9-]+(\\.[\\p{L}0-9-]+)*(\\.[\\p{L}]{2,})$";

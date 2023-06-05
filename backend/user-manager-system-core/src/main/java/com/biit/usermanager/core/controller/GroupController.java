@@ -30,21 +30,21 @@ public class GroupController extends BasicInsertableController<Group, GroupDTO, 
     }
 
     public GroupDTO getByName(String name) {
-        return converter.convert(new GroupConverterRequest(provider.findByName(name).orElseThrow(() -> new GroupNotFoundException(this.getClass(),
+        return getConverter().convert(new GroupConverterRequest(getProvider().findByName(name).orElseThrow(() -> new GroupNotFoundException(this.getClass(),
                 "No Group with name '" + name + "' found on the system."))));
     }
 
     public List<GroupDTO> getGroupsWithoutParent() {
-        return converter.convertAll(provider.findByParentIsNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParentIsNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
     public List<GroupDTO> getGroupsWithParent() {
-        return converter.convertAll(provider.findByParentIsNotNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParentIsNotNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
 
     public int deleteByName(String name) {
-        return provider.deleteByName(name);
+        return getProvider().deleteByName(name);
     }
 
 }

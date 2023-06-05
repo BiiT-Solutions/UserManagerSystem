@@ -16,10 +16,17 @@ import com.biit.usermanager.logger.UserManagerClientLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.core.Response;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 
 @Service
 public class UserManagerClient implements IAuthenticatedUserProvider {
@@ -40,7 +47,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username) {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByName(username))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByName(username), response.getStatus());
@@ -56,7 +63,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username, String applicationName) {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByNameAndApplication(username, applicationName))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByNameAndApplication(username, applicationName),
@@ -73,7 +80,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmail(email))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmail(email), response.getStatus());
@@ -88,7 +95,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
     public Optional<IAuthenticatedUser> findByEmailAddress(Email email) {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmail(email.getEmail()))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmail(email.getEmail()), response.getStatus());
@@ -104,7 +111,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmailAndApplication(EmailValidator.validate(email), applicationName))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmailAndApplication(email, applicationName),
@@ -120,7 +127,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
     public Optional<IAuthenticatedUser> findByEmailAddress(Email email, String applicationName) {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmailAndApplication(email.getEmail(), applicationName))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmailAndApplication(email.getEmail(), applicationName),
@@ -138,7 +145,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public Optional<IAuthenticatedUser> findByUID(String id) {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserById(id))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserById(id), response.getStatus());
@@ -155,7 +162,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
         try {
-            try (final Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
+            try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
                     mapper.writeValueAsString(UserDTOConverter.convert(createUserRequest)))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsers(), result.getStatus());
@@ -172,7 +179,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword) {
         try {
-            try (final Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.updateUserPassword(username),
+            try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.updateUserPassword(username),
                     mapper.writeValueAsString(new UpdatePasswordRequest(oldPassword, newPassword)))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.updateUserPassword(username), result.getStatus());
@@ -189,7 +196,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
         try {
-            try (final Response result = securityClient.put(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
+            try (Response result = securityClient.put(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
                     mapper.writeValueAsString(UserDTOConverter.convert(createUserRequest)))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsers(), result.getStatus());
@@ -206,7 +213,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public long count() {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.count())) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.count(), response.getStatus());
@@ -223,7 +230,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public Collection<IAuthenticatedUser> findAll() {
         try {
-            try (final Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getAll())) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getAll(), response.getStatus());
@@ -244,7 +251,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             return false;
         }
         try {
-            try (final Response result = securityClient.delete(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.deleteByUsername(username))) {
+            try (Response result = securityClient.delete(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.deleteByUsername(username))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.deleteByUsername(username), result.getStatus());
                 return true;
@@ -257,7 +264,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public boolean delete(IAuthenticatedUser authenticatedUser) {
         try {
-            try (final Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.delete(),
+            try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.delete(),
                     mapper.writeValueAsString(authenticatedUser))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.delete(), result.getStatus());
@@ -274,7 +281,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     public Set<String> getRoles(String username, String groupName, String applicationName) {
         final Set<String> roles = new HashSet<>();
         try {
-            try (final Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+            try (Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getRolesByUserAndGroupAndApplication(username, groupName, applicationName))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor

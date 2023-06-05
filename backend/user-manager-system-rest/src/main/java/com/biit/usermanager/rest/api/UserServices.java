@@ -15,13 +15,21 @@ import com.biit.usermanager.rest.api.models.CheckCredentialsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -39,7 +47,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
                                  HttpServletRequest request) {
-        return controller.getByUsername(username);
+        return getController().getByUsername(username);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
@@ -47,7 +55,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @GetMapping(value = "/emails/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @PathVariable("email") String email,
                               HttpServletRequest request) {
-        return (UserDTO) controller.findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        return (UserDTO) getController().findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with email '" + email + "' found on the system."));
     }
 
@@ -56,7 +64,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @PostMapping(value = "/credentials", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO checkCredentials(@RequestBody CheckCredentialsRequest credentialsRequest,
                                     HttpServletRequest request) {
-        return controller.checkCredentials(credentialsRequest.getUsername(), credentialsRequest.getEmail(), credentialsRequest.getPassword());
+        return getController().checkCredentials(credentialsRequest.getUsername(), credentialsRequest.getEmail(), credentialsRequest.getPassword());
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
@@ -67,7 +75,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
                                                @Parameter(description = "Name of an existing application", required = true)
                                                @PathVariable("applicationName") String applicationName,
                                                HttpServletRequest request) {
-        return (UserDTO) controller.findByUsername(username, applicationName).orElseThrow(() ->
+        return (UserDTO) getController().findByUsername(username, applicationName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
 
@@ -79,7 +87,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
                                             @Parameter(description = "Name of an existing application", required = true)
                                             @PathVariable("applicationName") String applicationName,
                                             HttpServletRequest request) {
-        return (UserDTO) controller.findByEmailAddress(email, applicationName).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        return (UserDTO) getController().findByEmailAddress(email, applicationName).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with email '" + email + "' found on the system."));
     }
 
@@ -88,7 +96,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @GetMapping(value = "/ids/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("id") String id,
                              HttpServletRequest request) {
-        return controller.getByUserId(id);
+        return getController().getByUserId(id);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
@@ -96,7 +104,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @GetMapping(value = "/phones/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByPhone(@Parameter(description = "Phone of an existing user", required = true) @PathVariable("phone") String phone,
                               HttpServletRequest request) {
-        return controller.getByPhone(phone);
+        return getController().getByPhone(phone);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
@@ -105,7 +113,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     public List<UserDTO> getByAccountExpired(@Parameter(description = "Account is expired", required = true)
                                              @PathVariable("account_expired") boolean accountExpired,
                                              HttpServletRequest request) {
-        return controller.getAllByExpired(accountExpired);
+        return getController().getAllByExpired(accountExpired);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
@@ -113,7 +121,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @GetMapping(value = "/enable/{enable}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getEnabled(@Parameter(description = "enable/disable", required = true)
                                     @PathVariable("enable") boolean enable, HttpServletRequest request) {
-        return controller.getByEnable(enable);
+        return getController().getByEnable(enable);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
@@ -122,7 +130,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void updatePassword(@RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            controller.updatePassword(authentication.getName(), request.getOldPassword(), request.getNewPassword());
+            getController().updatePassword(authentication.getName(), request.getOldPassword(), request.getNewPassword());
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
@@ -136,7 +144,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
                                       @PathVariable("username") String username,
                                       @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            return (UserDTO) controller.updatePassword(username, request.getOldPassword(), request.getNewPassword());
+            return (UserDTO) getController().updatePassword(username, request.getOldPassword(), request.getNewPassword());
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
@@ -150,7 +158,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     public UserDTO deleteUser(@Parameter(description = "username", required = true)
                               @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            return controller.delete(username);
+            return getController().delete(username);
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }

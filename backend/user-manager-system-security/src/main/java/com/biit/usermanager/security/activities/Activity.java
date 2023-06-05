@@ -37,8 +37,8 @@ public class Activity implements IActivity {
 
     @Override
     public String toString() {
-        return "Activity{" +
-                "tag='" + tag + '\'' +
-                '}';
+        return "Activity{"
+                + "tag='" + tag + '\''
+                + '}';
     }
 }

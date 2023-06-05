@@ -1,7 +1,15 @@
 package com.biit.usermanager.security;
 
-import com.biit.usermanager.core.controller.*;
-import com.biit.usermanager.dto.*;
+import com.biit.usermanager.core.controller.ApplicationController;
+import com.biit.usermanager.core.controller.GroupController;
+import com.biit.usermanager.core.controller.RoleController;
+import com.biit.usermanager.core.controller.UserController;
+import com.biit.usermanager.core.controller.UserRoleController;
+import com.biit.usermanager.dto.ApplicationDTO;
+import com.biit.usermanager.dto.GroupDTO;
+import com.biit.usermanager.dto.RoleDTO;
+import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.security.activities.ActivityManager;
 import com.biit.usermanager.security.activities.RoleActivities;
 import com.biit.usermanager.security.exceptions.InvalidCredentialsException;
@@ -21,7 +29,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

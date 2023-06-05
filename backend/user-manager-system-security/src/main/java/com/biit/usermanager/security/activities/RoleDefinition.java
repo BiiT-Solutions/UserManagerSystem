@@ -57,9 +57,9 @@ public class RoleDefinition {
 
     @Override
     public String toString() {
-        return "RoleDefinition{" +
-                "name='" + name + '\'' +
-                ", activities=" + activities +
-                '}';
+        return "RoleDefinition{"
+                + "name='" + name + '\''
+                + ", activities=" + activities
+                + '}';
     }
 }

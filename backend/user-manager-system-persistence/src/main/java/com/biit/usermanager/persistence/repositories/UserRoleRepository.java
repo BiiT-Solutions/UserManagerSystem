@@ -1,10 +1,14 @@
 package com.biit.usermanager.persistence.repositories;
 
-import com.biit.usermanager.persistence.entities.*;
+import com.biit.usermanager.persistence.entities.Application;
+import com.biit.usermanager.persistence.entities.Group;
+import com.biit.usermanager.persistence.entities.Role;
+import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.entities.UserRole;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository

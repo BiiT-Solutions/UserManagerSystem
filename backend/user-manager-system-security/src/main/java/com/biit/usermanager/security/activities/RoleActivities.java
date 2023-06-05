@@ -4,9 +4,9 @@ import com.biit.usermanager.entity.IRole;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.security.IActivity;
 import com.biit.usermanager.security.IRoleActivities;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 

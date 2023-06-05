@@ -3,7 +3,7 @@ package com.biit.usermanager.client.provider.converters;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.usermanager.dto.UserDTO;
 
-public class UserDTOConverter {
+public final class UserDTOConverter {
 
     private UserDTOConverter() {
     }

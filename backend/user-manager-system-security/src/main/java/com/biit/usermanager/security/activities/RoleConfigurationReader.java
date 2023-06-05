@@ -12,7 +12,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Set;
 
-public class RoleConfigurationReader extends ConfigurationReader {
+public final class RoleConfigurationReader extends ConfigurationReader {
     private static final String CONFIG_FILE = "roleActivities.conf";
     private static final String SYSTEM_VARIABLE_CONFIG = "ROLES_CONFIG";
 
@@ -20,12 +20,12 @@ public class RoleConfigurationReader extends ConfigurationReader {
     private static final String TRANSLATION_SUFFIX = "translation";
 
     private static final class InstanceHolder {
-        private static final RoleConfigurationReader instance = new RoleConfigurationReader();
+        private static final RoleConfigurationReader INSTANCE = new RoleConfigurationReader();
     }
 
     //@FindBugsSuppressWarnings(value = "DC_DOUBLECHECK")
     public static RoleConfigurationReader getInstance() {
-        return InstanceHolder.instance;
+        return InstanceHolder.INSTANCE;
     }
 
     private RoleConfigurationReader() {

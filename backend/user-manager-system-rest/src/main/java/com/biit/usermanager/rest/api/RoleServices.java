@@ -11,12 +11,14 @@ import com.biit.usermanager.persistence.repositories.RoleRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/roles")
@@ -31,8 +33,8 @@ public class RoleServices extends BasicServices<Role, RoleDTO, RoleRepository,
     @Operation(summary = "Gets a role by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/names/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RoleDTO getByName(@Parameter(description = "Name of an existing role", required = true) @PathVariable("name") String name,
-                       HttpServletRequest request) {
-        return controller.getByName(name);
+                             HttpServletRequest request) {
+        return getController().getByName(name);
     }
 
 }

@@ -17,6 +17,6 @@ public class ApplicationProvider extends CrudProvider<Application, Long, Applica
     }
 
     public Optional<Application> findByName(String name) {
-        return repository.findByName(name);
+        return getRepository().findByName(name);
     }
 }

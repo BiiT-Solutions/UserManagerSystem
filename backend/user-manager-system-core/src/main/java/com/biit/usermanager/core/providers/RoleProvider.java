@@ -17,6 +17,6 @@ public class RoleProvider extends CrudProvider<Role, Long, RoleRepository> {
     }
 
     public Optional<Role> findByName(String name) {
-        return repository.findByName(name);
+        return getRepository().findByName(name);
     }
 }

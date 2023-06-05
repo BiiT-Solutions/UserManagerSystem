@@ -8,7 +8,6 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
-import javax.naming.Name;
 
 import java.util.List;
 import java.util.Optional;

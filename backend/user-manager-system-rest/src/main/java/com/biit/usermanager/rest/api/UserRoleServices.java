@@ -11,6 +11,7 @@ import com.biit.usermanager.persistence.repositories.UserRoleRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -35,13 +35,13 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/groups/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getRolesFromUserGroupAndApplication(@Parameter(description = "Username of an existing user", required = true)
-                                                                        @PathVariable("username") String username,
-                                                                        @Parameter(description = "Group name")
-                                                                        @PathVariable("groupName") String groupName,
-                                                                        @Parameter(description = "Application name")
-                                                                        @PathVariable("applicationName") String applicationName,
-                                                                        HttpServletRequest request) {
-        return controller.getByUserAndGroupAndApplication(username, groupName, applicationName);
+                                                                 @PathVariable("username") String username,
+                                                                 @Parameter(description = "Group name")
+                                                                 @PathVariable("groupName") String groupName,
+                                                                 @Parameter(description = "Application name")
+                                                                 @PathVariable("applicationName") String applicationName,
+                                                                 HttpServletRequest request) {
+        return getController().getByUserAndGroupAndApplication(username, groupName, applicationName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
@@ -50,26 +50,26 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
     public List<UserRoleDTO> getRolesFromUser(@Parameter(description = "Username of an existing user", required = true)
                                               @PathVariable("username") String username,
                                               HttpServletRequest request) {
-        return controller.getByUser(username);
+        return getController().getByUser(username);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by group name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/groups/{groupName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getRolesFromGroup(@Parameter(description = "Name of an existing group", required = true)
-                                                      @PathVariable("groupName") String groupName,
-                                                      HttpServletRequest request) {
-        return controller.getByGroup(groupName);
+                                               @PathVariable("groupName") String groupName,
+                                               HttpServletRequest request) {
+        return getController().getByGroup(groupName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/groups/{groupName}/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getUsersWithRoleOnGroup(@Parameter(description = "Name of an existing group", required = true)
-                                                            @PathVariable("groupName") String groupName,
-                                                            @Parameter(description = "Role name", required = true)
-                                                            @PathVariable("roleName") String roleName,
-                                                            HttpServletRequest request) {
-        return controller.getByUserAndRole(groupName, roleName);
+                                                     @PathVariable("groupName") String groupName,
+                                                     @Parameter(description = "Role name", required = true)
+                                                     @PathVariable("roleName") String roleName,
+                                                     HttpServletRequest request) {
+        return getController().getByUserAndRole(groupName, roleName);
     }
 }

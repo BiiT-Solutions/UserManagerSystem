@@ -1,7 +1,11 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.CrudProvider;
-import com.biit.usermanager.persistence.entities.*;
+import com.biit.usermanager.persistence.entities.Application;
+import com.biit.usermanager.persistence.entities.Group;
+import com.biit.usermanager.persistence.entities.Role;
+import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.entities.UserRole;
 import com.biit.usermanager.persistence.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,30 +23,29 @@ public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepos
     public List<UserRole> findByUserAndGroupAndApplication(User user, Group group, Application application) {
         if (group != null) {
             if (application != null) {
-                return repository.findByUserAndGroupAndApplication(user, group, application);
+                return getRepository().findByUserAndGroupAndApplication(user, group, application);
             } else {
-                return repository.findByUserAndGroup(user, group);
+                return getRepository().findByUserAndGroup(user, group);
             }
         } else {
             if (application != null) {
-                return repository.findByUserAndApplication(user, application);
+                return getRepository().findByUserAndApplication(user, application);
             } else {
-                return repository.findByUser(user);
+                return getRepository().findByUser(user);
             }
         }
-//        return repository.findByUserAndGroupAndApplication(user, group, application);
     }
 
     public List<UserRole> findByUser(User user) {
-        return repository.findByUser(user);
+        return getRepository().findByUser(user);
     }
 
     public List<UserRole> findByGroup(Group group) {
-        return repository.findByGroup(group);
+        return getRepository().findByGroup(group);
     }
 
     public List<UserRole> findByGroupAndRole(Group group, Role role) {
-        return repository.findByGroupAndRole(group, role);
+        return getRepository().findByGroupAndRole(group, role);
     }
 
 

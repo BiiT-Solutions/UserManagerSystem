@@ -31,7 +31,7 @@ public class RoleController extends BasicInsertableController<Role, RoleDTO, Rol
     }
 
     public RoleDTO getByName(String name) {
-        return converter.convert(new RoleConverterRequest(provider.findByName(name).orElseThrow(() -> new RoleNotFoundException(this.getClass(),
+        return getConverter().convert(new RoleConverterRequest(getProvider().findByName(name).orElseThrow(() -> new RoleNotFoundException(this.getClass(),
                 "No Role with name '" + name + "' found on the system."))));
     }
 }

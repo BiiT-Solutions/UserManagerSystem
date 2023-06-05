@@ -18,18 +18,18 @@ public class GroupProvider extends CrudProvider<Group, Long, GroupRepository> {
     }
 
     public Optional<Group> findByName(String name) {
-        return repository.findByName(name);
+        return getRepository().findByName(name);
     }
 
     public List<Group> findByParentIsNull() {
-        return repository.findByParentIsNull();
+        return getRepository().findByParentIsNull();
     }
 
     public List<Group> findByParentIsNotNull() {
-        return repository.findByParentIsNotNull();
+        return getRepository().findByParentIsNotNull();
     }
 
     public int deleteByName(String name) {
-        return repository.deleteByName(name);
+        return getRepository().deleteByName(name);
     }
 }

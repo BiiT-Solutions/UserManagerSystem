@@ -26,6 +26,6 @@ public class ApplicationController extends BasicInsertableController<Application
     }
 
     public ApplicationDTO getByName(String applicationName) {
-        return converter.convert(new ApplicationConverterRequest(provider.findByName(applicationName).orElse(null)));
+        return getConverter().convert(new ApplicationConverterRequest(getProvider().findByName(applicationName).orElse(null)));
     }
 }

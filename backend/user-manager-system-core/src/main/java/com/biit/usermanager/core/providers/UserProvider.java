@@ -19,11 +19,11 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
     }
 
     public Optional<User> findByUsername(String username) {
-        return repository.findByUsername(username);
+        return getRepository().findByUsername(username);
     }
 
     public Optional<User> findByEmail(String email) {
-        return repository.findByEmail(email);
+        return getRepository().findByEmail(email);
     }
 
 
@@ -36,29 +36,29 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
     }
 
     public Optional<User> getById(Long id) {
-        return repository.findById(id);
+        return getRepository().findById(id);
     }
 
 
     public List<User> findAllByEnable(boolean enabled) {
 
-        return repository.findAllByEnabled(enabled);
+        return getRepository().findAllByEnabled(enabled);
     }
 
     public Optional<User> findByPhone(String phone) {
-        return repository.findByPhone(phone);
+        return getRepository().findByPhone(phone);
     }
 
     public List<User> findByAccountExpired(boolean accountExpired) {
-        return repository.findByAccountExpired(accountExpired);
+        return getRepository().findByAccountExpired(accountExpired);
     }
 
     public List<User> findAll() {
-        return repository.findAll();
+        return getRepository().findAll();
     }
 
     public Optional<User> deleteByUsername(String username) {
-        return repository.deleteByUsername(username);
+        return getRepository().deleteByUsername(username);
     }
 
 

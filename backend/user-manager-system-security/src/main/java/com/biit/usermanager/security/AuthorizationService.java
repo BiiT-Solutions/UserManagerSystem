@@ -12,18 +12,22 @@ import com.biit.usermanager.entity.IGroup;
 import com.biit.usermanager.entity.IRole;
 import com.biit.usermanager.entity.IUser;
 import com.biit.usermanager.logger.AuthenticationServiceLogger;
-import com.biit.usermanager.security.exceptions.*;
+import com.biit.usermanager.security.exceptions.InvalidCredentialsException;
+import com.biit.usermanager.security.exceptions.OrganizationDoesNotExistException;
+import com.biit.usermanager.security.exceptions.RoleDoesNotExistsException;
+import com.biit.usermanager.security.exceptions.UserDoesNotExistException;
+import com.biit.usermanager.security.exceptions.UserManagementException;
 import com.biit.usermanager.security.providers.AuthorizationUrlConstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.core.Response;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.Response;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -31,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthorizationService implements IAuthorizationService<Long, Long, Long> {
+    private static final int CACHE_EXPIRATION_TIME = 10 * 60 * 1000;
 
     private final AuthorizationUrlConstructor authorizationUrlConstructor;
 
@@ -48,7 +53,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     @Override
     public Set<IUser<Long>> getAllUsers() throws UserManagementException, InvalidCredentialsException {
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getAllUsers())) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor.getAllUsers(),
@@ -74,7 +79,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -99,7 +104,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new OrganizationDoesNotExistException("No Id provided.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getGroups(groupId))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -124,7 +129,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new OrganizationDoesNotExistException("No name provided.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getGroupByName(groupName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -145,7 +150,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     @Override
     public Set<IGroup<Long>> getAllAvailableOrganizations() throws UserManagementException, InvalidCredentialsException {
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getAllGroupsWithoutParent())) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -170,7 +175,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new RoleDoesNotExistsException("No Id provided.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getRoleById(roleId))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -194,7 +199,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new RoleDoesNotExistsException("No name provided.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getRoleByName(roleName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -225,7 +230,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new UserDoesNotExistException("No user selected.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getUserRolesByUser(user.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -256,7 +261,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new UserDoesNotExistException("No user selected.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getUserRolesByUser(user.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -285,7 +290,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), null))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -312,7 +317,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -341,7 +346,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
             throw new OrganizationDoesNotExistException("No group selected.");
         }
         try {
-            try (final Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
                     authorizationUrlConstructor.getUserByGroupAndRole(group.getUniqueName(), role.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
@@ -372,7 +377,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         final UserRoleDTO userRoleDTO = new UserRoleDTO();
         userRoleDTO.setUser((UserDTO) user);
         userRoleDTO.setRole((RoleDTO) role);
-        try (final Response response = securityClient.post(authorizationUrlConstructor.getUserManagerServerUrl(),
+        try (Response response = securityClient.post(authorizationUrlConstructor.getUserManagerServerUrl(),
                 authorizationUrlConstructor.addUserRoles(), mapper.writeValueAsString(userRoleDTO))) {
             AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                     authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor.addUserRoles(),
@@ -404,7 +409,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         userRoleDTO.setUser((UserDTO) user);
         userRoleDTO.setRole((RoleDTO) role);
         userRoleDTO.setGroup((GroupDTO) organization);
-        try (final Response response = securityClient.post(authorizationUrlConstructor.getUserManagerServerUrl(),
+        try (Response response = securityClient.post(authorizationUrlConstructor.getUserManagerServerUrl(),
                 authorizationUrlConstructor.addUserRoles(), mapper.writeValueAsString(userRoleDTO))) {
             AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                     authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor.addUserRoles(),
@@ -421,7 +426,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
 
 
     @CacheEvict(allEntries = true, value = {"users", "roles", "groups"})
-    @Scheduled(fixedDelay = 60 * 10 * 1000)
+    @Scheduled(fixedDelay = CACHE_EXPIRATION_TIME)
     @Override
     public void reset() {
         //Only for handling Spring cache.

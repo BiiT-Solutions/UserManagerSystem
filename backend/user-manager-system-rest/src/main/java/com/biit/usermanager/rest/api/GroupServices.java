@@ -11,12 +11,17 @@ import com.biit.usermanager.persistence.repositories.GroupRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -33,7 +38,7 @@ public class GroupServices extends BasicServices<Group, GroupDTO, GroupRepositor
     @GetMapping(value = "/names/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public GroupDTO get(@Parameter(description = "Name of an existing group", required = true) @PathVariable("name") String name,
                         HttpServletRequest request) {
-        return controller.getByName(name);
+        return getController().getByName(name);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
@@ -42,20 +47,20 @@ public class GroupServices extends BasicServices<Group, GroupDTO, GroupRepositor
     @DeleteMapping(value = "/names/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void delete(@Parameter(description = "Name of an existing group", required = true) @PathVariable("name") String name,
                        HttpServletRequest request) {
-        controller.deleteByName(name);
+        getController().deleteByName(name);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets all groups that does not have a parent.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/no-parent", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<GroupDTO> getWithoutParent(HttpServletRequest request) {
-        return controller.getGroupsWithoutParent();
+        return getController().getGroupsWithoutParent();
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets all groups that has parent.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/has-parent", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<GroupDTO> getWithParent(HttpServletRequest request) {
-        return controller.getGroupsWithParent();
+        return getController().getGroupsWithParent();
     }
 }

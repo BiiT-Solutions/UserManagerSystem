@@ -19,6 +19,7 @@ import com.biit.usermanager.security.providers.AuthenticationUrlConstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,13 +27,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class AuthenticationService implements IAuthenticationService<Long, Long> {
+    private static final int CACHE_EXPIRATION_TIME = 10 * 60 * 1000;
 
     private final AuthenticationUrlConstructor authenticationUrlConstructor;
 
@@ -58,7 +59,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
 
         try {
-            try (final Response response = securityClient.post(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.post(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.checkCredentials(), mapper.writeValueAsString(new CheckCredentialsRequest(null, email, password)))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.checkCredentials(),
@@ -87,7 +88,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
             throw new UserDoesNotExistException("No user selected.");
         }
         try {
-            try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.getRolesByUser(user.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getRolesByUser(user.getUniqueName()),
@@ -115,7 +116,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
 
         try {
-            try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.getUserByEmail(email))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getUserByEmail(email),
@@ -138,7 +139,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     @Override
     public IUser<Long> getUserById(long userId) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         try {
-            try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.getUserById(userId))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getUserById(userId),
@@ -161,7 +162,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     @Override
     public boolean isInGroup(IGroup<Long> group, IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
         try {
-            try (final Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.getRolesByUserAndGroupAndApplication(user.getUniqueName(),
                             group.getUniqueName(), applicationName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
@@ -191,7 +192,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
 
         try {
-            try (final Response response = securityClient.put(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.put(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.updateUserPassword(user.getUniqueName()), mapper.writeValueAsString(new UpdatePasswordRequest(
                             null, plainTextPassword)))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
@@ -223,7 +224,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
 
         try {
-            try (final Response response = securityClient.put(authenticationUrlConstructor.getUserManagerServerUrl(),
+            try (Response response = securityClient.put(authenticationUrlConstructor.getUserManagerServerUrl(),
                     authenticationUrlConstructor.updateUser(), mapper.writeValueAsString(user))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.updateUser(),
@@ -247,7 +248,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
 
 
     @CacheEvict(allEntries = true, value = {"users", "groups"})
-    @Scheduled(fixedDelay = 60 * 10 * 1000)
+    @Scheduled(fixedDelay = CACHE_EXPIRATION_TIME)
     @Override
     public void reset() {
         //Only for handling Spring cache.
@@ -268,7 +269,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
 
     @Override
     public IUser<Long> addUser(IUser<Long> userDTO) throws UserManagementException, InvalidCredentialsException {
-        try (final Response response = securityClient.post(authenticationUrlConstructor.getUserManagerServerUrl(),
+        try (Response response = securityClient.post(authenticationUrlConstructor.getUserManagerServerUrl(),
                 authenticationUrlConstructor.addUser(), mapper.writeValueAsString(userDTO))) {
             AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                     authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.updateUser(),
@@ -287,7 +288,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     @CacheEvict(allEntries = true, value = {"users", "groups"})
     @Override
     public void deleteUser(IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
-        try (final Response response = securityClient.delete(authenticationUrlConstructor.getUserManagerServerUrl(),
+        try (Response response = securityClient.delete(authenticationUrlConstructor.getUserManagerServerUrl(),
                 authenticationUrlConstructor.delete(user.getUniqueId()))) {
             AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                     authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.updateUser(),
