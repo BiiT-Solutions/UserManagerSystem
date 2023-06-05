@@ -193,55 +193,44 @@ public class MyServer {
 And generate a `ehcache.xml` file in your project where you define the regions `users` and `groups`.
 
 ```
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://www.ehcache.org/ehcache.xsd"
-         updateCheck="true"
-         monitoring="autodetect"
-         dynamicConfig="true">
+<config
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns:jsr107='http://www.ehcache.org/v3/jsr107'
+        xmlns='http://www.ehcache.org/v3'
+        xsi:schemaLocation="
+        http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
+        http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
 
-    <defaultCache
-            maxElementsInMemory="10000"
-            eternal="true"
-            timeToIdleSeconds="120"
-            timeToLiveSeconds="120"
-            overflowToDisk="true"
-            maxElementsOnDisk="10000000"
-            diskPersistent="true"
-            diskExpiryThreadIntervalSeconds="120"
-            memoryStoreEvictionPolicy="LRU" />
 
-    <cache
-            name="users"
-            maxElementsInMemory="50"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="300"
-            timeToLiveSeconds="600"
-            diskPersistent="false"
-            diskExpiryThreadIntervalSeconds="1"
-            memoryStoreEvictionPolicy="LFU" />
-    <cache
-            name="groups"
-            maxElementsInMemory="100"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="300"
-            timeToLiveSeconds="600"
-            diskPersistent="false"
-            diskExpiryThreadIntervalSeconds="1"
-            memoryStoreEvictionPolicy="LFU" />
-    <cache
-            name="roles"
-            maxElementsInMemory="250"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="300"
-            timeToLiveSeconds="600"
-            diskPersistent="false"
-            diskExpiryThreadIntervalSeconds="1"
-            memoryStoreEvictionPolicy="LFU" />
 
-</ehcache>
+    <cache-template name="default">
+        <listeners>
+            <listener>
+                <class>com.biit.usermanager.persistence.logger.CacheEventLogger</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>CREATED</events-to-fire-on>
+                <events-to-fire-on>UPDATED</events-to-fire-on>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+            </listener>
+        </listeners>
+        <resources>
+            <heap>2000</heap>
+            <offheap unit="MB">100</offheap>
+        </resources>
+    </cache-template>
+
+    <cache alias="users" uses-template="default">
+    </cache>
+
+    <cache alias="groups" uses-template="default">
+    </cache>
+
+    <cache alias="roles" uses-template="default">
+    </cache>
+</config>
 ```
 
 # Testing an external application
