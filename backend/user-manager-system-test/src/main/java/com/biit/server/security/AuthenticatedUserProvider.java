@@ -55,7 +55,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getFirstname(),
                 createUserRequest.getLastname(), createUserRequest.getPassword());
     }
@@ -103,7 +103,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
 
     @Override
-    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         final AuthenticatedUser user = (AuthenticatedUser) usersOnMemory.stream().filter(iAuthenticatedUser ->
                 iAuthenticatedUser.getUsername().equals(createUserRequest.getUsername())).findAny().orElseThrow(() ->
                 new RuntimeException("User with username '" + createUserRequest.getUsername() + "' does not exists"));
@@ -113,7 +113,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword) {
+    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
         final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
                 .findAny().orElseThrow(() ->
                         new RuntimeException("User with username '" + username + "' does not exists"));

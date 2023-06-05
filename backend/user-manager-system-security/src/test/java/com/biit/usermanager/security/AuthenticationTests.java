@@ -6,11 +6,13 @@ import com.biit.usermanager.core.controller.GroupController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserRoleController;
+import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.UserRoleDTO;
+import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.security.exceptions.InvalidCredentialsException;
 import com.biit.usermanager.security.exceptions.UserDoesNotExistException;
 import com.biit.usermanager.security.exceptions.UserManagementException;
@@ -54,7 +56,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private final static String ADMIN_LAST_NAME = "User";
     private static final String ADMIN_PASSWORD = "zxc567";
     private static final String ADMIN_ID_CARD = "12345678A";
-    private static final String[] ADMIN_ROLES = new String[]{"usermanagersystem_admin", "usermanagersystem_viewer"};
+    private static final String[] ADMIN_ROLES = new String[] {"usermanagersystem_admin", "usermanagersystem_viewer"};
 
     private static final String USER_NAME = "test";
 
@@ -64,7 +66,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private static final String USER_PASSWORD = "asd123";
     private static final String USER_NEW_PASSWORD = "asd12356";
     private static final String USER_ID_CARD = "87654321B";
-    private static final String[] USER_ROLES = new String[]{"usermanagersystem_viewer"};
+    private static final String[] USER_ROLES = new String[] {"usermanagersystem_viewer"};
 
     private static final String NEW_USER_NAME = "NewUser";
     private static final String NEW_USER_NAME_UPDATED = "NewUser2";
@@ -73,7 +75,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private final static String NEW_USER_LAST_NAME = "User";
     private static final String NEW_USER_PASSWORD = "asd123";
     private static final String NEW_USER_ID_CARD = "1233123123P";
-    private static final String[] NEW_USER_ROLES = new String[]{"usermanagersystem_viewer"};
+    private static final String[] NEW_USER_ROLES = new String[] {"usermanagersystem_viewer"};
 
     private static final String GROUP_NAME = "Group1";
 
@@ -82,6 +84,9 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserProvider userProvider;
 
     @Autowired
     private UserController userController;
@@ -234,14 +239,16 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     @Test
     public void updatePassword() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
-        Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, userDTO.getPassword()));
-        Assert.assertFalse(BCrypt.checkpw(USER_NEW_PASSWORD, userDTO.getPassword()));
+        User databaseUser = userProvider.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, databaseUser.getPassword()));
+        Assert.assertFalse(BCrypt.checkpw(USER_NEW_PASSWORD, databaseUser.getPassword()));
 
         authenticationService.updatePassword(userDTO, USER_NEW_PASSWORD);
+        databaseUser = userProvider.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
 
         userDTO = (UserDTO) authenticationService.getUserByEmail(USER_EMAIL);
-        Assert.assertTrue(BCrypt.checkpw(USER_NEW_PASSWORD, userDTO.getPassword()));
-        Assert.assertFalse(BCrypt.checkpw(USER_PASSWORD, userDTO.getPassword()));
+        Assert.assertTrue(BCrypt.checkpw(USER_NEW_PASSWORD, databaseUser.getPassword()));
+        Assert.assertFalse(BCrypt.checkpw(USER_PASSWORD, databaseUser.getPassword()));
 
         authenticationService.updatePassword(userDTO, USER_PASSWORD);
     }

@@ -32,7 +32,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_FIRST_NAME = "Test";
     private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
-    private static final String[] USER_ROLES = new String[]{"ADMIN", "VIEWER"};
+    private static final String[] USER_ROLES = new String[] {"ADMIN", "VIEWER"};
 
     @Autowired
     private UserController userController;
@@ -56,7 +56,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void setDefaultData() {
         //Create the admin user
-        final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD);
+        final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null);
 
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName, ""), null);
@@ -97,7 +97,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
         System.out.println(" #------------------------------------ Expected Exception ----------------------------");
         try {
-           userManagerClient.findByUsername(USER_NAME, applicationName + "_bad");
+            userManagerClient.findByUsername(USER_NAME, applicationName + "_bad");
         } catch (Exception ignored) {
 
         }

@@ -160,7 +160,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         try {
             try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
                     mapper.writeValueAsString(UserDTOConverter.convert(createUserRequest)))) {
@@ -177,7 +177,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword) {
+    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
         try {
             try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.updateUserPassword(username),
                     mapper.writeValueAsString(new UpdatePasswordRequest(oldPassword, newPassword)))) {
@@ -194,7 +194,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         try {
             try (Response result = securityClient.put(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
                     mapper.writeValueAsString(UserDTOConverter.convert(createUserRequest)))) {

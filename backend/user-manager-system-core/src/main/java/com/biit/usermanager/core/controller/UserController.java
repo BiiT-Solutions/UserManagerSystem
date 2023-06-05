@@ -7,11 +7,14 @@ import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.UserConverter;
-import com.biit.usermanager.core.converters.UserRoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.exceptions.*;
+import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
+import com.biit.usermanager.core.exceptions.InvalidParameterException;
+import com.biit.usermanager.core.exceptions.InvalidPasswordException;
+import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
@@ -27,7 +30,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Primary
@@ -36,7 +44,6 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
     private final UserRoleProvider userRoleProvider;
 
-    private final UserRoleConverter userRoleConverter;
     private final ApplicationProvider applicationProvider;
     private final ApplicationConverter applicationConverter;
     private final GroupProvider groupProvider;
@@ -44,12 +51,10 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
-                             UserRoleProvider userRoleProvider, UserRoleConverter userRoleConverter,
-                             ApplicationConverter applicationConverter, ApplicationProvider applicationProvider,
-                             GroupProvider groupProvider, GroupConverter groupConverter) {
+                             UserRoleProvider userRoleProvider, ApplicationConverter applicationConverter,
+                             ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter) {
         super(provider, converter);
         this.userRoleProvider = userRoleProvider;
-        this.userRoleConverter = userRoleConverter;
         this.applicationProvider = applicationProvider;
         this.groupProvider = groupProvider;
         this.applicationConverter = applicationConverter;
@@ -62,7 +67,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     }
 
     public UserDTO getByUsername(String username) {
-        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
     }
@@ -70,20 +75,20 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     public UserDTO checkCredentials(String username, String email, String password) {
         final User user;
         if (username != null) {
-            user = provider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+            user = getProvider().findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                     "No User with username '" + username + "' found on the system."));
         } else {
-            user = provider.findByEmail(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+            user = getProvider().findByEmail(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                     "No User with email '" + email + "' found on the system."));
         }
         if (!BCrypt.checkpw(password, user.getPassword())) {
             throw new InvalidPasswordException(this.getClass(), "Password '" + password + "' does not match the correct one!");
         }
-        return setGrantedAuthorities(converter.convert(new UserConverterRequest(user)), null, null);
+        return setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null, null);
     }
 
     public UserDTO getByEmail(String email) {
-        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByEmail(email).orElseThrow(() ->
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(),
                         "No User with email '" + email + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
@@ -91,7 +96,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
 
     public UserDTO getByUserId(String id) {
-        return converter.convert(new UserConverterRequest(provider.getById(id).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        return getConverter().convert(new UserConverterRequest(getProvider().getById(id).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with id '" + id + "' found on the system."))));
     }
 
@@ -110,7 +115,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         if (applicationName == null) {
             return findByUsername(username);
         }
-        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         return Optional.of(setGrantedAuthorities(userDTO, null,
                 applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
@@ -119,7 +124,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     @Override
     public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
-        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByEmail(email).orElseThrow(() ->
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
         return Optional.of(setGrantedAuthorities(userDTO, null, null));
     }
@@ -129,7 +134,7 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         if (applicationName == null) {
             return findByEmailAddress(email);
         }
-        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByEmail(email).orElseThrow(() ->
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
         return Optional.of(setGrantedAuthorities(userDTO, null,
                 applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
@@ -138,18 +143,18 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
 
     @Override
     public Optional<IAuthenticatedUser> findByUID(String uid) {
-        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.get(Long.parseLong(uid)).orElseThrow(() ->
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().get(Long.parseLong(uid)).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
         return Optional.of(setGrantedAuthorities(userDTO, null, null));
     }
 
     @Override
-    public IAuthenticatedUser create(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getFirstname(),
-                createUserRequest.getLastname(), createUserRequest.getPassword());
+                createUserRequest.getLastname(), createUserRequest.getPassword(), createdBy);
     }
 
-    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password) {
+    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String createdBy) {
         if (findByUsername(username).isPresent()) {
             throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
         }
@@ -159,12 +164,13 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         user.setLastname(lastName);
         user.setIdCard(uniqueId);
         user.setPassword(password);
-        return converter.convert(new UserConverterRequest(provider.save(converter.reverse(user))));
+        user.setCreatedBy(createdBy);
+        return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(user))));
     }
 
     @Override
-    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword) {
-        final UserDTO userDTO = converter.convert(new UserConverterRequest(provider.findByUsername(username).orElseThrow(() ->
+    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         //Check old password.
         if (oldPassword != null && !BCrypt.checkpw(oldPassword, userDTO.getPassword())) {
@@ -172,44 +178,47 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
         }
 
         userDTO.setPassword(newPassword);
-        return converter.convert(new UserConverterRequest(provider.save(converter.reverse(userDTO))));
+        userDTO.setUpdatedBy(updatedBy);
+        return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
     }
 
     @Override
-    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         final UserDTO userDTO = getByUsername(createUserRequest.getUsername());
         userDTO.setUsername(createUserRequest.getUsername());
         userDTO.setFirstName(createUserRequest.getFirstname());
         userDTO.setLastname(createUserRequest.getLastname());
         userDTO.setIdCard(createUserRequest.getUniqueId());
-        return converter.convert(new UserConverterRequest(provider.update(converter.reverse(userDTO))));
+        userDTO.setUpdatedBy(updatedBy);
+        return getConverter().convert(new UserConverterRequest(getProvider().update(getConverter().reverse(userDTO))));
     }
 
     public List<UserDTO> getByEnable(Boolean enable) {
-        return provider.findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
+        return getProvider().findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(getConverter()::convert)
+                .collect(Collectors.toList());
     }
 
     public UserDTO getByPhone(String phone) {
-        return converter.convert(new UserConverterRequest(provider.findByPhone(phone).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        return getConverter().convert(new UserConverterRequest(getProvider().findByPhone(phone).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with username '" + phone + "' found on the system."))));
     }
 
     public List<UserDTO> getAllByExpired(boolean accountExpired) {
-        final List<User> usersList = provider.findByAccountExpired(accountExpired);
+        final List<User> usersList = getProvider().findByAccountExpired(accountExpired);
         final List<UserDTO> usersdtList = new ArrayList<>();
         for (final User user : usersList) {
-            usersdtList.add(converter.convert(new UserConverterRequest(user)));
+            usersdtList.add(getConverter().convert(new UserConverterRequest(user)));
         }
         return usersdtList;
     }
 
     public void delete(User user) {
-        provider.delete(user);
+        getProvider().delete(user);
     }
 
     @Override
     public Collection<IAuthenticatedUser> findAll() {
-        return provider.findAll().parallelStream().map(this::createConverterRequest).map(converter::convert).collect(Collectors.toList());
+        return getProvider().findAll().parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());
     }
 
     @Override
@@ -240,15 +249,15 @@ public class UserController extends BasicInsertableController<User, UserDTO, Use
     }
 
     public UserDTO delete(String username) {
-        final Optional<User> user = provider.deleteByUsername(username);
-        return user.map(value -> converter.convert(new UserConverterRequest(value))).orElse(null);
+        final Optional<User> user = getProvider().deleteByUsername(username);
+        return user.map(value -> getConverter().convert(new UserConverterRequest(value))).orElse(null);
     }
 
     private UserDTO setGrantedAuthorities(UserDTO userDTO, GroupDTO groupDTO, ApplicationDTO applicationDTO) {
         if (userDTO != null) {
             final Set<String> grantedAuthorities = new HashSet<>();
             userRoleProvider.findByUserAndGroupAndApplication(
-                            converter.reverse(userDTO),
+                            getConverter().reverse(userDTO),
                             groupConverter.reverse(groupDTO),
                             applicationConverter.reverse(applicationDTO)
                     ).stream()

@@ -58,9 +58,9 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
 
     @Override
     public String getFullName() {
-        return (getFirstName() != null ? getFirstName() : "") +
-                (getFirstName() != null && getLastName() != null ? " " : "") +
-                (getLastName() != null ? getLastName() : "");
+        return (getFirstName() != null ? getFirstName() : "")
+                + (getFirstName() != null && getLastName() != null ? " " : "")
+                + (getLastName() != null ? getLastName() : "");
     }
 
     @Override
@@ -163,6 +163,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
         return grantedAuthorities;
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
@@ -178,6 +179,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
         setLastname(lastName);
     }
 
+    @JsonIgnore
     @Override
     public void setPassword(String password) {
         this.password = password;

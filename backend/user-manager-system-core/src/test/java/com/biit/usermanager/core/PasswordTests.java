@@ -20,7 +20,7 @@ public class PasswordTests extends AbstractTestNGSpringContextTests {
 
     private static final String USER_NEW_PASSWORD = "password2";
 
-    private static final String[] USER_ROLES = new String[]{"admin", "viewer"};
+    private static final String[] USER_ROLES = new String[] {"admin", "viewer"};
 
     @Autowired
     private UserController userController;
@@ -32,22 +32,22 @@ public class PasswordTests extends AbstractTestNGSpringContextTests {
         createUserRequest.setFirstname(USER_FIRST_NAME);
         createUserRequest.setLastname(USER_LAST_NAME);
         createUserRequest.setPassword(USER_PASSWORD);
-        userController.create(createUserRequest);
+        userController.create(createUserRequest, null);
     }
 
     @Test(expectedExceptions = UserNotFoundException.class)
     public void updatePasswordInvalidUser() {
-        userController.updatePassword(USER_NAME + "_error", USER_PASSWORD, USER_NEW_PASSWORD);
+        userController.updatePassword(USER_NAME + "_error", USER_PASSWORD, USER_NEW_PASSWORD, null);
     }
 
     @Test(expectedExceptions = InvalidParameterException.class)
     public void updatePasswordInvalidOld() {
-        userController.updatePassword(USER_NAME, USER_PASSWORD + "_error", USER_NEW_PASSWORD);
+        userController.updatePassword(USER_NAME, USER_PASSWORD + "_error", USER_NEW_PASSWORD, null);
     }
 
     @Test
     public void updatePasswordCorrectOld() {
-        userController.updatePassword(USER_NAME, USER_PASSWORD, USER_NEW_PASSWORD);
-        userController.updatePassword(USER_NAME, USER_NEW_PASSWORD, USER_PASSWORD);
+        userController.updatePassword(USER_NAME, USER_PASSWORD, USER_NEW_PASSWORD, null);
+        userController.updatePassword(USER_NAME, USER_NEW_PASSWORD, USER_PASSWORD, null);
     }
 }

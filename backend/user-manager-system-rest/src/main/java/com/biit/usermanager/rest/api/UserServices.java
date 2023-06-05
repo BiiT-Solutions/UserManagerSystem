@@ -130,7 +130,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void updatePassword(@RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            getController().updatePassword(authentication.getName(), request.getOldPassword(), request.getNewPassword());
+            getController().updatePassword(authentication.getName(), request.getOldPassword(), request.getNewPassword(), authentication.getName());
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
@@ -144,7 +144,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
                                       @PathVariable("username") String username,
                                       @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            return (UserDTO) getController().updatePassword(username, request.getOldPassword(), request.getNewPassword());
+            return (UserDTO) getController().updatePassword(username, request.getOldPassword(), request.getNewPassword(), authentication.getName());
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
