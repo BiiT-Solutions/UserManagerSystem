@@ -90,8 +90,12 @@ And include the correct path on the ComponentScan:
 On the `application.properties` set the next property:
 
 ```
-usermanager.server.url=...
+usermanager.server.urlhttps://testing.biit-solutions.com/user-manager-system-backend
 ``` 
+
+And change the URL depending on your needs. 
+
+### Client logger
 
 It has a custom logger. Add its configuration to the `logback.xml` file:
 
