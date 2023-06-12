@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.BasicInsertableController;
+import com.biit.server.controller.BasicElementController;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.exceptions.GroupNotFoundException;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class GroupController extends BasicInsertableController<Group, GroupDTO, GroupRepository,
+public class GroupController extends BasicElementController<Group, GroupDTO, GroupRepository,
         GroupProvider, GroupConverterRequest, GroupConverter> {
 
     @Autowired

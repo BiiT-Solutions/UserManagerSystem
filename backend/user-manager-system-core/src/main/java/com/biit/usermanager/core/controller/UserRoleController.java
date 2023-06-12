@@ -2,7 +2,7 @@ package com.biit.usermanager.core.controller;
 
 
 import com.biit.logger.ExceptionType;
-import com.biit.server.controller.BasicInsertableController;
+import com.biit.server.controller.BasicElementController;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.UserConverter;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class UserRoleController extends BasicInsertableController<UserRole, UserRoleDTO, UserRoleRepository,
+public class UserRoleController extends BasicElementController<UserRole, UserRoleDTO, UserRoleRepository,
         UserRoleProvider, UserRoleConverterRequest, UserRoleConverter> {
     private final UserConverter userConverter;
     private final GroupConverter groupConverter;

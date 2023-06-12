@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.BasicInsertableController;
+import com.biit.server.controller.BasicElementController;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.providers.ApplicationProvider;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ApplicationController extends BasicInsertableController<Application, ApplicationDTO, ApplicationRepository,
+public class ApplicationController extends BasicElementController<Application, ApplicationDTO, ApplicationRepository,
         ApplicationProvider, ApplicationConverterRequest, ApplicationConverter> {
 
     @Autowired

@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.server.controller.BasicInsertableController;
+import com.biit.server.controller.BasicElementController;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 @Primary
 @Controller
-public class UserController extends BasicInsertableController<User, UserDTO, UserRepository,
+public class UserController extends BasicElementController<User, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
     private final UserRoleProvider userRoleProvider;
 
