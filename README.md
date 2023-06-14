@@ -16,8 +16,7 @@ Let's see the next example:
 On this example we have different applications that are deployed on a different server. `Application A` wants to consume
 a service that is on `Application B`. For this purpose, `Application A` sends its credentials for `Application B`. A
 typical user and password. But `Application B` does not have the information to know if this user is allowed to access
-or
-not to its own API.
+or not to its own API.
 
 Then `Application B` send these credentials to the `User Manager System` that can also be on a different
 server (`Server C`) and asks for the permissions on `Application B`. `User Manager System` validates the credentials and
@@ -90,10 +89,15 @@ And include the correct path on the ComponentScan:
 On the `application.properties` set the next property:
 
 ```
-usermanager.server.urlhttps://testing.biit-solutions.com/user-manager-system-backend
+usermanager.server.url=https://testing.biit-solutions.com/user-manager-system-backend
 ``` 
 
-And change the URL depending on your needs. 
+And change the URL depending on your needs. As it is using JWT for communication, remember to set the JWT settings on the `application.properties`:
+
+```
+jwt.user=
+jwt.password=
+```
 
 ### Client logger
 
@@ -104,13 +108,6 @@ It has a custom logger. Add its configuration to the `logback.xml` file:
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="DAILY"/>
     </logger>
-```
-
-As it is using JWT for communication, remember to set the JWT settings on the `application.properties`:
-
-```
-jwt.user=
-jwt.password=
 ```
 
 # Using User Manager System Security as an Authentication and Authorization provider

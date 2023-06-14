@@ -91,7 +91,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
         final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
         authenticatedUser.setUsername(username);
-        authenticatedUser.setUID(idCounter++ + "");
+        authenticatedUser.setUID(String.valueOf(idCounter++));
         authenticatedUser.setAuthorities(authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         authenticatedUser.setName(name);
         authenticatedUser.setPassword(password);

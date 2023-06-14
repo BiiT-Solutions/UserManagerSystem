@@ -160,8 +160,8 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         }
         final UserDTO user = new UserDTO();
         user.setUsername(username);
-        user.setFirstName(name);
-        user.setLastname(lastName);
+        user.setFirstName(name != null ? name : "");
+        user.setLastname(lastName != null ? lastName : "");
         user.setIdCard(uniqueId);
         user.setPassword(password);
         user.setCreatedBy(createdBy);
