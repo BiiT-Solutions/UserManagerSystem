@@ -16,7 +16,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.servlet.DispatcherServlet;
 
 //Avoid Swagger redirecting https to http
-//@OpenAPIDefinition(servers = {@Server(url = "/", description = "Default Server URL")})
+@OpenAPIDefinition(servers = {@Server(url = "${server.servlet.context-path}", description = "Default Server URL")})
 @SpringBootApplication
 @ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client"})
 @ConfigurationPropertiesScan({"com.biit.usermanager.rest"})
