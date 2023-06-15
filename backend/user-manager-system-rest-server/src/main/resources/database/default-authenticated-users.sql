@@ -7,3 +7,13 @@ INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-6
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-7, -4 , -3, -1, -5);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-8, null, -2, -1, null);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-9, null, -3, -1, null);
+
+-- KafkaProxy
+INSERT INTO applications (id, name) VALUES (-20, 'KafkaProxy');
+INSERT INTO roles (id, name, description) VALUES (-21, 'kafkaproxy_viewer', '');
+INSERT INTO roles (id, name, description) VALUES (-22, 'kafkaproxy_editor', '');
+INSERT INTO roles (id, name, description) VALUES (-23, 'kafkaproxy_admin', '');
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-24, -4 , -21, -1, -20);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-25, -4 , -22, -1, -20);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-26, -4 , -23, -1, -20);
+
