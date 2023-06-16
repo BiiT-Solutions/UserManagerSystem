@@ -153,7 +153,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{username}/password", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public String getsUserPassword(@Parameter(description = "username", required = true) @PathVariable("username") String username,
                                    Authentication authentication, HttpServletRequest httpRequest) {
