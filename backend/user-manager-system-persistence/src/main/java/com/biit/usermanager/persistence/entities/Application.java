@@ -40,4 +40,11 @@ public class Application extends Element {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "Application{"
+                + "name='" + name + '\''
+                + "}";
+    }
 }

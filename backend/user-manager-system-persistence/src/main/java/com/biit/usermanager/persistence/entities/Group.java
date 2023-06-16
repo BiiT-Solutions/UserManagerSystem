@@ -57,4 +57,13 @@ public class Group extends Element {
     public void setParent(Group parentGroup) {
         this.parent = parentGroup;
     }
+
+    @Override
+    public String toString() {
+        return "Group{"
+                + "name='" + name + '\''
+                + ", subGroups=" + subGroups
+                + ", parent=" + parent
+                + "}";
+    }
 }

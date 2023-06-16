@@ -42,4 +42,11 @@ public class RoleDTO extends ElementDTO implements IRole<Long> {
     public Long getUniqueId() {
         return getId();
     }
+
+    @Override
+    public String toString() {
+        return "RoleDTO{"
+                + "name='" + name + '\''
+                + "}";
+    }
 }

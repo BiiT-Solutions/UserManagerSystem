@@ -74,4 +74,12 @@ public class UserRole extends Element {
     public void setApplication(Application application) {
         this.application = application;
     }
+
+    @Override
+    public String toString() {
+        return "UserRole{"
+                + ", user=" + user
+                + ", role=" + role
+                + "}";
+    }
 }

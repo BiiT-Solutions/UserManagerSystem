@@ -246,6 +246,12 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
     }
 
+    public String getPassword(String username) {
+        final User user = getProvider().findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+        return user.getPassword();
+    }
+
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         final UserDTO userDTO = getByUsername(createUserRequest.getUsername());

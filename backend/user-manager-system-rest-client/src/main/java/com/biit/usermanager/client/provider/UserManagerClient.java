@@ -192,6 +192,21 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         }
     }
 
+    @Override
+    public String getPassword(String username) {
+        try {
+            try (Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUserPassword(username))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.updateUserPassword(username), result.getStatus());
+                return mapper.readValue(result.readEntity(String.class), String.class);
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {

@@ -55,4 +55,14 @@ public class UserRoleDTO extends ElementDTO {
     public void setRole(RoleDTO role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "UserRoleDTO{"
+                + "group=" + group
+                + ", application=" + application
+                + ", user=" + user
+                + ", role=" + role
+                + "}";
+    }
 }

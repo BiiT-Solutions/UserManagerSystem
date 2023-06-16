@@ -55,4 +55,11 @@ public class GroupDTO extends ElementDTO implements IGroup<Long> {
     public void setParent(GroupDTO parent) {
         this.parent = parent;
     }
+
+    @Override
+    public String toString() {
+        return "GroupDTO{"
+                + "name='" + name + '\''
+                + "}";
+    }
 }

@@ -242,6 +242,6 @@ public class User extends Element {
     public String toString() {
         return "User{"
                 + "username='" + username + '\''
-                + "} " + super.toString();
+                + "}";
     }
 }

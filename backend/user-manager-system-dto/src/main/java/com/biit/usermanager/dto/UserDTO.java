@@ -268,6 +268,6 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
     public String toString() {
         return "UserDTO{"
                 + "username='" + username + '\''
-                + "} " + super.toString();
+                + "}";
     }
 }

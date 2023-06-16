@@ -31,4 +31,11 @@ public class ApplicationDTO extends ElementDTO {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationDTO{"
+                + "name='" + name + '\''
+                + "}";
+    }
 }

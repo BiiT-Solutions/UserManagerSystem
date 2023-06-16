@@ -152,6 +152,20 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public String getsUserPassword(@Parameter(description = "username", required = true) @PathVariable("username") String username,
+                                   Authentication authentication, HttpServletRequest httpRequest) {
+        try {
+            return getController().getPassword(username);
+        } catch (Exception e) {
+            UserManagerLogger.errorMessage(this.getClass(), e);
+        }
+        return null;
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/{username}/")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
