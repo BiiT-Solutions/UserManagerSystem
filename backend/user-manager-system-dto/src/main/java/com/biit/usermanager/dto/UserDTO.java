@@ -263,4 +263,11 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
         }
         return getFirstName().compareTo(user.getFirstName());
     }
+
+    @Override
+    public String toString() {
+        return "UserDTO{"
+                + "username='" + username + '\''
+                + "} " + super.toString();
+    }
 }

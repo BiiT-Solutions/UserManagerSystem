@@ -22,6 +22,7 @@ import com.biit.usermanager.core.providers.UserRoleProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,23 +76,47 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     public UserDTO checkCredentials(String username, String email, String password) {
         final User user;
         if (username != null) {
-            user = getProvider().findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
-                    "No User with username '" + username + "' found on the system."));
+            try {
+                user = getProvider().findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                        "No User with username '" + username + "' found on the system."));
+            } catch (Exception e) {
+                UserManagerLogger.warning(this.getClass(), "No User with username '" + username + "' found on the system.");
+                throw e;
+            }
         } else {
-            user = getProvider().findByEmail(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
-                    "No User with email '" + email + "' found on the system."));
+            try {
+                user = getProvider().findByEmail(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                        "No User with email '" + email + "' found on the system."));
+            } catch (Exception e) {
+                UserManagerLogger.warning(this.getClass(), "No User with email '" + email + "' found on the system.");
+                throw e;
+            }
         }
         if (!BCrypt.checkpw(password, user.getPassword())) {
-            throw new InvalidPasswordException(this.getClass(), "Password '" + password + "' does not match the correct one!");
+            try {
+                throw new InvalidPasswordException(this.getClass(), "Password '" + password + "' does not match the correct one!");
+            } catch (Exception e) {
+                UserManagerLogger.debug(this.getClass(), "Password '" + password + "' does not match the correct one!");
+                throw e;
+            }
         }
-        return setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null, null);
+        final UserDTO userDTO = setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null, null);
+        UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", userDTO.getGrantedAuthorities());
+        return userDTO;
     }
 
     public UserDTO getByEmail(String email) {
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(),
-                        "No User with email '" + email + "' found on the system."))));
-        return setGrantedAuthorities(userDTO, null, null);
+        try {
+            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
+                    new UserNotFoundException(this.getClass(),
+                            "No User with email '" + email + "' found on the system."))));
+            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
+            return grantedUserDTO;
+        } catch (Exception e) {
+            UserManagerLogger.warning(this.getClass(), "No User with email '" + email + "' found on the system.");
+            throw e;
+        }
     }
 
 
@@ -105,6 +130,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         try {
             return Optional.of(getByUsername(username));
         } catch (UserNotFoundException e) {
+            UserManagerLogger.warning(this.getClass(), "No User with username '" + username + "' found on the system.");
             return Optional.empty();
         }
     }
@@ -115,18 +141,30 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         if (applicationName == null) {
             return findByUsername(username);
         }
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
-        return Optional.of(setGrantedAuthorities(userDTO, null,
-                applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
-                        new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'."))))));
+        try {
+            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
+                    new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+            final UserDTO grantedUser = setGrantedAuthorities(userDTO, null,
+                    applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
+                            new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'.")))));
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser.getGrantedAuthorities());
+            return Optional.of(grantedUser);
+        } catch (Exception e) {
+            UserManagerLogger.warning(this.getClass(), "No User with username '" + username + "' found on the system.");
+            throw e;
+        }
     }
 
     @Override
     public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
-        return Optional.of(setGrantedAuthorities(userDTO, null, null));
+        try {
+            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
+                    new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
+            return Optional.of(setGrantedAuthorities(userDTO, null, null));
+        } catch (Exception e) {
+            UserManagerLogger.warning(this.getClass(), "No User with email '" + email + "' found on the system.");
+            throw e;
+        }
     }
 
     @Override
@@ -134,18 +172,37 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         if (applicationName == null) {
             return findByEmailAddress(email);
         }
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
-        return Optional.of(setGrantedAuthorities(userDTO, null,
-                applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
-                        new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'."))))));
+        try {
+            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
+                    new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
+            try {
+                final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null,
+                        applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
+                                new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'.")))));
+                UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
+                return Optional.of(grantedUserDTO);
+            } catch (ApplicationNotFoundException e) {
+                UserManagerLogger.warning(this.getClass(), "No application '" + applicationName + "' exists.");
+                throw e;
+            }
+        } catch (Exception e) {
+            UserManagerLogger.warning(this.getClass(), "No User with email '" + email + "' found on the system.");
+            throw e;
+        }
     }
 
     @Override
     public Optional<IAuthenticatedUser> findByUID(String uid) {
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().get(Long.parseLong(uid)).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
-        return Optional.of(setGrantedAuthorities(userDTO, null, null));
+        try {
+            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().get(Long.parseLong(uid)).orElseThrow(() ->
+                    new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
+            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
+            return Optional.of(grantedUserDTO);
+        } catch (Exception e) {
+            UserManagerLogger.warning(this.getClass(), "No User with id '" + uid + "' found on the system.");
+            throw e;
+        }
     }
 
     @Override
@@ -156,6 +213,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
 
     public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String createdBy) {
         if (findByUsername(username).isPresent()) {
+            UserManagerLogger.warning(this.getClass(), "Username '" + username + "' already exists!.");
             throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
         }
         final UserDTO user = new UserDTO();
@@ -165,7 +223,11 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         user.setIdCard(uniqueId);
         user.setPassword(password);
         user.setCreatedBy(createdBy);
-        return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(user))));
+        try {
+            return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(user))));
+        } finally {
+            UserManagerLogger.info(this.getClass(), "User '" + username + "' created on the system.");
+        }
     }
 
     @Override
@@ -174,11 +236,13 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         //Check old password.
         if (oldPassword != null && !BCrypt.checkpw(oldPassword, userDTO.getPassword())) {
+            UserManagerLogger.warning(this.getClass(), "Provided password is incorrect!.");
             throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
         }
 
         userDTO.setPassword(newPassword);
         userDTO.setUpdatedBy(updatedBy);
+        UserManagerLogger.info(this.getClass(), "Password updated!.");
         return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
     }
 
@@ -190,6 +254,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         userDTO.setLastname(createUserRequest.getLastname());
         userDTO.setIdCard(createUserRequest.getUniqueId());
         userDTO.setUpdatedBy(updatedBy);
+        UserManagerLogger.info(this.getClass(), "User '" + createUserRequest.getUsername() + "' updated!.");
         return getConverter().convert(new UserConverterRequest(getProvider().update(getConverter().reverse(userDTO))));
     }
 
@@ -213,6 +278,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     }
 
     public void delete(User user) {
+        UserManagerLogger.warning(this.getClass(), "Deleting user '" + user + "'!.");
         getProvider().delete(user);
     }
 
@@ -243,13 +309,17 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
                 applicationProvider.findByName(applicationName).orElse(null)));
         final UserDTO userWithRoles = setGrantedAuthorities(userDTO, groupDTO, applicationDTO);
         if (userWithRoles != null) {
-            return userWithRoles.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+            final Set<String> roles = userWithRoles.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+            UserManagerLogger.debug(this.getClass(), "Obtained roles '" + roles
+                    + "' from '" + username + "'.");
+            return roles;
         }
         return new HashSet<>();
     }
 
     public UserDTO delete(String username) {
         final Optional<User> user = getProvider().deleteByUsername(username);
+        UserManagerLogger.warning(this.getClass(), "Deleting user '" + user + "'!.");
         return user.map(value -> getConverter().convert(new UserConverterRequest(value))).orElse(null);
     }
 
@@ -263,6 +333,8 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
                     ).stream()
                     .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)
                     .forEach(userRole -> grantedAuthorities.add(userRole.getRole().getName().toUpperCase()));
+            UserManagerLogger.debug(this.getClass(), "Assigning authorities '" + grantedAuthorities
+                    + "' to '" + userDTO.getUsername() + "'.");
             userDTO.setGrantedAuthorities(grantedAuthorities);
         }
         return userDTO;

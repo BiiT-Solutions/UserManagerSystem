@@ -237,4 +237,11 @@ public class User extends Element {
     public void setCity(String city) {
         this.city = city;
     }
+
+    @Override
+    public String toString() {
+        return "User{"
+                + "username='" + username + '\''
+                + "} " + super.toString();
+    }
 }
