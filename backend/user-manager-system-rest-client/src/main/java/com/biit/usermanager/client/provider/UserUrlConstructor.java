@@ -4,6 +4,9 @@ import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Component
 public class UserUrlConstructor {
 
@@ -26,7 +29,7 @@ public class UserUrlConstructor {
     }
 
     public String getUserByName(String username) {
-        return getUsers() + "/usernames/" + username;
+        return getUsers() + "/usernames/" + URLEncoder.encode(username, StandardCharsets.UTF_8);
     }
 
     public String getUserByEmail(String email) {
@@ -37,14 +40,16 @@ public class UserUrlConstructor {
         if (applicationName == null) {
             return getUserByName(username);
         }
-        return getUsers() + "/usernames/" + username + "/applications/" + applicationName;
+        return getUsers() + "/usernames/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/applications/"
+                + URLEncoder.encode(applicationName, StandardCharsets.UTF_8);
     }
 
     public String getUserByEmailAndApplication(String email, String applicationName) {
         if (applicationName == null) {
             return getUserByEmail(email);
         }
-        return getUsers() + "/emails/" + email + "/applications/" + applicationName;
+        return getUsers() + "/emails/" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "/applications/"
+                + URLEncoder.encode(applicationName, StandardCharsets.UTF_8);
     }
 
     public String getUserById(String id) {
@@ -56,15 +61,15 @@ public class UserUrlConstructor {
     }
 
     public String updateUserPassword(String username) {
-        return getUsers() + "/" + username + "/password";
+        return getUsers() + "/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/password";
     }
 
     public String getUserPassword(String username) {
-        return getUsers() + "/" + username + "/password";
+        return getUsers() + "/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/password";
     }
 
     public String getUserPasswordByUid(String uid) {
-        return getUsers() + "/uids/" + uid + "/password";
+        return getUsers() + "/uids/" + URLEncoder.encode(uid, StandardCharsets.UTF_8) + "/password";
     }
 
     public String count() {
@@ -80,11 +85,12 @@ public class UserUrlConstructor {
     }
 
     public String deleteByUsername(String username) {
-        return getUsers() + "/" + username;
+        return getUsers() + "/" + URLEncoder.encode(username, StandardCharsets.UTF_8);
     }
 
     public String getRolesByUserAndGroupAndApplication(String username, String groupName, String applicationName) {
-        return getUserRoles() + "/usernames/" + username + "/groups/" + groupName + "/applications/" + applicationName;
+        return getUserRoles() + "/usernames/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/groups/" + groupName
+                + "/applications/" + applicationName;
     }
 
 }
