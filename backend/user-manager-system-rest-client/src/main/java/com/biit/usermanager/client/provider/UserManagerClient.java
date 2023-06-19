@@ -16,9 +16,12 @@ import com.biit.usermanager.logger.UserManagerClientLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -195,13 +198,12 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     @Override
     public String getPassword(String username) {
         try {
-            try (Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUserPassword(username))) {
+            try (Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUserPassword(
+                    URLEncoder.encode(username, StandardCharsets.UTF_8)), MediaType.TEXT_PLAIN)) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.updateUserPassword(username), result.getStatus());
-                return mapper.readValue(result.readEntity(String.class), String.class);
+                return result.readEntity(String.class);
             }
-        } catch (JsonProcessingException e) {
-            throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
         }

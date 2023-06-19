@@ -14,6 +14,7 @@ import com.biit.usermanager.rest.UserManagerServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -32,7 +33,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_FIRST_NAME = "Test";
     private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
-    private static final String[] USER_ROLES = new String[] {"ADMIN", "VIEWER"};
+    private static final String[] USER_ROLES = new String[]{"ADMIN", "VIEWER"};
 
     @Autowired
     private UserController userController;
@@ -102,5 +103,10 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
         }
         System.out.println(" #--------------------------------- End of Expected Exception -------------------------");
+    }
+
+    @Test
+    public void getPassword() {
+        Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, userManagerClient.getPassword(USER_NAME)));
     }
 }

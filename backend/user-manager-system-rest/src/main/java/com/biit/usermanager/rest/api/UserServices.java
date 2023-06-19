@@ -109,9 +109,9 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets a list of expired users", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/account_expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/account-expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getByAccountExpired(@Parameter(description = "Account is expired", required = true)
-                                             @PathVariable("account_expired") boolean accountExpired,
+                                             @PathVariable("account-expired") boolean accountExpired,
                                              HttpServletRequest request) {
         return getController().getAllByExpired(accountExpired);
     }
