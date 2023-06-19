@@ -201,7 +201,21 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             try (Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUserPassword(
                     URLEncoder.encode(username, StandardCharsets.UTF_8)), MediaType.TEXT_PLAIN)) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.updateUserPassword(username), result.getStatus());
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserPassword(username), result.getStatus());
+                return result.readEntity(String.class);
+            }
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getPasswordByUid(String uid) {
+        try {
+            try (Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUserPasswordByUid(
+                    uid), MediaType.TEXT_PLAIN)) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserPasswordByUid(uid), result.getStatus());
                 return result.readEntity(String.class);
             }
         } catch (EmptyResultException e) {

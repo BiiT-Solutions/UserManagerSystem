@@ -252,6 +252,18 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         return user.getPassword();
     }
 
+    /**
+     * Gets the password using a user UID.
+     *
+     * @param uid is the database id.
+     * @return
+     */
+    public String getPasswordByUid(String uid) {
+        final User user = getProvider().getById(uid).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with id '" + uid + "' found on the system."));
+        return user.getPassword();
+    }
+
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         final UserDTO userDTO = getByUsername(createUserRequest.getUsername());

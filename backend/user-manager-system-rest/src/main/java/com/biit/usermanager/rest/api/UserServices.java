@@ -166,6 +166,20 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(path = "/uids/{uids}/password", produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public String getsUserPasswordById(@Parameter(description = "The UID from the user", required = true) @PathVariable("uids") String uids,
+                                       Authentication authentication, HttpServletRequest httpRequest) {
+        try {
+            return getController().getPasswordByUid(uids);
+        } catch (Exception e) {
+            UserManagerLogger.errorMessage(this.getClass(), e);
+        }
+        return null;
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/{username}/")
     @ResponseStatus(value = HttpStatus.ACCEPTED)

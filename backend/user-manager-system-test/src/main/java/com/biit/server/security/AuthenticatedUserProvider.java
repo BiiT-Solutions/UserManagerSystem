@@ -136,6 +136,14 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         return user.getPassword();
     }
 
+    @Override
+    public String getPasswordByUid(String uid) {
+        IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUID().equals(uid))
+                .findAny().orElseThrow(() ->
+                        new RuntimeException("User with uid '" + uid + "' does not exists"));
+        return user.getPassword();
+    }
+
 
     @Override
     public Collection<IAuthenticatedUser> findAll() {

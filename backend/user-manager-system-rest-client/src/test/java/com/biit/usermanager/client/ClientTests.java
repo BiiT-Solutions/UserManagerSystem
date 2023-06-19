@@ -109,4 +109,11 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     public void getPassword() {
         Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, userManagerClient.getPassword(USER_NAME)));
     }
+
+    @Test
+    public void getPasswordByUID() {
+        final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
+        Assert.assertTrue(user.isPresent());
+        Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, userManagerClient.getPasswordByUid(user.get().getUID())));
+    }
 }

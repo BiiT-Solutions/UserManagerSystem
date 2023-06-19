@@ -63,6 +63,10 @@ public class UserUrlConstructor {
         return getUsers() + "/" + username + "/password";
     }
 
+    public String getUserPasswordByUid(String uid) {
+        return getUsers() + "/uids/" + uid + "/password";
+    }
+
     public String count() {
         return getUsers() + "/count";
     }
