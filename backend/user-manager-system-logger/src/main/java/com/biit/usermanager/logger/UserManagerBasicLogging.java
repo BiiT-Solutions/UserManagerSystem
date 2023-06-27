@@ -57,7 +57,7 @@ public class UserManagerBasicLogging extends AbstractLogging {
     @Around(value = "selectAll() || isAnnotated()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         final StopWatch stopWatch = new StopWatch();
-        Object returnValue;
+        final Object returnValue;
         stopWatch.start();
         returnValue = joinPoint.proceed();
         stopWatch.stop();

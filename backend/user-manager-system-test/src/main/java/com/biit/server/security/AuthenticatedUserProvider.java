@@ -130,7 +130,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     @Override
     public String getPassword(String username) {
-        IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
+        final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
                 .findAny().orElseThrow(() ->
                 new RuntimeException("User with username '" + username + "' does not exists"));
         return user.getPassword();
@@ -138,7 +138,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     @Override
     public String getPasswordByUid(String uid) {
-        IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUID().equals(uid))
+        final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUID().equals(uid))
                 .findAny().orElseThrow(() ->
                         new RuntimeException("User with uid '" + uid + "' does not exists"));
         return user.getPassword();
