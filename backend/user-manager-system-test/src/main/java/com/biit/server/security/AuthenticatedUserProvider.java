@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +29,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     private static int idCounter = 1;
 
     private final Collection<IAuthenticatedUser> usersOnMemory = new ArrayList<>();
+    private final Map<IAuthenticatedUser, Set<String>> userRoles = new HashMap<>();
 
 
     @Override
@@ -71,7 +74,8 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
         final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
         authenticatedUser.setUsername(username);
-        authenticatedUser.setAuthorities(authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+        authenticatedUser.setAuthorities(authorities.stream().map(s -> s.replace(" ", ""))
+                .map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         authenticatedUser.setUID(uniqueId);
         authenticatedUser.setName(name);
         authenticatedUser.setLastname(lastName);
@@ -80,6 +84,8 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         }
 
         usersOnMemory.add(authenticatedUser);
+        setRoles(authenticatedUser, authorities.stream().map(s -> s.replace(" ", ""))
+                .collect(Collectors.toSet()));
 
         return authenticatedUser;
     }
@@ -149,9 +155,22 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     @Override
     public Set<String> getRoles(String username, String groupName, String application) {
-        return null;
+        final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
+                .findAny().orElseThrow(() ->
+                        new RuntimeException("User with username '" + username + "' does not exists"));
+        return userRoles.get(user);
     }
 
+    public void setRoles(String username, Set<String> roles) {
+        final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
+                .findAny().orElseThrow(() ->
+                        new RuntimeException("User with username '" + username + "' does not exists"));
+        setRoles(user, roles);
+    }
+
+    public void setRoles(IAuthenticatedUser user, Set<String> roles) {
+        userRoles.put(user, roles);
+    }
 
     @Override
     public long count() {
