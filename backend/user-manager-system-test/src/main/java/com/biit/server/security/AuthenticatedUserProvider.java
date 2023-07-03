@@ -85,20 +85,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     public IAuthenticatedUser createUser(String username, String name, String password) {
-        if (findByUsername(username).isPresent()) {
-            throw new RuntimeException("Username exists!");
-        }
-
-        final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-        authenticatedUser.setUsername(username);
-        authenticatedUser.setUID(String.valueOf(idCounter++));
-        authenticatedUser.setAuthorities(authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-        authenticatedUser.setName(name);
-        authenticatedUser.setPassword(password);
-
-        usersOnMemory.add(authenticatedUser);
-
-        return authenticatedUser;
+        return createUser(username, String.valueOf(idCounter++), name, null, password);
     }
 
 
@@ -132,7 +119,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     public String getPassword(String username) {
         final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
                 .findAny().orElseThrow(() ->
-                new RuntimeException("User with username '" + username + "' does not exists"));
+                        new RuntimeException("User with username '" + username + "' does not exists"));
         return user.getPassword();
     }
 

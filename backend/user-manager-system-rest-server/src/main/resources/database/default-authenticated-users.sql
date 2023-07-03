@@ -49,3 +49,11 @@ INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-5
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-55, -4 , -52, -1, -50);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-56, -4 , -53, -1, -50);
 
+-- Base Form Drools Engine
+INSERT INTO applications (id, name) VALUES (-60, 'BaseFormDroolsEngine');
+INSERT INTO roles (id, name, description) VALUES (-61, 'baseformdroolsengine_viewer', '');
+INSERT INTO roles (id, name, description) VALUES (-62, 'baseformdroolsengine_editor', '');
+INSERT INTO roles (id, name, description) VALUES (-63, 'baseformdroolsengine_admin', '');
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-64, -4 , -61, -1, -60);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-65, -4 , -62, -1, -60);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-66, -4 , -63, -1, -60);
