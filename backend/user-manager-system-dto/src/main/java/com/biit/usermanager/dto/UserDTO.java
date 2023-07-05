@@ -27,6 +27,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
 
     private String phone = "";
 
+    @JsonIgnore
     private Locale locale;
 
     private String password = "";

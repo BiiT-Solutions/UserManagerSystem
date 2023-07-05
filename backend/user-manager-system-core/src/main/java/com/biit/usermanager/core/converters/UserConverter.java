@@ -8,6 +8,8 @@ import com.biit.usermanager.persistence.entities.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+
 @Component
 public class UserConverter extends ElementConverter<User, UserDTO, UserConverterRequest> {
 
@@ -16,6 +18,9 @@ public class UserConverter extends ElementConverter<User, UserDTO, UserConverter
     protected UserDTO convertElement(UserConverterRequest from) {
         final UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(from.getEntity(), userDTO);
+        if (from.getEntity().getLocale() != null) {
+            userDTO.setLocale(Locale.forLanguageTag(from.getEntity().getLocale().replace("_", "-")));
+        }
         return userDTO;
     }
 
@@ -26,6 +31,9 @@ public class UserConverter extends ElementConverter<User, UserDTO, UserConverter
         }
         final User user = new User();
         BeanUtils.copyProperties(to, user);
+        if (to.getLocale() != null) {
+            user.setLocale(to.getLocale().toLanguageTag().replace("-", "_"));
+        }
         return user;
     }
 }
