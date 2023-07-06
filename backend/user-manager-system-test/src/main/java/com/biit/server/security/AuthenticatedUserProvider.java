@@ -26,7 +26,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Value("#{'${user.provider.test.authorities}'.split(',')}")
     private List<String> authorities;
 
-    @Value("${bcrypt.salt}:")
+    @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
     private static int idCounter = 1;

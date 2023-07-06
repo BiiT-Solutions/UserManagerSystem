@@ -86,10 +86,6 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     @Value("${spring.application.name}")
     private String applicationName;
 
-    private MockMvc mockMvc;
-
-    private String jwtToken;
-
     private ApplicationDTO applicationDTO;
 
     private Map<String, RoleDTO> roles;
@@ -163,14 +159,6 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
             userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO, applicationDTO), null);
             userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO2, applicationDTO), null);
         }
-    }
-
-
-    @BeforeClass
-    public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
     }
 
     @Test

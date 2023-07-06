@@ -96,10 +96,6 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     @Value("${spring.application.name}")
     private String applicationName;
 
-    private MockMvc mockMvc;
-
-    private String jwtToken;
-
     private ApplicationDTO applicationDTO;
 
     private Map<String, RoleDTO> roles;
@@ -193,14 +189,6 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         for (String otherUserRoles : OTHER_USER_ROLES) {
             userRoleController.create(new UserRoleDTO(testUser, roles.get(otherUserRoles), groupDTO, applicationDTO), null);
         }
-    }
-
-
-    @BeforeClass
-    public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
     }
 
     @Test

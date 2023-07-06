@@ -97,7 +97,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     @Value("${spring.application.name}")
     private String applicationName;
 
-    @Value("${bcrypt.salt}:")
+    @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
 
@@ -183,6 +183,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
     }
+
+     @Test
+     public void checkPassword(){
+        userController.checkPassword(ADMIN_USER_NAME, ADMIN_PASSWORD);
+     }
 
     @Test
     public void jwtGeneration() throws Exception {

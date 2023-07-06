@@ -47,7 +47,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
     private final UserRoleProvider userRoleProvider;
 
-    @Value("${bcrypt.salt}:")
+    @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
     private final ApplicationProvider applicationProvider;
@@ -226,6 +226,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         }
         final UserDTO user = new UserDTO();
         user.setUsername(username);
+        user.setUUID(UUID.randomUUID());
         user.setFirstName(name != null ? name : "");
         user.setLastname(lastName != null ? lastName : "");
         user.setIdCard(uniqueId);
@@ -254,6 +255,16 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
     }
 
+    public void checkPassword(String username, String password) {
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+        //Check old password.
+        if (password != null && !BCrypt.checkpw(bcryptSalt + password, userDTO.getPassword())) {
+            UserManagerLogger.warning(this.getClass(), "Provided password is incorrect!.");
+            throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
+        }
+    }
+
     public String getPassword(String username) {
         final User user = getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
@@ -267,7 +278,10 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
      * @return
      */
     public String getPasswordByUid(String uid) {
-        final User user = getProvider().getById(uid).orElseThrow(() ->
+        if (uid == null) {
+            return null;
+        }
+        final User user = getProvider().findByUuid(UUID.fromString(uid)).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with id '" + uid + "' found on the system."));
         return user.getPassword();
     }

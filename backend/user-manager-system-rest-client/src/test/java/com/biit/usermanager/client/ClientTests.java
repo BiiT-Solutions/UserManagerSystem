@@ -6,6 +6,7 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserRoleController;
+import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
@@ -35,7 +36,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_PASSWORD = "asd123";
     private static final String[] USER_ROLES = new String[]{"ADMIN", "VIEWER"};
 
-    @Value("${bcrypt.salt}:")
+    @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
     @Autowired
@@ -78,6 +79,16 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
         //Assign application roles.
         applicationRoles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null, applicationDTO), null));
+    }
+
+    @Test
+    public void checkPasswordCorrect() {
+        userController.checkPassword(USER_NAME, USER_PASSWORD);
+    }
+
+    @Test(expectedExceptions = InvalidParameterException.class)
+    public void checkPasswordCorrectIncorrect() {
+        userController.checkPassword(USER_NAME, USER_PASSWORD + "A");
     }
 
     @Test

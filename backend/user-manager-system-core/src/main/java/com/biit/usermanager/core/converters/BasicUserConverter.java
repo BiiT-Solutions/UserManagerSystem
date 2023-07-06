@@ -21,6 +21,7 @@ public class BasicUserConverter extends ElementConverter<User, BasicUserDTO, Bas
         if (from.getEntity().getLocale() != null) {
             userDTO.setLocale(Locale.forLanguageTag(from.getEntity().getLocale().replace("_", "-")));
         }
+        userDTO.setUUID(from.getEntity().getUuid());
         return userDTO;
     }
 

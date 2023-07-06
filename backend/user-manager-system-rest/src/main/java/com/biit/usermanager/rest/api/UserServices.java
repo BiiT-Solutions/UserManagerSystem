@@ -112,7 +112,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @Operation(summary = "Gets a list of expired users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/account-expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getByAccountExpired(@Parameter(description = "Account is expired", required = true)
-                                             @PathVariable("account-expired") boolean accountExpired,
+                                             @PathVariable("account_expired") boolean accountExpired,
                                              HttpServletRequest request) {
         return getController().getAllByExpired(accountExpired);
     }
@@ -182,7 +182,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a user.", security = @SecurityRequirement(name = "bearerAuth"))
-    @DeleteMapping(path = "/{username}/")
+    @DeleteMapping(path = "/{username}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public UserDTO deleteUser(@Parameter(description = "username", required = true)
                               @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {

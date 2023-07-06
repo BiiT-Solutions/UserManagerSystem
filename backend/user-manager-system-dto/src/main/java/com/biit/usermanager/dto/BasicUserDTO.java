@@ -20,6 +20,9 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
 
     private String lastname = "";
 
+    public BasicUserDTO() {
+        uuid = UUID.randomUUID();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -36,11 +39,18 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
 
     @Override
     public String getUID() {
+        if (uuid == null) {
+            return null;
+        }
         return uuid.toString();
     }
 
     public void setUID(String uid) {
-        this.uuid = UUID.fromString(uid);
+        if (uid == null) {
+            this.uuid = null;
+        } else {
+            this.uuid = UUID.fromString(uid);
+        }
     }
 
     @Override

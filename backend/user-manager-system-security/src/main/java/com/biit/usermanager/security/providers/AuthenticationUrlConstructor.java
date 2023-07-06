@@ -34,7 +34,7 @@ public class AuthenticationUrlConstructor {
     }
 
     public String getUserById(Long id) {
-        return getUsers() + "/ids/" + id;
+        return getUsers() + "/" + id;
     }
 
     public String checkCredentials() {
