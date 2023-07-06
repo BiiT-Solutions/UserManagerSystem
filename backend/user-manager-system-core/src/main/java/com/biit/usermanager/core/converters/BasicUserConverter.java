@@ -3,7 +3,6 @@ package com.biit.usermanager.core.converters;
 
 import com.biit.server.controller.converters.ElementConverter;
 import com.biit.usermanager.core.converters.models.BasicUserConverterRequest;
-import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.dto.BasicUserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import org.springframework.beans.BeanUtils;

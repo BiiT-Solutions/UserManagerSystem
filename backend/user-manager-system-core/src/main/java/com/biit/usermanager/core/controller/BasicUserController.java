@@ -5,17 +5,13 @@ import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.BasicUserConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
-import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.BasicUserConverterRequest;
-import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.providers.UserRoleProvider;
 import com.biit.usermanager.dto.BasicUserDTO;
-import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
@@ -113,7 +109,8 @@ public class BasicUserController extends BasicElementController<User, BasicUserD
     }
 
     public BasicUserDTO getByPhone(String phone) {
-        return getConverter().convert(new BasicUserConverterRequest(getProvider().findByPhone(phone).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        return getConverter().convert(new BasicUserConverterRequest(getProvider().findByPhone(phone).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(),
                 "No User with username '" + phone + "' found on the system."))));
     }
 

@@ -10,7 +10,11 @@ import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.exceptions.*;
+import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
+import com.biit.usermanager.core.exceptions.InvalidParameterException;
+import com.biit.usermanager.core.exceptions.InvalidPasswordException;
+import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
@@ -22,12 +26,19 @@ import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Primary
@@ -35,6 +46,9 @@ import java.util.stream.Collectors;
 public class UserController extends BasicElementController<User, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
     private final UserRoleProvider userRoleProvider;
+
+    @Value("${bcrypt.salt}:")
+    private String bcryptSalt;
 
     private final ApplicationProvider applicationProvider;
     private final ApplicationConverter applicationConverter;
@@ -83,7 +97,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
                 throw e;
             }
         }
-        if (!BCrypt.checkpw(password, user.getPassword())) {
+        if (!BCrypt.checkpw(bcryptSalt + password, user.getPassword())) {
             try {
                 throw new InvalidPasswordException(this.getClass(), "Password '" + password + "' does not match the correct one!");
             } catch (Exception e) {
@@ -229,7 +243,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         //Check old password.
-        if (oldPassword != null && !BCrypt.checkpw(oldPassword, userDTO.getPassword())) {
+        if (oldPassword != null && !BCrypt.checkpw(bcryptSalt + oldPassword, userDTO.getPassword())) {
             UserManagerLogger.warning(this.getClass(), "Provided password is incorrect!.");
             throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
         }

@@ -35,6 +35,9 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_PASSWORD = "asd123";
     private static final String[] USER_ROLES = new String[]{"ADMIN", "VIEWER"};
 
+    @Value("${bcrypt.salt}:")
+    private String bcryptSalt;
+
     @Autowired
     private UserController userController;
 
@@ -107,13 +110,13 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void getPassword() {
-        Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, userManagerClient.getPassword(USER_NAME)));
+        Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, userManagerClient.getPassword(USER_NAME)));
     }
 
     @Test
     public void getPasswordByUID() {
         final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
         Assert.assertTrue(user.isPresent());
-        Assert.assertTrue(BCrypt.checkpw(USER_PASSWORD, userManagerClient.getPasswordByUid(user.get().getUID())));
+        Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, userManagerClient.getPasswordByUid(user.get().getUID())));
     }
 }

@@ -127,6 +127,10 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         this.firstname = firstname;
     }
 
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
     @Override
     public void setLastName(String surname) {
         this.lastname = surname;

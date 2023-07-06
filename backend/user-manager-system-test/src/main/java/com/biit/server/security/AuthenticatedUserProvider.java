@@ -26,6 +26,9 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Value("#{'${user.provider.test.authorities}'.split(',')}")
     private List<String> authorities;
 
+    @Value("${bcrypt.salt}:")
+    private String bcryptSalt;
+
     private static int idCounter = 1;
 
     private final Collection<IAuthenticatedUser> usersOnMemory = new ArrayList<>();
@@ -112,7 +115,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
                         new RuntimeException("User with username '" + username + "' does not exists"));
 
         //Check old password.
-        if (!BCrypt.checkpw(oldPassword, user.getPassword())) {
+        if (!BCrypt.checkpw(bcryptSalt + oldPassword, user.getPassword())) {
             throw new RuntimeException("Provided password is incorrect!");
         }
 

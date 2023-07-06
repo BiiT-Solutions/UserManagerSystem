@@ -1,8 +1,7 @@
 package com.biit.usermanager.persistence.entities;
 
-import com.biit.database.encryption.LocalDateTimeCryptoConverter;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,12 +25,10 @@ public abstract class Element {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    @Convert(converter = LocalDateTimeCryptoConverter.class)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    @Convert(converter = LocalDateTimeCryptoConverter.class)
     private LocalDateTime updatedAt;
 
     public void setId(Long id) {
