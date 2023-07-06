@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAuthenticatedUser {
+public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUser {
     private String idCard;
 
     private String username = "";
@@ -223,11 +223,13 @@ public class UserDTO extends ElementDTO implements IUser<Long>, UserDetails, IAu
         return getUsername();
     }
 
+    @JsonIgnore
     @Override
     public Long getUniqueId() {
         return getId();
     }
 
+    @JsonIgnore
     @Override
     public String getUID() {
         if (getId() != null) {
