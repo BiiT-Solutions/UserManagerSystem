@@ -1,30 +1,27 @@
 package com.biit.usermanager.persistence.entities;
 
-import com.biit.database.encryption.BCryptPasswordConverter;
-import com.biit.database.encryption.BooleanCryptoConverter;
-import com.biit.database.encryption.LocalDateCryptoConverter;
-import com.biit.database.encryption.LocalDateTimeCryptoConverter;
-import com.biit.database.encryption.StringCryptoConverter;
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.biit.database.encryption.*;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "users")
 public class User extends Element {
+    private static final int UUID_COLUMN_LENGTH = 36;
 
     @Column(name = "id_card", unique = true)
     @Convert(converter = StringCryptoConverter.class)
     private String idCard;
+
+    @Column(name = "uuid", unique = true, length = UUID_COLUMN_LENGTH)
+    private UUID uuid = UUID.randomUUID();
 
     @Column(name = "username", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
@@ -93,6 +90,14 @@ public class User extends Element {
     @Column(name = "enabled", nullable = false)
     @Convert(converter = BooleanCryptoConverter.class)
     private boolean enabled = true;
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
     public String getIdCard() {
         return idCard;

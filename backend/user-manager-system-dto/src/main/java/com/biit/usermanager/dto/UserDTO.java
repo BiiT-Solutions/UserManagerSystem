@@ -1,12 +1,10 @@
 package com.biit.usermanager.dto;
 
-import com.biit.server.controllers.models.ElementDTO;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -14,14 +12,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUser {
+public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticatedUser {
     private String idCard;
-
-    private String username = "";
-
-    private String firstname = "";
-
-    private String lastname = "";
 
     private String email = "";
 
@@ -30,6 +22,7 @@ public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUs
     @JsonIgnore
     private Locale locale;
 
+    @JsonIgnore
     private String password = "";
 
     private LocalDateTime passwordModifiedDate;
@@ -51,18 +44,6 @@ public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUs
     }
 
     private Set<String> grantedAuthorities;
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getFullName() {
-        return (getFirstName() != null ? getFirstName() : "")
-                + (getFirstName() != null && getLastName() != null ? " " : "")
-                + (getLastName() != null ? getLastName() : "");
-    }
 
     @Override
     public String getMobilePhone() {
@@ -89,26 +70,6 @@ public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUs
         return enabled;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -123,25 +84,17 @@ public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUs
     }
 
     @Override
-    public String getFirstName() {
-        return getFirstname();
-    }
-
-    @Override
     public String getLanguageId() {
         return locale == null ? null : locale.toLanguageTag().replace("-", "_");
     }
 
-    @Override
-    public String getLastName() {
-        return getLastname();
-    }
-
+    @JsonIgnore
     @Override
     public Locale getLocale() {
         return locale;
     }
 
+    @JsonIgnore
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
@@ -168,16 +121,6 @@ public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUs
     @Override
     public String getPassword() {
         return password;
-    }
-
-    @Override
-    public void setFirstName(String firstName) {
-        setFirstname(firstName);
-    }
-
-    @Override
-    public void setLastName(String lastName) {
-        setLastname(lastName);
     }
 
     @JsonIgnore
@@ -218,59 +161,4 @@ public class UserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUs
         this.phone = phone;
     }
 
-    @Override
-    public String getUniqueName() {
-        return getUsername();
-    }
-
-    @JsonIgnore
-    @Override
-    public Long getUniqueId() {
-        return getId();
-    }
-
-    @JsonIgnore
-    @Override
-    public String getUID() {
-        if (getId() != null) {
-            return getId().toString();
-        }
-        return null;
-    }
-
-    @Override
-    public int compareTo(IUser<Long> user) {
-        // Compare by surname.
-        if (this.getLastName() == null) {
-            if (user.getLastName() != null) {
-                return -1;
-            }
-        } else {
-            if (user.getLastName() == null) {
-                return 1;
-            }
-        }
-        final int lastNameComparator = getLastName().compareTo(user.getLastName());
-        if (lastNameComparator != 0) {
-            return lastNameComparator;
-        }
-        // Compare by name.
-        if (this.getFirstName() == null) {
-            if (user.getFirstName() != null) {
-                return -1;
-            }
-        } else {
-            if (user.getFirstName() == null) {
-                return 1;
-            }
-        }
-        return getFirstName().compareTo(user.getFirstName());
-    }
-
-    @Override
-    public String toString() {
-        return "UserDTO{"
-                + "username='" + username + '\''
-                + "}";
-    }
 }

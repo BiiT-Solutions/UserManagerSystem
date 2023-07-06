@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserProvider extends CrudProvider<User, Long, UserRepository> {
@@ -33,6 +34,10 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
+    }
+
+    public Optional<User> findByUuid(UUID uuid) {
+        return getRepository().findByUuid(uuid);
     }
 
     public Optional<User> getById(Long id) {

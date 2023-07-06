@@ -1,0 +1,192 @@
+package com.biit.usermanager.dto;
+
+import com.biit.server.controllers.models.ElementDTO;
+import com.biit.server.security.IAuthenticatedUser;
+import com.biit.usermanager.entity.IUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+import java.util.Locale;
+import java.util.UUID;
+
+public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUser {
+
+    private UUID uuid;
+
+    private String username = "";
+
+    private String firstname = "";
+
+    private String lastname = "";
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    @Override
+    public String getUID() {
+        return uuid.toString();
+    }
+
+    public void setUID(String uid) {
+        this.uuid = UUID.fromString(uid);
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
+    @Override
+    public String getFullName() {
+        return (getFirstName() != null ? getFirstName() : "")
+                + (getFirstName() != null && getLastName() != null ? " " : "")
+                + (getLastName() != null ? getLastName() : "");
+    }
+
+    @Override
+    public String getMobilePhone() {
+        return null;
+    }
+
+    @Override
+    public String getEmailAddress() {
+        return null;
+    }
+
+    @Override
+    public String getFirstName() {
+        return firstname;
+    }
+
+    @Override
+    public String getLanguageId() {
+        return null;
+    }
+
+    @Override
+    public String getLastName() {
+        return lastname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public void setFirstName(String firstname) {
+        this.firstname = firstname;
+    }
+
+    @Override
+    public void setLastName(String surname) {
+        this.lastname = surname;
+    }
+
+    @Override
+    public void setLocale(Locale locale) {
+
+    }
+
+    @Override
+    public void setPassword(String password) {
+
+    }
+
+    @JsonIgnore
+    @Override
+    public String getUniqueName() {
+        return getUsername();
+    }
+
+    @JsonIgnore
+    @Override
+    public Long getUniqueId() {
+        return getId();
+    }
+
+    @Override
+    public int compareTo(IUser<Long> user) {
+        // Compare by surname.
+        if (this.getLastName() == null) {
+            if (user.getLastName() != null) {
+                return -1;
+            }
+        } else {
+            if (user.getLastName() == null) {
+                return 1;
+            }
+        }
+        final int lastNameComparator = getLastName().compareTo(user.getLastName());
+        if (lastNameComparator != 0) {
+            return lastNameComparator;
+        }
+        // Compare by name.
+        if (this.getFirstName() == null) {
+            if (user.getFirstName() != null) {
+                return -1;
+            }
+        } else {
+            if (user.getFirstName() == null) {
+                return 1;
+            }
+        }
+        return getFirstName().compareTo(user.getFirstName());
+    }
+
+    @Override
+    public String toString() {
+        return "UserDTO{"
+                + "username='" + username + '\''
+                + "}";
+    }
+}

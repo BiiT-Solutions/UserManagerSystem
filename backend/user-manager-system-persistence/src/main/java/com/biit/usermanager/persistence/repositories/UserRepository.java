@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @Transactional
@@ -17,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByIdCard(String idCard);
+
+    Optional<User> findByUuid(UUID uuid);
 
     Optional<User> findByNameAndLastname(String name, String lastname);
 

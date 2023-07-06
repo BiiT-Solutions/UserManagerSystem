@@ -93,10 +93,11 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/ids/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("id") String id,
+    @GetMapping(value = "/uuids/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("uuid") String uuid,
                              HttpServletRequest request) {
-        return getController().getByUserId(id);
+        return (UserDTO) getController().findByUID(uuid).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                "No User with uuid '" + uuid + "' found on the system."));
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
@@ -152,7 +153,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
     @GetMapping(path = "/{username}/password", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public String getsUserPassword(@Parameter(description = "username", required = true) @PathVariable("username") String username,
@@ -166,7 +167,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
     @GetMapping(path = "/uids/{uids}/password", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public String getsUserPasswordById(@Parameter(description = "The UID from the user", required = true) @PathVariable("uids") String uids,

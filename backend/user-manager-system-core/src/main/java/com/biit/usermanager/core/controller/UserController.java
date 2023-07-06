@@ -10,11 +10,7 @@ import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
-import com.biit.usermanager.core.exceptions.InvalidParameterException;
-import com.biit.usermanager.core.exceptions.InvalidPasswordException;
-import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
-import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.exceptions.*;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
@@ -31,12 +27,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Primary
@@ -194,11 +185,14 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     @Override
     public Optional<IAuthenticatedUser> findByUID(String uid) {
         try {
-            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().get(Long.parseLong(uid)).orElseThrow(() ->
+            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUuid(UUID.fromString(uid)).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
             final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
             return Optional.of(grantedUserDTO);
+        } catch (IllegalArgumentException e) {
+            UserManagerLogger.warning(this.getClass(), "Invalid uid '" + uid + "'!.");
+            throw e;
         } catch (Exception e) {
             UserManagerLogger.warning(this.getClass(), "No User with id '" + uid + "' found on the system.");
             throw e;
