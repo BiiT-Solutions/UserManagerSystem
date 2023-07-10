@@ -52,26 +52,31 @@ public class BasicUserServices extends BasicServices<User, BasicUserDTO, UserRep
     }
 
     @Operation(hidden = true)
+    @Override
     public BasicUserDTO add(@RequestBody BasicUserDTO dto, Authentication authentication, HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not valid!");
     }
 
     @Operation(hidden = true)
+    @Override
     public List<BasicUserDTO> add(@RequestBody Collection<BasicUserDTO> dtos, Authentication authentication, HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not valid!");
     }
 
     @Operation(hidden = true)
+    @Override
     public BasicUserDTO update(@RequestBody BasicUserDTO dto, Authentication authentication, HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not valid!");
     }
 
     @Operation(hidden = true)
+    @Override
     public void delete(@RequestBody BasicUserDTO dto, HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not valid!");
     }
 
     @Operation(hidden = true)
+    @Override
     public void delete(Long id, HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not valid!");
     }
