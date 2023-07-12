@@ -5,6 +5,7 @@ import com.biit.database.encryption.BooleanCryptoConverter;
 import com.biit.database.encryption.LocalDateCryptoConverter;
 import com.biit.database.encryption.LocalDateTimeCryptoConverter;
 import com.biit.database.encryption.StringCryptoConverter;
+import com.biit.database.encryption.UUIDCryptoConverter;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -28,7 +29,8 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String idCard;
 
-    @Column(name = "uuid", unique = true, length = UUID_COLUMN_LENGTH)
+    @Column(name = "user_uuid", unique = true, length = UUID_COLUMN_LENGTH, nullable = false, columnDefinition = "uuid")
+    @Convert(converter = UUIDCryptoConverter.class)
     private UUID uuid = UUID.randomUUID();
 
     @Column(name = "username", nullable = false, unique = true)
