@@ -29,7 +29,7 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String idCard;
 
-    @Column(name = "user_uuid", unique = true, length = UUID_COLUMN_LENGTH, nullable = false, columnDefinition = "uuid")
+    @Column(name = "user_uuid", unique = true, length = UUID_COLUMN_LENGTH, nullable = false)
     @Convert(converter = UUIDCryptoConverter.class)
     private UUID uuid = UUID.randomUUID();
 
