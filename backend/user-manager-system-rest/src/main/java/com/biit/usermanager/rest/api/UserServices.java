@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,8 +41,8 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         super(userController);
     }
 
-    @PreAuthorize("hasAuthority('USERMANAGERSYSTEM_ADMIN')")
-    //@PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    //@PreAuthorize("hasAuthority('USERMANAGERSYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,

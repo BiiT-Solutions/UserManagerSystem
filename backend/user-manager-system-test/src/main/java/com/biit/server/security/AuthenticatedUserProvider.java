@@ -25,7 +25,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    @Value("#{'${user.provider.test.authorities:ADMIN,VIEWER}'.split(',')}")
+    @Value("#{'${user.provider.test.authorities:ADMIN,EDITOR,VIEWER}'.split(',')}")
     private List<String> authorities;
 
     @Value("${spring.application.name:}")

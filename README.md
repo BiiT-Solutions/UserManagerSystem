@@ -257,10 +257,11 @@ jwt.expiration=604800000
 jwt.ip.check=false
 jwt.user=admin
 jwt.password=asd123
-user.provider.test.authorities=ADMIN,VIEWER
+user.provider.test.authorities=ADMIN,EDITOR,VIEWER
 ```
 
-If you do not set the parameter `user.provider.test.authorities`, by default has already the value `ADMIN,VIEWER`.
+If you do not set the parameter `user.provider.test.authorities`, by default has already the value `ADMIN,EDITOR,VIEWER`. That
+will generate the authorities `<<yourapplication>>_ADMIN`, `<<yourapplication>>_EDITOR` and `<<yourapplication>>_VIEWER`. 
 
 # Dependencies
 
