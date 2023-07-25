@@ -92,7 +92,8 @@ On the `application.properties` set the next property:
 usermanager.server.url=https://testing.biit-solutions.com/user-manager-system-backend
 ``` 
 
-And change the URL depending on your needs. As it is using JWT for communication, remember to set the JWT settings on the `application.properties`:
+And change the URL depending on your needs. As it is using JWT for communication, remember to set the JWT settings on
+the `application.properties`:
 
 ```
 jwt.user=
@@ -248,14 +249,21 @@ If you want to test your application without connecting to the User Manager Syst
 
 This application include a basic AuthenticatedUserProvided that handle user on memory rather than accessing to the API.
 For defining custom roles of your application, you need to add on the `application.properties` of your test the
-property:
+property `user.provider.test.authorities`:
 
 ```
+jwt.secret=asd123
+jwt.expiration=604800000
+jwt.ip.check=false
+jwt.user=admin
+jwt.password=asd123
 user.provider.test.authorities=ADMIN,VIEWER
 ```
 
+If you do not set the parameter `user.provider.test.authorities`, by default has already the value `ADMIN,VIEWER`.
+
 # Dependencies
 
-As it uses `Rest Server Security`, all configurations for this library must be configured. Check the project for a
-deeper information.
+As it uses `Rest Server Security`, all configurations for this library must be configured.
+Check [this project](https://git.biit-solutions.com/BiiT/RestServicesSecurity) for extra information.
 

@@ -3,11 +3,11 @@
     <test name="UserManager" enabled="true" preserve-order="true">
         <groups>
             <run>
-<!--                <include name=""/>-->
+                <include name="clientTests"/>
             </run>
         </groups>
         <classes>
-<!--            <class name=""/>-->
+            <class name="com.biit.server.security.tests.ClientTests"/>
         </classes>
     </test>
 </suite>

@@ -1,7 +1,8 @@
 package com.biit.server.security;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,16 +16,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Primary
 @Repository
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    @Value("#{'${user.provider.test.authorities}'.split(',')}")
+    @Value("#{'${user.provider.test.authorities:ADMIN,VIEWER}'.split(',')}")
     private List<String> authorities;
+
+    @Value("${spring.application.name:}")
+    private String applicationName;
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
@@ -70,31 +75,43 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         usersOnMemory.clear();
     }
 
-    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password) {
+    public IAuthenticatedUser createUser(String username, String uuid, String name, String lastName, String password) {
         if (findByUsername(username).isPresent()) {
             throw new RuntimeException("Username exists!");
         }
 
         final AuthenticatedUser authenticatedUser = new AuthenticatedUser();
         authenticatedUser.setUsername(username);
-        authenticatedUser.setAuthorities(authorities.stream().map(s -> s.replace(" ", ""))
+
+        //Add application in authority.
+        final Set<String> applicationAuthorities = authorities.stream().map(s -> applicationName.toUpperCase() + "_" + s.replace(" ", ""))
+                .collect(Collectors.toSet());
+
+        //Also set the pure ones to be sure that on tests people is allowed to use them.
+        applicationAuthorities.addAll(authorities.stream().map(s -> s.replace(" ", "")).collect(Collectors.toSet()));
+
+        authenticatedUser.setAuthorities(applicationAuthorities.stream()
                 .map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-        authenticatedUser.setUID(uniqueId);
+        authenticatedUser.setUID(uuid);
         authenticatedUser.setName(name);
         authenticatedUser.setLastname(lastName);
         if (password != null) {
-            authenticatedUser.setPassword(encoder.encode(password));
+            authenticatedUser.setPassword(encoder.encode(bcryptSalt + password));
         }
 
         usersOnMemory.add(authenticatedUser);
-        setRoles(authenticatedUser, authorities.stream().map(s -> s.replace(" ", ""))
-                .collect(Collectors.toSet()));
+        //Roles with application name.
+        final Set<String> roles = authorities.stream().map(s -> applicationName.toUpperCase() + "_" + s.replace(" ", ""))
+                .collect(Collectors.toSet());
+        //Pure roles
+        roles.addAll(authorities.stream().map(s -> s.replace(" ", "")).collect(Collectors.toSet()));
+        setRoles(authenticatedUser, roles);
 
         return authenticatedUser;
     }
 
     public IAuthenticatedUser createUser(String username, String name, String password) {
-        return createUser(username, String.valueOf(idCounter++), name, null, password);
+        return createUser(username, UUID.randomUUID().toString(), name, null, password);
     }
 
 

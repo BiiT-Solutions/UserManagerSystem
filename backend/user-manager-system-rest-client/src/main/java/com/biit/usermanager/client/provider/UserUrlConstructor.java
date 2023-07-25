@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class UserUrlConstructor {
 
-    @Value("${usermanager.server.url:null}")
+    @Value("${usermanager.server.url:#{null}}")
     private String userManagerServerUrl;
 
     public String getUserManagerServerUrl() {

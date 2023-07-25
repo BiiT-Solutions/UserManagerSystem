@@ -7,6 +7,7 @@ import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.model.UpdatePasswordRequest;
+import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import com.biit.usermanager.client.provider.converters.UserDTOConverter;
 import com.biit.usermanager.client.provider.models.Email;
 import com.biit.usermanager.client.validators.EmailValidator;
@@ -18,6 +19,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +33,8 @@ import java.util.Set;
 
 
 @Service
+@Order(2)
+@Qualifier("userManagerClient")
 public class UserManagerClient implements IAuthenticatedUserProvider {
 
     private final UserUrlConstructor userUrlConstructor;
@@ -58,6 +63,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -75,6 +83,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -91,6 +102,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -106,6 +120,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -123,6 +140,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -139,6 +159,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -156,6 +179,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -173,6 +199,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
         }
     }
 
@@ -190,6 +219,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
         }
     }
 
@@ -204,6 +236,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
         }
     }
 
@@ -218,6 +253,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
         }
     }
 
@@ -235,6 +273,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
         }
     }
 
@@ -252,6 +293,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return -1;
         }
     }
 
@@ -270,6 +314,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
         }
     }
 
@@ -287,6 +334,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return false;
         }
     }
 
@@ -303,6 +353,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return false;
         }
     }
 
@@ -324,6 +377,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new HashSet<>();
         }
         return roles;
     }
