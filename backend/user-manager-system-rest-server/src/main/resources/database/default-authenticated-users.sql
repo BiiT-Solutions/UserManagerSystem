@@ -57,3 +57,13 @@ INSERT INTO roles (id, name, description) VALUES (-63, 'baseformdroolsengine_adm
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-64, -4 , -61, -1, -60);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-65, -4 , -62, -1, -60);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-66, -4 , -63, -1, -60);
+
+
+-- InfographicEngine
+INSERT INTO applications (id, name) VALUES (-70, 'InfographicEngine');
+INSERT INTO roles (id, name, description) VALUES (-71, 'infographicengine_viewer', '');
+INSERT INTO roles (id, name, description) VALUES (-72, 'infographicengine_editor', '');
+INSERT INTO roles (id, name, description) VALUES (-73, 'infographicengine_admin', '');
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-74, -4 , -71, -1, -70);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-75, -4 , -72, -1, -70);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-76, -4 , -73, -1, -70);
