@@ -37,6 +37,7 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         return uuid;
     }
 
+    @JsonIgnore
     @Override
     public String getUID() {
         if (uuid == null) {
@@ -45,6 +46,7 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         return uuid.toString();
     }
 
+    @JsonIgnore
     public void setUID(String uid) {
         if (uid == null) {
             this.uuid = null;
@@ -62,16 +64,19 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         this.username = username;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return false;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return false;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return false;
@@ -82,6 +87,7 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         return false;
     }
 
+    @JsonIgnore
     @Override
     public String getFullName() {
         return (getFirstName() != null ? getFirstName() : "")
@@ -89,16 +95,19 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
                 + (getLastName() != null ? getLastName() : "");
     }
 
+    @JsonIgnore
     @Override
     public String getMobilePhone() {
         return null;
     }
 
+    @JsonIgnore
     @Override
     public String getEmailAddress() {
         return null;
     }
 
+    @JsonIgnore
     @Override
     public String getFirstName() {
         return firstname;
@@ -109,6 +118,7 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         return null;
     }
 
+    @JsonIgnore
     @Override
     public String getLastName() {
         return lastname;
@@ -132,6 +142,7 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         return null;
     }
 
+    @JsonIgnore
     @Override
     public void setFirstName(String firstname) {
         this.firstname = firstname;
@@ -141,6 +152,7 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
         this.firstname = firstname;
     }
 
+    @JsonIgnore
     @Override
     public void setLastName(String surname) {
         this.lastname = surname;

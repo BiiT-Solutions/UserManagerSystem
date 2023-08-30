@@ -45,16 +45,19 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private Set<String> grantedAuthorities;
 
+    @JsonIgnore
     @Override
     public String getMobilePhone() {
         return getPhone();
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return !accountExpired;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return !accountLocked;
@@ -78,6 +81,7 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
         this.email = email;
     }
 
+    @JsonIgnore
     @Override
     public String getEmailAddress() {
         return getEmail();
