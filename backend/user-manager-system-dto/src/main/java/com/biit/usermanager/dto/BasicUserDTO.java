@@ -16,7 +16,7 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
 
     private String username = "";
 
-    private String firstname = "";
+    private String name = "";
 
     private String lastname = "";
 
@@ -110,7 +110,15 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
     @JsonIgnore
     @Override
     public String getFirstName() {
-        return firstname;
+        return name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -145,11 +153,11 @@ public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthentica
     @JsonIgnore
     @Override
     public void setFirstName(String firstname) {
-        this.firstname = firstname;
+        this.name = firstname;
     }
 
     public void setFirstname(String firstname) {
-        this.firstname = firstname;
+        this.name = firstname;
     }
 
     @JsonIgnore

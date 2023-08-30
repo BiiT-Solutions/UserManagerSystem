@@ -19,6 +19,12 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private String phone = "";
 
+    private String address;
+
+    private String postalCode;
+
+    private String city;
+
     @JsonIgnore
     private Locale locale;
 
@@ -32,8 +38,6 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     private boolean accountBlocked = false;
 
     private boolean accountExpired = false;
-
-    private boolean enabled = true;
 
     public String getIdCard() {
         return idCard;
@@ -68,9 +72,10 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
         return !accountExpired;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return !accountBlocked;
     }
 
     public String getEmail() {
@@ -165,4 +170,35 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
         this.phone = phone;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public boolean isAccountExpired() {
+        return accountExpired;
+    }
+
+    public void setAccountExpired(boolean accountExpired) {
+        this.accountExpired = accountExpired;
+    }
 }
