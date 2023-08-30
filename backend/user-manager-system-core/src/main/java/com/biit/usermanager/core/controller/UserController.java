@@ -300,8 +300,8 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         return getConverter().convert(new UserConverterRequest(getProvider().update(getConverter().reverse(userDTO))));
     }
 
-    public List<UserDTO> getByEnable(Boolean enable) {
-        return getProvider().findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(getConverter()::convert)
+    public List<UserDTO> getByAccountBlocked(boolean accountBlocked) {
+        return getProvider().findAllByAccountBlocked(accountBlocked).parallelStream().map(this::createConverterRequest).map(getConverter()::convert)
                 .collect(Collectors.toList());
     }
 

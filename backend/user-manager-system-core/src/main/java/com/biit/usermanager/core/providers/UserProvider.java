@@ -45,9 +45,8 @@ public class UserProvider extends CrudProvider<User, Long, UserRepository> {
     }
 
 
-    public List<User> findAllByEnable(boolean enabled) {
-
-        return getRepository().findAllByEnabled(enabled);
+    public List<User> findAllByAccountBlocked(boolean accountBlocked) {
+        return getRepository().findAllByAccountBlocked(accountBlocked);
     }
 
     public Optional<User> findByPhone(String phone) {

@@ -68,9 +68,9 @@ public class UserNotDisableTest extends AbstractTestNGSpringContextTests {
 
 
 
-        user1.setEnabled(true);
-        user2.setEnabled(false);
-        user3.setEnabled(true);
+        user1.setAccountBlocked(true);
+        user2.setAccountBlocked(false);
+        user3.setAccountBlocked(true);
 
         Assert.assertNull(user1.getId());
         Assert.assertNull(user2.getId());
@@ -86,11 +86,11 @@ public class UserNotDisableTest extends AbstractTestNGSpringContextTests {
     }
 
     @Test(dependsOnMethods = "saveUser")
-    public void getUsersByNotDisable() {
-        List<User> usersList = userRepository.findAllByEnabled(true);
+    public void getUsersByNotBlocked() {
+        List<User> usersList = userRepository.findAllByAccountBlocked(true);
         Assert.assertEquals(usersList.size(), 2);
         for (User user : usersList) {
-            Assert.assertTrue(user.isEnabled());
+            Assert.assertTrue(user.isAccountBlocked());
         }
     }
 

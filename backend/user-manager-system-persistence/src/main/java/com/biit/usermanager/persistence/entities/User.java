@@ -97,10 +97,6 @@ public class User extends Element {
     @Convert(converter = BooleanCryptoConverter.class)
     private boolean accountExpired = false;
 
-    @Column(name = "enabled", nullable = false)
-    @Convert(converter = BooleanCryptoConverter.class)
-    private boolean enabled = true;
-
     public UUID getUuid() {
         return uuid;
     }
@@ -195,14 +191,6 @@ public class User extends Element {
 
     public void setAccountExpired(boolean accountExpired) {
         this.accountExpired = accountExpired;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getPhone() {

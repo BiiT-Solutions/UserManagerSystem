@@ -122,7 +122,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @GetMapping(value = "/enable/{enable}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getEnabled(@Parameter(description = "enable/disable", required = true)
                                     @PathVariable("enable") boolean enable, HttpServletRequest request) {
-        return getController().getByEnable(enable);
+        return getController().getByAccountBlocked(enable);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")

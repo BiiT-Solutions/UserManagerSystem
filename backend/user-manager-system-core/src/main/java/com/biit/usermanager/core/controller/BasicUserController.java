@@ -103,8 +103,8 @@ public class BasicUserController extends BasicElementController<User, BasicUserD
         return user.getPassword();
     }
 
-    public List<BasicUserDTO> getByEnable(Boolean enable) {
-        return getProvider().findAllByEnable(enable).parallelStream().map(this::createConverterRequest).map(getConverter()::convert)
+    public List<BasicUserDTO> getByAccountBlocked(Boolean accountBlocked) {
+        return getProvider().findAllByAccountBlocked(accountBlocked).parallelStream().map(this::createConverterRequest).map(getConverter()::convert)
                 .collect(Collectors.toList());
     }
 
