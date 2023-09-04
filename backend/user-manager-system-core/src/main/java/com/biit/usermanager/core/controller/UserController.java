@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -330,8 +331,8 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     }
 
     @Override
-    public boolean deleteUser(String name, String username) {
-        return delete(username) != null;
+    public boolean deleteUser(String deletedBy, String username) {
+        return delete(username, deletedBy) != null;
     }
 
     @Override
@@ -359,7 +360,19 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         return new HashSet<>();
     }
 
-    public UserDTO delete(String username) {
+    @Override
+    public void delete(UserDTO entity, String deletedBy) {
+        if (Objects.equals(entity.getUsername(), deletedBy)) {
+            throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
+        }
+        getProvider().delete(getConverter().reverse(entity));
+    }
+
+
+    public UserDTO delete(String username, String deletedBy) {
+        if (Objects.equals(username, deletedBy)) {
+            throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
+        }
         final Optional<User> user = getProvider().deleteByUsername(username);
         UserManagerLogger.warning(this.getClass(), "Deleting user '" + user + "'!.");
         return user.map(value -> getConverter().convert(new UserConverterRequest(value))).orElse(null);

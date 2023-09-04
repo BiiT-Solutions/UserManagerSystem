@@ -71,7 +71,7 @@ public class BasicUserServices extends BasicServices<User, BasicUserDTO, UserRep
 
     @Operation(hidden = true)
     @Override
-    public void delete(@RequestBody BasicUserDTO dto, HttpServletRequest request) {
+    public void delete(@RequestBody BasicUserDTO dto, Authentication authentication, HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not valid!");
     }
 

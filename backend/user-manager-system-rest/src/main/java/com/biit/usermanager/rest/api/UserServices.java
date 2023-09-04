@@ -187,7 +187,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     public UserDTO deleteUser(@Parameter(description = "username", required = true)
                               @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            return getController().delete(username);
+            return getController().delete(username, authentication.getName());
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
