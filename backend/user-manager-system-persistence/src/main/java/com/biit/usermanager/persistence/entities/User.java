@@ -73,6 +73,10 @@ public class User extends Element {
     @Convert(converter = StringCryptoConverter.class)
     private String city;
 
+    @Column(name = "country", length = MAX_UNIQUE_COLUMN_LENGTH)
+    @Convert(converter = StringCryptoConverter.class)
+    private String country;
+
     @Column(name = "locale")
     @Convert(converter = StringCryptoConverter.class)
     private String locale = "";
@@ -239,6 +243,14 @@ public class User extends Element {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     @Override

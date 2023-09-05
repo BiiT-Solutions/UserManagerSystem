@@ -25,6 +25,8 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private String city;
 
+    private String country;
+
     @JsonIgnore
     private Locale locale;
 
@@ -188,6 +190,14 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     public String getCity() {
         return city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public void setCity(String city) {
