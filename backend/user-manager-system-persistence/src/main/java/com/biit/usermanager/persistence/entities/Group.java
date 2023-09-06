@@ -1,6 +1,7 @@
 package com.biit.usermanager.persistence.entities;
 
 import com.biit.database.encryption.StringCryptoConverter;
+import com.biit.server.persistence.entities.Element;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.providers;
 
-import com.biit.server.providers.CrudProvider;
+import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.Group;
 import com.biit.usermanager.persistence.repositories.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class GroupProvider extends CrudProvider<Group, Long, GroupRepository> {
+public class GroupProvider extends ElementProvider<Group, Long, GroupRepository> {
 
     @Autowired
     public GroupProvider(GroupRepository repository) {

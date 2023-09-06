@@ -33,6 +33,10 @@
             <groupId>com.biit</groupId>
             <artifactId>database-encryptor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.biit</groupId>
+            <artifactId>rest-server-persistence</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.mysql</groupId>

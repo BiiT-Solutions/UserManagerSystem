@@ -6,6 +6,7 @@ import com.biit.database.encryption.LocalDateCryptoConverter;
 import com.biit.database.encryption.LocalDateTimeCryptoConverter;
 import com.biit.database.encryption.StringCryptoConverter;
 import com.biit.database.encryption.UUIDCryptoConverter;
+import com.biit.server.persistence.entities.Element;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

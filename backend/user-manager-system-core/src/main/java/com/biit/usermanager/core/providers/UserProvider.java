@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 
-import com.biit.server.providers.CrudProvider;
+import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserProvider extends CrudProvider<User, Long, UserRepository> {
+public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     @Autowired
     public UserProvider(UserRepository repository) {

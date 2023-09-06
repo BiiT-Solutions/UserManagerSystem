@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.providers;
 
-import com.biit.server.providers.CrudProvider;
+import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.Group;
 import com.biit.usermanager.persistence.entities.Role;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserRoleProvider extends CrudProvider<UserRole, Long, UserRoleRepository> {
+public class UserRoleProvider extends ElementProvider<UserRole, Long, UserRoleRepository> {
 
     @Autowired
     public UserRoleProvider(UserRoleRepository repository) {

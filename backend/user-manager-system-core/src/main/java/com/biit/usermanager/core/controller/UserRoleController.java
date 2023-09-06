@@ -78,9 +78,6 @@ public class UserRoleController extends BasicElementController<UserRole, UserRol
     }
 
     public List<UserRoleDTO> getByGroup(String groupName) {
-        System.out.println("#######################3 " + groupName);
-        System.out.println(groupProvider.getAll());
-        System.out.println(groupProvider.findByName(groupName));
         final Group group = groupProvider.findByName(groupName).orElseThrow(() -> new GroupNotFoundException(getClass(),
                 "Group with name '" + groupName + "' not found.", ExceptionType.WARNING));
         return getConverter().convertAll(getProvider().findByGroup(group).stream().map(this::createConverterRequest).collect(Collectors.toList()));

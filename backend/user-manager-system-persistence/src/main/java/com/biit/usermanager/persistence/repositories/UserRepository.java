@@ -1,8 +1,8 @@
 package com.biit.usermanager.persistence.repositories;
 
+import com.biit.server.persistence.repositories.ElementRepository;
 import com.biit.usermanager.persistence.entities.User;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 @Transactional
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends ElementRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
