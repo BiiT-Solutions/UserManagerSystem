@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.biit</groupId>
         <artifactId>user-manager-system</artifactId>
-        <version>0.2.79</version>
+        <version>0.2.80-SNAPSHOT</version>
     </parent>
 
 
