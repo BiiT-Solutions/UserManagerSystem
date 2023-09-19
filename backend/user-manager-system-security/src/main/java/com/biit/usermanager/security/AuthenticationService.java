@@ -50,7 +50,6 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         this.mapper = mapper;
     }
 
-    @Cacheable("users")
     @Override
     public IUser<Long> authenticate(String email, String password) throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         // Login fails if either the username or password is null
@@ -81,7 +80,6 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @Cacheable("groups")
     @Override
     public IGroup<Long> getDefaultGroup(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (user == null) {
@@ -108,7 +106,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @Cacheable("users")
+    @Cacheable(value = "users-by-mail", key = "#email")
     @Override
     public IUser<Long> getUserByEmail(String email) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (email == null) {
@@ -135,7 +133,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @Cacheable("users")
+    @Cacheable(value = "users", key = "#userId")
     @Override
     public IUser<Long> getUserById(long userId) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         try {
@@ -158,7 +156,6 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @Cacheable("groups")
     @Override
     public boolean isInGroup(IGroup<Long> group, IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
         try {
@@ -182,7 +179,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @CacheEvict(allEntries = true, value = {"users"})
+    @CacheEvict(allEntries = true, value = {"users", "users-by-mail"})
     @Override
     public IUser<Long> updatePassword(IUser<Long> user, String plainTextPassword) throws UserDoesNotExistException,
             InvalidCredentialsException, UserManagementException {
@@ -215,7 +212,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @CacheEvict(allEntries = true, value = {"users"})
+    @CacheEvict(allEntries = true, value = {"users", "users-by-mail"})
     @Override
     public IUser<Long> updateUser(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         // Login fails if either the username or password is null
@@ -247,7 +244,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
 
-    @CacheEvict(allEntries = true, value = {"users", "groups"})
+    @CacheEvict(allEntries = true, value = {"users", "groups", "users-by-mail"})
     @Scheduled(fixedDelay = CACHE_EXPIRATION_TIME)
     @Override
     public void reset() {
@@ -285,7 +282,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
         }
     }
 
-    @CacheEvict(allEntries = true, value = {"users", "groups"})
+    @CacheEvict(allEntries = true, value = {"users", "groups", "users-by-mail"})
     @Override
     public void deleteUser(IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
         try (Response response = securityClient.delete(authenticationUrlConstructor.getUserManagerServerUrl(),

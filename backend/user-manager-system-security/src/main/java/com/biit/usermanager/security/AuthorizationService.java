@@ -49,7 +49,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         this.mapper = mapper;
     }
 
-    @Cacheable("users")
     @Override
     public Set<IUser<Long>> getAllUsers() throws UserManagementException, InvalidCredentialsException {
         try {
@@ -71,7 +70,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("users")
     @Override
     public Set<IUser<Long>> getAllUsers(IGroup<Long> group) throws UserManagementException, OrganizationDoesNotExistException,
             InvalidCredentialsException {
@@ -97,7 +95,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("groups")
+    @Cacheable(value = "groups", key = "#groupId")
     @Override
     public IGroup<Long> getOrganization(Long groupId) throws UserManagementException, OrganizationDoesNotExistException, InvalidCredentialsException {
         if (groupId == null) {
@@ -121,7 +119,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("groups")
     @Override
     public IGroup<Long> getOrganization(String groupName) throws UserManagementException, InvalidCredentialsException,
             OrganizationDoesNotExistException {
@@ -146,7 +143,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getAllAvailableOrganizations() throws UserManagementException, InvalidCredentialsException {
         try {
@@ -168,7 +164,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("roles")
+    @Cacheable(value = "roles", key = "#roleId")
     @Override
     public IRole<Long> getRole(Long roleId) throws UserManagementException, RoleDoesNotExistsException, InvalidCredentialsException {
         if (roleId == null) {
@@ -192,7 +188,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("roles")
     @Override
     public IRole<Long> getRole(String roleName) throws UserManagementException, RoleDoesNotExistsException, InvalidCredentialsException {
         if (roleName == null) {
@@ -216,14 +211,12 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("roles")
     @Override
     public Set<IRole<Long>> getUserGroupRoles(IGroup<Long> organization) throws OrganizationDoesNotExistException,
             UserManagementException, InvalidCredentialsException {
         return getAllRoles(organization);
     }
 
-    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserGroups(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (user == null) {
@@ -254,7 +247,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         return getUserGroups(user);
     }
 
-    @Cacheable("roles")
     @Override
     public Set<IRole<Long>> getUserRoles(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
         if (user == null) {
@@ -279,7 +271,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("roles")
     @Override
     public Set<IRole<Long>> getUserRoles(IUser<Long> user, IGroup<Long> organization) throws UserManagementException, UserDoesNotExistException,
             InvalidCredentialsException, OrganizationDoesNotExistException {
@@ -309,7 +300,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("roles")
     @Override
     public Set<IRole<Long>> getAllRoles(IGroup<Long> group) throws UserManagementException, OrganizationDoesNotExistException,
             InvalidCredentialsException {
@@ -335,7 +325,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
     }
 
-    @Cacheable("users")
     @Override
     public Set<IUser<Long>> getUsers(IRole<Long> role, IGroup<Long> group) throws UserManagementException, RoleDoesNotExistsException,
             OrganizationDoesNotExistException, InvalidCredentialsException {
@@ -443,21 +432,18 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         //Only for handling Spring cache.
     }
 
-    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserParentOrganizations(IUser<Long> user) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
         return getUserGroups(user).stream().filter(group -> ((GroupDTO) group).getParent() == null).collect(Collectors.toSet());
     }
 
-    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
         return getUserGroups(user).stream().filter(group -> ((GroupDTO) group).getParent() != null).collect(Collectors.toSet());
     }
 
-    @Cacheable("groups")
     @Override
     public Set<IGroup<Long>> getUserOrganizations(IUser<Long> user, IGroup<Long> site) throws UserManagementException {
         return null;
