@@ -28,8 +28,8 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git.biit-solutions.com:BiiT/UserManagerSystem.git</connection>
-        <developerConnection>scm:git:git.biit-solutions.com:BiiT/UserManagerSystem.git</developerConnection>
+        <connection>scm:git:git.biit-solutions.com:Java/UserManagerSystem.git</connection>
+        <developerConnection>scm:git:git.biit-solutions.com:Java/UserManagerSystem.git</developerConnection>
         <tag>UserManagerSystem</tag>
     </scm>
 
