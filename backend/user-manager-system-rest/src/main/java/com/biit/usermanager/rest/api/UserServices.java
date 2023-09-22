@@ -181,8 +181,8 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Deletes a user.", security = @SecurityRequirement(name = "bearerAuth"))
-    @DeleteMapping(path = "/{username}")
+    @Operation(summary = "Deletes a user by username.", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping(path = "/username/{username}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public UserDTO deleteUser(@Parameter(description = "username", required = true)
                               @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
