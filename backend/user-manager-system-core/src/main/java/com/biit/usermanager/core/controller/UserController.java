@@ -332,7 +332,12 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
 
     @Override
     public boolean deleteUser(String deletedBy, String username) {
-        return delete(username, deletedBy) != null;
+        try {
+            delete(username, deletedBy);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -369,13 +374,16 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     }
 
 
-    public UserDTO delete(String username, String deletedBy) {
+    public void delete(String username, String deletedBy) {
         if (Objects.equals(username, deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
         }
-        final Optional<User> user = getProvider().deleteByUsername(username);
-        UserManagerLogger.warning(this.getClass(), "Deleting user '" + user + "'!.");
-        return user.map(value -> getConverter().convert(new UserConverterRequest(value))).orElse(null);
+        long count = getProvider().deleteByUsername(username);
+        if (count == 0) {
+            throw new UserNotFoundException(this.getClass(), "Cannot delete user.");
+        } else {
+            UserManagerLogger.warning(this.getClass(), "Deleting user '" + username + "'!.");
+        }
     }
 
     private UserDTO setGrantedAuthorities(UserDTO userDTO, GroupDTO groupDTO, ApplicationDTO applicationDTO) {

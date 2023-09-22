@@ -184,13 +184,8 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     @Operation(summary = "Deletes a user by username.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/username/{username}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public UserDTO deleteUser(@Parameter(description = "username", required = true)
-                              @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
-        try {
-            return getController().delete(username, authentication.getName());
-        } catch (Exception e) {
-            UserManagerLogger.errorMessage(this.getClass(), e);
-        }
-        throw new UserNotFoundException(this.getClass(), "No user found with username '" + username + "'");
+    public void deleteUser(@Parameter(description = "username", required = true)
+                           @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
+        getController().delete(username, authentication.getName());
     }
 }

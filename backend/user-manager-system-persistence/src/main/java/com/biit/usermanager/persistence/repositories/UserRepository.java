@@ -31,5 +31,5 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     List<User> findByAccountExpired(boolean accountExpired);
 
-    Optional<User> deleteByUsername(String username);
+    long deleteByUsername(String username);
 }

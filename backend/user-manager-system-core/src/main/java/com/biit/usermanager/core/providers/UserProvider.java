@@ -61,7 +61,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         return getRepository().findAll();
     }
 
-    public Optional<User> deleteByUsername(String username) {
+    public long deleteByUsername(String username) {
         return getRepository().deleteByUsername(username);
     }
 
