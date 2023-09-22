@@ -138,19 +138,31 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Updates a password.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Updates a password by an admin user. Does not require to know the old password.",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public UserDTO updateUserPassword(@Parameter(description = "username", required = true)
                                       @PathVariable("username") String username,
                                       @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
-            return (UserDTO) getController().updatePassword(username, request.getOldPassword(), request.getNewPassword(), authentication.getName());
+            return (UserDTO) getController().updatePassword(username, request.getNewPassword(), authentication.getName());
         } catch (Exception e) {
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
         return null;
     }
+
+
+    @Operation(summary = "Checks if a username is already taken or not.")
+    @GetMapping(path = "/public/{username}/check")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void checkUsernameExists(@Parameter(description = "username", required = true)
+                                    @PathVariable("username") String username,
+                                    HttpServletRequest httpRequest) {
+        getController().checkUsernameExists(username);
+    }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)

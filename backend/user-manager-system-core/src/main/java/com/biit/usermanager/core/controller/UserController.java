@@ -258,6 +258,23 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
     }
 
+    /**
+     * Updates a user password, but does not check the old password. Only for using by Admins.
+     *
+     * @param username    user to be changed
+     * @param newPassword the new password
+     * @param updatedBy   the admin who is updating it.
+     * @return the updated user.
+     */
+    public IAuthenticatedUser updatePassword(String username, String newPassword, String updatedBy) {
+        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+        userDTO.setPassword(newPassword);
+        userDTO.setUpdatedBy(updatedBy);
+        UserManagerLogger.info(this.getClass(), "Password updated!.");
+        return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
+    }
+
     public void checkPassword(String username, String password) {
         final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
@@ -401,5 +418,10 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
             userDTO.setGrantedAuthorities(grantedAuthorities);
         }
         return userDTO;
+    }
+
+    public void checkUsernameExists(String username) {
+        getProvider().findByUsername(username).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No uses exists with the username '" + username + "'."));
     }
 }
