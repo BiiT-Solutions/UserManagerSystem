@@ -378,7 +378,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         if (Objects.equals(username, deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
         }
-        long count = getProvider().deleteByUsername(username);
+        final long count = getProvider().deleteByUsername(username);
         if (count == 0) {
             throw new UserNotFoundException(this.getClass(), "Cannot delete user.");
         } else {
