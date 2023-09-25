@@ -178,6 +178,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         return null;
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
     @GetMapping(path = "/uids/{uids}/password", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -191,6 +192,7 @@ public class UserServices extends BasicServices<User, UserDTO, UserRepository,
         }
         return null;
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a user by username.", security = @SecurityRequirement(name = "bearerAuth"))

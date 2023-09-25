@@ -1,5 +1,5 @@
 -- User Manager System
-INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired, enabled) VALUES (-1, 'e58ed763-928c-4155-bee9-fdbaaadc15f3', 'admin@test.com', 'admin@test.com', 'Admin', 'Admin', '$2a$10$V84FYKhHogkULl5OlAzw1.mLquRv0Y5kAOtYgUBnv0NuE56KGlBnO', '+34722177548', 0, 0, 0, 1);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-1, 'e58ed763-928c-4155-bee9-fdbaaadc15f3', 'admin@test.com', 'admin@test.com', 'Admin', 'Admin', '$2a$10$V84FYKhHogkULl5OlAzw1.mLquRv0Y5kAOtYgUBnv0NuE56KGlBnO', '+34722177548', 0, 0, 0);
 INSERT INTO applications (id, name) VALUES (-5, 'UserManagerSystem');
 INSERT INTO roles (id, name, description) VALUES (-2, 'usermanagersystem_admin', '');
 INSERT INTO roles (id, name, description) VALUES (-3, 'usermanagersystem_viewer', '');
@@ -67,3 +67,12 @@ INSERT INTO roles (id, name, description) VALUES (-73, 'infographicengine_admin'
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-74, -4 , -71, -1, -70);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-75, -4 , -72, -1, -70);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-76, -4 , -73, -1, -70);
+
+-- Knowledge System
+INSERT INTO applications (id, name) VALUES (-80, 'InfographicEngine');
+INSERT INTO roles (id, name, description) VALUES (-81, 'knowledgesystem_viewer', '');
+INSERT INTO roles (id, name, description) VALUES (-82, 'knowledgesystem_editor', '');
+INSERT INTO roles (id, name, description) VALUES (-83, 'knowledgesystem_admin', '');
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-84, -4 , -81, -1, -80);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-85, -4 , -82, -1, -80);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-86, -4 , -83, -1, -80);
