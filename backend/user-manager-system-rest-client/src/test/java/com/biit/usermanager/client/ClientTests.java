@@ -119,7 +119,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         user = userManagerClient.findByUsername(USER_NAME, null);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
-        Assert.assertEquals(user.get().getAuthorities().size(), 2);
+        Assert.assertEquals(user.get().getAuthorities().size(), 4);
 
         System.out.println(" #------------------------------------ Expected Exception ----------------------------");
         try {
