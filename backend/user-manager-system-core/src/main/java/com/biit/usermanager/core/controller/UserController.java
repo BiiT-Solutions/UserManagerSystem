@@ -412,21 +412,26 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
      * Populate the authorities for a user. If a group is selected, only the one of the group. If not the roles that are not at group level.
      *
      * @param userDTO   The user to populate.
-     * @param groupDTOs The list of groups to be used.
+     * @param groupDTOs The list of groups to be used. If this value is null, gets all roles of any group.
      * @return the populated user.
      */
     private UserDTO setGrantedAuthorities(UserDTO userDTO, Collection<GroupDTO> groupDTOs) {
         if (userDTO != null) {
             final Set<String> grantedAuthorities = new HashSet<>();
             final List<UserRole> userRoles = new ArrayList<>();
-            //Roles with no group.
-            userRoles.addAll(userRoleProvider.findByUserAndGroup(
-                    getConverter().reverse(userDTO), null));
-            //Roles from groups.
-            userRoles.addAll(userRoleProvider.findByUserAndGroupIn(
-                    getConverter().reverse(userDTO),
-                    groupConverter.reverseAll(groupDTOs)
-            ));
+            if (groupDTOs == null) {
+                userRoles.addAll(new ArrayList<>(userRoleProvider.findByUser(
+                        getConverter().reverse(userDTO))));
+            } else {
+                //Roles with no group.
+                userRoles.addAll(userRoleProvider.findByUserAndGroup(
+                        getConverter().reverse(userDTO), null));
+                //Roles from groups.
+                userRoles.addAll(userRoleProvider.findByUserAndGroupIn(
+                        getConverter().reverse(userDTO),
+                        groupConverter.reverseAll(groupDTOs)
+                ));
+            }
             userRoles.stream()
                     .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)
                     .forEach(userRole -> grantedAuthorities.add(userRole.getRole().getName().toUpperCase()));

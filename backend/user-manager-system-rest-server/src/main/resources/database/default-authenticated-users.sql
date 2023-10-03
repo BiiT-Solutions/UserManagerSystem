@@ -3,11 +3,11 @@ INSERT INTO users (id, user_uuid, username, email, name, lastname, password, pho
 INSERT INTO applications (id, name) VALUES (-5, 'UserManagerSystem');
 INSERT INTO roles (id, name, description) VALUES (-2, 'usermanagersystem_admin', '');
 INSERT INTO roles (id, name, description) VALUES (-3, 'usermanagersystem_viewer', '');
-INSERT INTO groups (id, name) VALUES (-4, 'localhost');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-6, -4 , -2, -1, -5);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-7, -4 , -3, -1, -5);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-8, null, -2, -1, null);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-9, null, -3, -1, null);
+INSERT INTO groups (id, name, application_id) VALUES (-4, 'users', -5);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-6, -4 , -2, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-7, -4 , -3, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-8, null, -2, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-9, null, -3, -1);
 
 
 -- KafkaProxy
@@ -15,9 +15,10 @@ INSERT INTO applications (id, name) VALUES (-20, 'KafkaProxy');
 INSERT INTO roles (id, name, description) VALUES (-21, 'kafkaproxy_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-22, 'kafkaproxy_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-23, 'kafkaproxy_admin', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-24, -4 , -21, -1, -20);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-25, -4 , -22, -1, -20);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-26, -4 , -23, -1, -20);
+INSERT INTO groups (id, name, application_id) VALUES (-24, 'users', -20);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-25, -24 , -21, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-26, -24 , -22, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-27, -24 , -23, -1);
 
 
 -- Task Junction
@@ -25,9 +26,10 @@ INSERT INTO applications (id, name) VALUES (-30, 'TaskJunction');
 INSERT INTO roles (id, name, description) VALUES (-31, 'taskjunction_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-32, 'taskjunction_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-33, 'taskjunction_admin', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-34, -4 , -31, -1, -30);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-35, -4 , -32, -1, -30);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-36, -4 , -33, -1, -30);
+INSERT INTO groups (id, name, application_id) VALUES (-34, 'users', -30);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-35, -34 , -31, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-36, -34 , -32, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-37, -34 , -33, -1);
 
 
 -- Appointment Center
@@ -35,9 +37,10 @@ INSERT INTO applications (id, name) VALUES (-40, 'AppointmentCenter');
 INSERT INTO roles (id, name, description) VALUES (-41, 'appointmentcenter_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-42, 'appointmentcenter_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-43, 'appointmentcenter_admin', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-44, -4 , -41, -1, -40);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-45, -4 , -42, -1, -40);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-46, -4 , -43, -1, -40);
+INSERT INTO groups (id, name, application_id) VALUES (-44, 'users', -40);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-44, -44 , -41, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-45, -44 , -42, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-46, -44 , -43, -1);
 
 
 -- Fact Manager
@@ -45,18 +48,20 @@ INSERT INTO applications (id, name) VALUES (-50, 'FactManager');
 INSERT INTO roles (id, name, description) VALUES (-51, 'factmanager_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-52, 'factmanager_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-53, 'factmanager_admin', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-54, -4 , -51, -1, -50);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-55, -4 , -52, -1, -50);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-56, -4 , -53, -1, -50);
+INSERT INTO groups (id, name, application_id) VALUES (-54, 'users', -50);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-55, -54 , -51, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-56, -54 , -52, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-57, -54 , -53, -1);
 
 -- Base Form Drools Engine
 INSERT INTO applications (id, name) VALUES (-60, 'BaseFormDroolsEngine');
 INSERT INTO roles (id, name, description) VALUES (-61, 'baseformdroolsengine_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-62, 'baseformdroolsengine_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-63, 'baseformdroolsengine_admin', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-64, -4 , -61, -1, -60);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-65, -4 , -62, -1, -60);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-66, -4 , -63, -1, -60);
+INSERT INTO groups (id, name, application_id) VALUES (-64, 'users', -60);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-65, -64 , -61, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-66, -64 , -62, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-67, -64 , -63, -1);
 
 
 -- InfographicEngine
@@ -64,24 +69,27 @@ INSERT INTO applications (id, name) VALUES (-70, 'InfographicEngine');
 INSERT INTO roles (id, name, description) VALUES (-71, 'infographicengine_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-72, 'infographicengine_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-73, 'infographicengine_admin', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-74, -4 , -71, -1, -70);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-75, -4 , -72, -1, -70);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-76, -4 , -73, -1, -70);
+INSERT INTO groups (id, name, application_id) VALUES (-74, 'users', -70);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-75, -74 , -71, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-76, -74 , -72, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-77, -74 , -73, -1);
 
 -- Knowledge System
 INSERT INTO applications (id, name) VALUES (-80, 'InfographicEngine');
 INSERT INTO roles (id, name, description) VALUES (-81, 'knowledgesystem_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-82, 'knowledgesystem_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-83, 'knowledgesystem_admin', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-84, -4 , -81, -1, -80);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-85, -4 , -82, -1, -80);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-86, -4 , -83, -1, -80);
+INSERT INTO groups (id, name, application_id) VALUES (-84, 'users', -80);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-85, -84 , -81, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-86, -84 , -82, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-87, -84 , -83, -1);
 
 -- Knowledge System
 INSERT INTO applications (id, name) VALUES (-90, 'FactsDashboard');
 INSERT INTO roles (id, name, description) VALUES (-91, 'factsdashboard_employee', '');
 INSERT INTO roles (id, name, description) VALUES (-92, 'factsdashboard_teamleader', '');
 INSERT INTO roles (id, name, description) VALUES (-93, 'factsdashboard_ceo', '');
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-94, -4 , -91, -1, -90);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-95, -4 , -92, -1, -90);
-INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-96, -4 , -93, -1, -90);
+INSERT INTO groups (id, name, application_id) VALUES (-94, 'users', -90);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-95, -94 , -91, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-96, -94 , -92, -1);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-97, -94 , -93, -1);
