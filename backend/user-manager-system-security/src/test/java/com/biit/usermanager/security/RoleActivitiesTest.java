@@ -109,9 +109,9 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         this.applicationDTO = applicationController.create(applicationDTO, null);
     }
 
-    @BeforeClass
+    @BeforeClass(dependsOnMethods = "createApplication")
     private void createGroups() {
-        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME), null);
+        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME, applicationDTO), null);
     }
 
     @BeforeClass
@@ -138,7 +138,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
         //Assign admin roles
         for (String adminRole : ADMIN_ROLES) {
-            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO), null);
+            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null), null);
         }
     }
 
@@ -156,8 +156,8 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
         //Assign user roles
         for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO, applicationDTO), null);
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO2, applicationDTO), null);
+            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO), null);
+            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO2), null);
         }
     }
 
@@ -177,8 +177,8 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     @AfterClass(alwaysRun = true)
     public void dropTables() {
         userRoleController.deleteAll();
-        applicationController.deleteAll();
         groupController.deleteAll();
+        applicationController.deleteAll();
         roleController.deleteAll();
         userController.deleteAll();
     }

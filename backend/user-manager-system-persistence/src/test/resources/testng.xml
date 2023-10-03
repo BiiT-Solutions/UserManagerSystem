@@ -6,14 +6,15 @@
                 <include name="userRepository"/>
                 <include name="roleRepository"/>
                 <include name="groupRepository"/>
+                <include name="applicationRepository"/>
             </run>
         </groups>
         <classes>
             <class name="com.biit.usermanager.persistence.repositories.UserRepositoryTests"/>
             <class name="com.biit.usermanager.persistence.repositories.UserNotDisableTest"/>
             <class name="com.biit.usermanager.persistence.repositories.UserRoleTest"/>
-            <class name="com.biit.usermanager.persistence.repositories.GroupRepositoryTest"></class>
-
+            <class name="com.biit.usermanager.persistence.repositories.GroupRepositoryTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.ApplicationRepositoryTest"/>
         </classes>
     </test>
 </suite>

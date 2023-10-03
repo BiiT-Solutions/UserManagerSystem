@@ -1,7 +1,6 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
-import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.Group;
 import com.biit.usermanager.persistence.entities.Role;
 import com.biit.usermanager.persistence.entities.User;
@@ -10,6 +9,7 @@ import com.biit.usermanager.persistence.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -20,20 +20,12 @@ public class UserRoleProvider extends ElementProvider<UserRole, Long, UserRoleRe
         super(repository);
     }
 
-    public List<UserRole> findByUserAndGroupAndApplication(User user, Group group, Application application) {
-        if (group != null) {
-            if (application != null) {
-                return getRepository().findByUserAndGroupAndApplication(user, group, application);
-            } else {
-                return getRepository().findByUserAndGroup(user, group);
-            }
-        } else {
-            if (application != null) {
-                return getRepository().findByUserAndApplication(user, application);
-            } else {
-                return getRepository().findByUser(user);
-            }
-        }
+    public List<UserRole> findByUserAndGroup(User user, Group group) {
+        return getRepository().findByUserAndGroup(user, group);
+    }
+
+    public List<UserRole> findByUserAndGroupIn(User user, Collection<Group> group) {
+        return getRepository().findByUserAndGroupIn(user, group);
     }
 
     public List<UserRole> findByUser(User user) {

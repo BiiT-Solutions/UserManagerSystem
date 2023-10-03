@@ -34,20 +34,26 @@ public class GroupServices extends BasicServices<Group, GroupDTO, GroupRepositor
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Gets an group by name.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/names/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public GroupDTO get(@Parameter(description = "Name of an existing group", required = true) @PathVariable("name") String name,
+    @Operation(summary = "Gets a group by name.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/groups/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public GroupDTO get(@Parameter(description = "Name of an existing group", required = true)
+                        @PathVariable("groupName") String groupName,
+                        @Parameter(description = "Application name")
+                        @PathVariable("applicationName") String applicationName,
                         HttpServletRequest request) {
-        return getController().getByName(name);
+        return getController().getByName(groupName, applicationName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Deletes an group by name.", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Deletes a group by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(value = "/names/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void delete(@Parameter(description = "Name of an existing group", required = true) @PathVariable("name") String name,
+    @DeleteMapping(value = "/groups/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void delete(@Parameter(description = "Name of an existing group", required = true)
+                       @PathVariable("groupName") String groupName,
+                       @Parameter(description = "Application name")
+                       @PathVariable("applicationName") String applicationName,
                        HttpServletRequest request) {
-        getController().deleteByName(name);
+        getController().deleteByName(groupName, applicationName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")

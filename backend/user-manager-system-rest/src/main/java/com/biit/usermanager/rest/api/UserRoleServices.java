@@ -55,21 +55,25 @@ public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserR
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by group name", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/groups/{groupName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/groups/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getRolesFromGroup(@Parameter(description = "Name of an existing group", required = true)
                                                @PathVariable("groupName") String groupName,
+                                               @Parameter(description = "Application name")
+                                               @PathVariable("applicationName") String applicationName,
                                                HttpServletRequest request) {
-        return getController().getByGroup(groupName);
+        return getController().getByGroup(groupName, applicationName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get roles by username", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/groups/{groupName}/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/groups/{groupName}/applications/{applicationName}/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserRoleDTO> getUsersWithRoleOnGroup(@Parameter(description = "Name of an existing group", required = true)
                                                      @PathVariable("groupName") String groupName,
+                                                     @Parameter(description = "Application name")
+                                                     @PathVariable("applicationName") String applicationName,
                                                      @Parameter(description = "Role name", required = true)
                                                      @PathVariable("roleName") String roleName,
                                                      HttpServletRequest request) {
-        return getController().getByUserAndRole(groupName, roleName);
+        return getController().getByUserAndRole(groupName, applicationName, roleName);
     }
 }

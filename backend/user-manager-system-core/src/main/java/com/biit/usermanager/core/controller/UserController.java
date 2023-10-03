@@ -7,7 +7,6 @@ import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.UserConverter;
-import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
@@ -19,11 +18,12 @@ import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.providers.UserRoleProvider;
-import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
+import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.entities.UserRole;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +35,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -78,7 +79,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     public UserDTO getByUsername(String username) {
         final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
-        return setGrantedAuthorities(userDTO, null, null);
+        return setGrantedAuthorities(userDTO, null);
     }
 
     public UserDTO checkCredentials(String username, String email, String password) {
@@ -108,7 +109,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
                 throw e;
             }
         }
-        final UserDTO userDTO = setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null, null);
+        final UserDTO userDTO = setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null);
         UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", userDTO.getGrantedAuthorities());
         return userDTO;
     }
@@ -118,7 +119,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(),
                             "No User with email '" + email + "' found on the system."))));
-            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
+            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
             return grantedUserDTO;
         } catch (Exception e) {
@@ -152,9 +153,11 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
-            final UserDTO grantedUser = setGrantedAuthorities(userDTO, null,
-                    applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
-                            new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'.")))));
+            final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
+                    new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
+            final Collection<GroupDTO> groups = groupConverter.convertAll(groupProvider.findByApplication(application).stream()
+                    .map(group -> new GroupConverterRequest(group, application)).collect(Collectors.toList()));
+            final UserDTO grantedUser = setGrantedAuthorities(userDTO, groups);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser.getGrantedAuthorities());
             return Optional.of(grantedUser);
         } catch (Exception e) {
@@ -168,7 +171,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
-            return Optional.of(setGrantedAuthorities(userDTO, null, null));
+            return Optional.of(setGrantedAuthorities(userDTO, null));
         } catch (Exception e) {
             UserManagerLogger.warning(this.getClass(), "No User with email '" + email + "' found on the system.");
             throw e;
@@ -183,10 +186,12 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
+            final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
+                    new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
+            final Collection<GroupDTO> groups = groupConverter.convertAll(groupProvider.findByApplication(application).stream()
+                    .map(group -> new GroupConverterRequest(group, application)).collect(Collectors.toList()));
             try {
-                final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null,
-                        applicationConverter.convert(new ApplicationConverterRequest(applicationProvider.findByName(applicationName).orElseThrow(() ->
-                                new ApplicationNotFoundException(this.getClass(), "No application exists with name '" + applicationName + "'.")))));
+                final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, groups);
                 UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
                 return Optional.of(grantedUserDTO);
             } catch (ApplicationNotFoundException e) {
@@ -204,7 +209,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUuid(UUID.fromString(uid)).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
-            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
+            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
             return Optional.of(grantedUserDTO);
         } catch (IllegalArgumentException e) {
@@ -368,11 +373,11 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     @Override
     public Set<String> getRoles(String username, String groupName, String applicationName) {
         final UserDTO userDTO = getByUsername(username);
+        final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
+                new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
         final GroupDTO groupDTO = groupConverter.convert(new GroupConverterRequest(
-                groupProvider.findByName(groupName).orElse(null)));
-        final ApplicationDTO applicationDTO = applicationConverter.convert(new ApplicationConverterRequest(
-                applicationProvider.findByName(applicationName).orElse(null)));
-        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, groupDTO, applicationDTO);
+                groupProvider.findByNameAndApplication(groupName, application).orElse(null), application));
+        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, Collections.singleton(groupDTO));
         if (userWithRoles != null) {
             final Set<String> roles = userWithRoles.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
             UserManagerLogger.debug(this.getClass(), "Obtained roles '" + roles
@@ -403,14 +408,26 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         }
     }
 
-    private UserDTO setGrantedAuthorities(UserDTO userDTO, GroupDTO groupDTO, ApplicationDTO applicationDTO) {
+    /**
+     * Populate the authorities for a user. If a group is selected, only the one of the group. If not the roles that are not at group level.
+     *
+     * @param userDTO   The user to populate.
+     * @param groupDTOs The list of groups to be used.
+     * @return the populated user.
+     */
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, Collection<GroupDTO> groupDTOs) {
         if (userDTO != null) {
             final Set<String> grantedAuthorities = new HashSet<>();
-            userRoleProvider.findByUserAndGroupAndApplication(
-                            getConverter().reverse(userDTO),
-                            groupConverter.reverse(groupDTO),
-                            applicationConverter.reverse(applicationDTO)
-                    ).stream()
+            final List<UserRole> userRoles = new ArrayList<>();
+            //Roles with no group.
+            userRoles.addAll(userRoleProvider.findByUserAndGroup(
+                    getConverter().reverse(userDTO), null));
+            //Roles from groups.
+            userRoles.addAll(userRoleProvider.findByUserAndGroupIn(
+                    getConverter().reverse(userDTO),
+                    groupConverter.reverseAll(groupDTOs)
+            ));
+            userRoles.stream()
                     .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)
                     .forEach(userRole -> grantedAuthorities.add(userRole.getRole().getName().toUpperCase()));
             UserManagerLogger.debug(this.getClass(), "Assigning authorities '" + grantedAuthorities

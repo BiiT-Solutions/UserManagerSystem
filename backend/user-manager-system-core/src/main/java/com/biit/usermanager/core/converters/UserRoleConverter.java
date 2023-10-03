@@ -2,7 +2,6 @@ package com.biit.usermanager.core.converters;
 
 
 import com.biit.server.controller.converters.ElementConverter;
-import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
@@ -41,15 +40,15 @@ public class UserRoleConverter extends ElementConverter<UserRole, UserRoleDTO, U
     protected UserRoleDTO convertElement(UserRoleConverterRequest from) {
         final UserRoleDTO userRoleDTO = new UserRoleDTO();
         BeanUtils.copyProperties(from.getEntity(), userRoleDTO);
-        userRoleDTO.setRole(roleConverter.convert(new RoleConverterRequest(from.getEntity().getRole())));
+        if (from.getEntity().getRole() != null) {
+            userRoleDTO.setRole(roleConverter.convert(new RoleConverterRequest(from.getEntity().getRole())));
+        }
         if (from.getEntity().getGroup() != null) {
             userRoleDTO.setGroup(groupConverter.convert(
                     new GroupConverterRequest(groupProvider.get(from.getEntity().getGroup().getId()))));
         }
-        userRoleDTO.setUser(userConverter.convert(new UserConverterRequest(from.getEntity().getUser())));
-        if (from.getEntity().getApplication() != null) {
-            userRoleDTO.setApplication(applicationConverter.convert(
-                    new ApplicationConverterRequest(applicationProvider.get(from.getEntity().getApplication().getId()))));
+        if (from.getEntity().getUser() != null) {
+            userRoleDTO.setUser(userConverter.convert(new UserConverterRequest(from.getEntity().getUser())));
         }
         return userRoleDTO;
     }
@@ -64,7 +63,6 @@ public class UserRoleConverter extends ElementConverter<UserRole, UserRoleDTO, U
         userRole.setRole(roleConverter.reverse(to.getRole()));
         userRole.setGroup(groupConverter.reverse(to.getGroup()));
         userRole.setUser(userConverter.reverse(to.getUser()));
-        userRole.setApplication(applicationConverter.reverse(to.getApplication()));
         return userRole;
     }
 }

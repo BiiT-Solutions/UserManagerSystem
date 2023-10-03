@@ -10,5 +10,7 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface RoleRepository extends ElementRepository<Role, Long> {
+
     Optional<Role> findByName(String name);
+
 }

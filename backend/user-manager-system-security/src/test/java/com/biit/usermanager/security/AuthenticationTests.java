@@ -127,11 +127,6 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     }
 
     @BeforeClass
-    private void createGroups() {
-        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME), null);
-    }
-
-    @BeforeClass
     private void createRoles() {
         roles = new HashMap<>();
         Set<String> roleNames = new HashSet<>(Arrays.asList(ADMIN_ROLES));
@@ -141,7 +136,12 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         }
     }
 
-    @BeforeClass(dependsOnMethods = {"createApplication", "createRoles"})
+    @BeforeClass(dependsOnMethods = {"createApplication"})
+    private void createGroups() {
+        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME, applicationDTO), null);
+    }
+
+    @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createGroups"})
     private void createAdminAccount() {
         //Create the admin user
         UserDTO userDTO = new UserDTO();
@@ -155,7 +155,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         //Assign admin roles
         for (String adminRole : ADMIN_ROLES) {
-            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null, applicationDTO), null);
+            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null), null);
         }
     }
 
@@ -173,7 +173,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         //Assign user roles
         for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO, applicationDTO), null);
+            userRoleController.create(new UserRoleDTO(testUser, roles.get(userRoles), groupDTO), null);
         }
     }
 
@@ -289,12 +289,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void isInGroup() throws UserManagementException, InvalidCredentialsException {
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME);
+        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
         UserDTO userDTO = userController.getByUsername(USER_NAME);
         Assert.assertTrue(authenticationService.isInGroup(groupDTO, userDTO));
 
-        GroupDTO otherGroup = new GroupDTO();
-        otherGroup.setName("Other Name");
+        GroupDTO otherGroup = new GroupDTO("Other Name", applicationDTO);
         otherGroup = groupController.create(otherGroup, null);
 
         Assert.assertFalse(authenticationService.isInGroup(otherGroup, userDTO));
@@ -310,8 +309,8 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     @AfterClass(alwaysRun = true)
     public void dropTables() {
         userRoleController.deleteAll();
-        applicationController.deleteAll();
         groupController.deleteAll();
+        applicationController.deleteAll();
         roleController.deleteAll();
         userController.deleteAll();
     }

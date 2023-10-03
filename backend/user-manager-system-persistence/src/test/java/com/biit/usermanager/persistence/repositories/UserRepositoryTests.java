@@ -54,6 +54,7 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
     }
+
     @Test(dependsOnMethods = "saveUser")
     public void getUserByNameAndLastname() {
         Optional<User> user = userRepository.findByNameAndLastname(NAME, LASTNAME);
@@ -61,6 +62,7 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(user.get().getName(), NAME);
         Assert.assertEquals(user.get().getLastname(),LASTNAME);
     }
+
     @Test(dependsOnMethods = "saveUser")
     public void getUserByEmail() {
         Optional<User> user = userRepository.findByEmail(USER_EMAIL);

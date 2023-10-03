@@ -76,3 +76,12 @@ INSERT INTO roles (id, name, description) VALUES (-83, 'knowledgesystem_admin', 
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-84, -4 , -81, -1, -80);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-85, -4 , -82, -1, -80);
 INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-86, -4 , -83, -1, -80);
+
+-- Knowledge System
+INSERT INTO applications (id, name) VALUES (-90, 'FactsDashboard');
+INSERT INTO roles (id, name, description) VALUES (-91, 'factsdashboard_employee', '');
+INSERT INTO roles (id, name, description) VALUES (-92, 'factsdashboard_teamleader', '');
+INSERT INTO roles (id, name, description) VALUES (-93, 'factsdashboard_ceo', '');
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-94, -4 , -91, -1, -90);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-95, -4 , -92, -1, -90);
+INSERT INTO user_roles (id, user_group, role, user_role, application) VALUES (-96, -4 , -93, -1, -90);

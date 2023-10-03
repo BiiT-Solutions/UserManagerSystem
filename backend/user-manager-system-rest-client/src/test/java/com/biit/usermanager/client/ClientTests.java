@@ -3,11 +3,13 @@ package com.biit.usermanager.client;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.client.provider.UserManagerClient;
 import com.biit.usermanager.core.controller.ApplicationController;
+import com.biit.usermanager.core.controller.GroupController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserRoleController;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.dto.ApplicationDTO;
+import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.UserRoleDTO;
@@ -35,6 +37,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
     private static final String[] USER_ROLES = new String[]{"ADMIN", "VIEWER"};
+    private static final String DEFAULT_GROUP = "Standard_Users";
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
@@ -47,6 +50,9 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private ApplicationController applicationController;
+
+    @Autowired
+    private GroupController groupController;
 
     @Autowired
     private UserRoleController userRoleController;
@@ -66,19 +72,22 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName, ""), null);
 
+        //Create a group
+        final GroupDTO groupDTO = groupController.create(new GroupDTO(DEFAULT_GROUP, applicationDTO), null);
+
         //Set the roles
         final List<RoleDTO> roles = new ArrayList<>();
-        final List<RoleDTO> applicationRoles = new ArrayList<>();
+        final List<RoleDTO> groupRoles = new ArrayList<>();
         for (final String roleName : USER_ROLES) {
             roles.add(roleController.create(new RoleDTO(roleName, null), null));
-            applicationRoles.add(roleController.create(new RoleDTO(applicationName + "_" + roleName, null), null));
+            groupRoles.add(roleController.create(new RoleDTO(applicationName + "_" + roleName, null), null));
         }
 
         //Assign the basic roles.
-        roles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null, null), null));
+        roles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null), null));
 
-        //Assign application roles.
-        applicationRoles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null, applicationDTO), null));
+        //Assign group roles.
+        groupRoles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, groupDTO), null));
     }
 
     @Test
@@ -100,15 +109,17 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void findUserByNameAndApplication() {
+        //Application + default authorities.
         Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, applicationName);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
-        Assert.assertEquals(user.get().getAuthorities().size(), 2);
+        Assert.assertEquals(user.get().getAuthorities().size(), 4);
 
+        //Only default authorities.
         user = userManagerClient.findByUsername(USER_NAME, null);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
-        Assert.assertEquals(user.get().getAuthorities().size(), 4);
+        Assert.assertEquals(user.get().getAuthorities().size(), 2);
 
         System.out.println(" #------------------------------------ Expected Exception ----------------------------");
         try {

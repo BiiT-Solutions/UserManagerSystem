@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,9 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     private final SecurityClient securityClient;
 
     private final ObjectMapper mapper;
+
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     public AuthorizationService(AuthorizationUrlConstructor authorizationUrlConstructor, SecurityClient securityClient, ObjectMapper mapper) {
         this.authorizationUrlConstructor = authorizationUrlConstructor;
@@ -78,10 +82,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName()))) {
+                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName(), applicationName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesByGroup(group.getUniqueName()), response.getStatus());
+                                .getUserRolesByGroup(group.getUniqueName(), applicationName), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -127,10 +131,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getGroupByName(groupName))) {
+                    authorizationUrlConstructor.getGroupByName(groupName, applicationName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getGroupByName(groupName), response.getStatus());
+                                .getGroupByName(groupName, applicationName), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -282,10 +286,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), null))) {
+                    authorizationUrlConstructor.getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), applicationName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), null),
+                                .getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), applicationName),
                         response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
@@ -308,10 +312,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName()))) {
+                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName(), applicationName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesByGroup(group.getUniqueName()), response.getStatus());
+                                .getUserRolesByGroup(group.getUniqueName(), applicationName), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -336,10 +340,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserByGroupAndRole(group.getUniqueName(), role.getUniqueName()))) {
+                    authorizationUrlConstructor.getUserByGroupAndRole(group.getUniqueName(), applicationName, role.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserByGroupAndRole(group.getUniqueName(), role.getUniqueName()), response.getStatus());
+                                .getUserByGroupAndRole(group.getUniqueName(), applicationName, role.getUniqueName()), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }

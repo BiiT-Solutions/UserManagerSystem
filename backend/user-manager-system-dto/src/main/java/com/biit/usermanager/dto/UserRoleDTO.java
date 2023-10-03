@@ -6,8 +6,6 @@ public class UserRoleDTO extends ElementDTO {
 
     private GroupDTO group;
 
-    private ApplicationDTO application;
-
     private UserDTO user;
 
     private RoleDTO role;
@@ -16,12 +14,11 @@ public class UserRoleDTO extends ElementDTO {
         super();
     }
 
-    public UserRoleDTO(UserDTO user, RoleDTO role, GroupDTO group, ApplicationDTO application) {
+    public UserRoleDTO(UserDTO user, RoleDTO role, GroupDTO group) {
         this();
         setUser(user);
         setRole(role);
         setGroup(group);
-        setApplication(application);
     }
 
     public GroupDTO getGroup() {
@@ -30,14 +27,6 @@ public class UserRoleDTO extends ElementDTO {
 
     public void setGroup(GroupDTO group) {
         this.group = group;
-    }
-
-    public ApplicationDTO getApplication() {
-        return application;
-    }
-
-    public void setApplication(ApplicationDTO application) {
-        this.application = application;
     }
 
     public UserDTO getUser() {
@@ -60,7 +49,6 @@ public class UserRoleDTO extends ElementDTO {
     public String toString() {
         return "UserRoleDTO{"
                 + "group=" + group
-                + ", application=" + application
                 + ", user=" + user
                 + ", role=" + role
                 + "}";

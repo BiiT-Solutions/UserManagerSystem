@@ -13,13 +13,16 @@ public class GroupDTO extends ElementDTO implements IGroup<Long> {
 
     private GroupDTO parent;
 
+    private ApplicationDTO application;
+
     public GroupDTO() {
         super();
     }
 
-    public GroupDTO(String name) {
+    public GroupDTO(String name, ApplicationDTO application) {
         this();
         setName(name);
+        setApplication(application);
     }
 
     public String getName() {
@@ -54,6 +57,14 @@ public class GroupDTO extends ElementDTO implements IGroup<Long> {
 
     public void setParent(GroupDTO parent) {
         this.parent = parent;
+    }
+
+    public ApplicationDTO getApplication() {
+        return application;
+    }
+
+    public void setApplication(ApplicationDTO application) {
+        this.application = application;
     }
 
     @Override

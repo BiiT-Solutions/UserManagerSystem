@@ -11,6 +11,7 @@ import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
+import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.GroupNotFoundException;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
@@ -77,8 +78,10 @@ public class UserRoleController extends BasicElementController<UserRole, UserRol
         return getConverter().convertAll(getProvider().findByUser(user).stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
-    public List<UserRoleDTO> getByGroup(String groupName) {
-        final Group group = groupProvider.findByName(groupName).orElseThrow(() -> new GroupNotFoundException(getClass(),
+    public List<UserRoleDTO> getByGroup(String groupName, String applicationName) {
+        final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
+                new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
+        final Group group = groupProvider.findByNameAndApplication(groupName, application).orElseThrow(() -> new GroupNotFoundException(getClass(),
                 "Group with name '" + groupName + "' not found.", ExceptionType.WARNING));
         return getConverter().convertAll(getProvider().findByGroup(group).stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
@@ -87,25 +90,43 @@ public class UserRoleController extends BasicElementController<UserRole, UserRol
         final User user = userProvider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(getClass(),
                 "User with username '" + username + "' not found.",
                 ExceptionType.INFO));
-        final Group group = groupProvider.findByName(groupName).orElse(null);
-        final Application application = applicationProvider.findByName(applicationName).orElse(null);
-        return getByUserAndGroupAndApplication(userConverter.convert(new UserConverterRequest(user)),
-                groupConverter.convert(new GroupConverterRequest(group)),
-                applicationConverter.convert(new ApplicationConverterRequest(application)));
+        final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
+                new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
+        final Group group = groupProvider.findByNameAndApplication(groupName, application).orElse(null);
+        return getByUserAndGroup(userConverter.convert(new UserConverterRequest(user)),
+                groupConverter.convert(new GroupConverterRequest(group)));
     }
 
-    public List<UserRoleDTO> getByUserAndGroupAndApplication(UserDTO userDTO, GroupDTO groupDTO, ApplicationDTO applicationDTO) {
-        return getConverter().convertAll(getProvider().findByUserAndGroupAndApplication(userConverter.reverse(userDTO),
-                        groupConverter.reverse(groupDTO), applicationConverter.reverse(applicationDTO)).stream()
+    public List<UserRoleDTO> getByUserAndGroup(UserDTO userDTO, GroupDTO groupDTO) {
+        return getConverter().convertAll(getProvider().findByUserAndGroup(userConverter.reverse(userDTO),
+                        groupConverter.reverse(groupDTO)).stream()
                 .map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
-    public List<UserRoleDTO> getByUserAndRole(String groupName, String roleName) {
-        final Group group = groupProvider.findByName(groupName).orElseThrow(() -> new GroupNotFoundException(getClass(),
+    public List<UserRoleDTO> getByUserAndRole(String groupName, String applicationName, String roleName) {
+        final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
+                new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
+        final Group group = groupProvider.findByNameAndApplication(groupName, application).orElseThrow(() -> new GroupNotFoundException(getClass(),
                 "Group with name '" + roleName + "' not found.", ExceptionType.WARNING));
         final Role role = roleProvider.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(getClass(),
                 "Role with name '" + roleName + "' not found.", ExceptionType.WARNING));
         return getConverter().convertAll(getProvider().findByGroupAndRole(group, role)
                 .stream().map(this::createConverterRequest).collect(Collectors.toList()));
+    }
+
+    public List<UserRoleDTO> getByUserAndApplication(String username, String applicationName) {
+        final User user = userProvider.findByUsername(username).orElseThrow(() -> new UserNotFoundException(getClass(),
+                "User with username '" + username + "' not found.",
+                ExceptionType.INFO));
+        final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
+                new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
+        return getByUserAndApplication(userConverter.convert(new UserConverterRequest(user)),
+                applicationConverter.convert(new ApplicationConverterRequest(application)));
+    }
+
+    public List<UserRoleDTO> getByUserAndApplication(UserDTO userDTO, ApplicationDTO applicationDTO) {
+        return getConverter().convertAll(getProvider().findByUserAndGroupIn(userConverter.reverse(userDTO),
+                        groupProvider.findByApplication(applicationConverter.reverse(applicationDTO))).stream()
+                .map(this::createConverterRequest).collect(Collectors.toList()));
     }
 }

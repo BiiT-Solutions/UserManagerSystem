@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
+import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.Group;
 import com.biit.usermanager.persistence.repositories.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,6 @@ public class GroupProvider extends ElementProvider<Group, Long, GroupRepository>
         super(repository);
     }
 
-    public Optional<Group> findByName(String name) {
-        return getRepository().findByName(name);
-    }
-
     public List<Group> findByParentIsNull() {
         return getRepository().findByParentIsNull();
     }
@@ -29,7 +26,15 @@ public class GroupProvider extends ElementProvider<Group, Long, GroupRepository>
         return getRepository().findByParentIsNotNull();
     }
 
-    public int deleteByName(String name) {
-        return getRepository().deleteByName(name);
+    public List<Group> findByApplication(Application application) {
+        return getRepository().findByApplication(application);
+    }
+
+    public Optional<Group> findByNameAndApplication(String name, Application application) {
+        return getRepository().findByNameAndApplication(name, application);
+    }
+
+    public int deleteByName(String name, Application application) {
+        return getRepository().deleteByNameAndApplication(name, application);
     }
 }

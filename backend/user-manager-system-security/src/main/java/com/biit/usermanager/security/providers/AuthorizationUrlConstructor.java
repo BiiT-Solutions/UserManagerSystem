@@ -41,12 +41,12 @@ public class AuthorizationUrlConstructor {
         return getUsers();
     }
 
-    public String getUserRolesByGroup(String groupName) {
-        return getUserRoles() + "/groups/" + groupName;
+    public String getUserRolesByGroup(String groupName, String applicationName) {
+        return getUserRoles() + "/groups/" + groupName + "/applications/" + applicationName;
     }
 
-    public String getUserByGroupAndRole(String groupName, String roleName) {
-        return getUserRoles() + "/groups/" + groupName + "/roles/" + roleName;
+    public String getUserByGroupAndRole(String groupName, String applicationName, String roleName) {
+        return getUserRoles() + "/groups/" + groupName + "/applications/" + applicationName + "/roles/" + roleName;
     }
 
     public String getUserRolesByUser(String username) {
@@ -57,8 +57,8 @@ public class AuthorizationUrlConstructor {
         return getGroups() + "/" + id;
     }
 
-    public String getGroupByName(String groupName) {
-        return getGroups() + "/names/" + groupName;
+    public String getGroupByName(String groupName, String applicationName) {
+        return getGroups() + "/groups/" + groupName + "/applications/" + applicationName;
     }
 
     public String getAllGroups() {
