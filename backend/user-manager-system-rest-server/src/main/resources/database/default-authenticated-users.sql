@@ -77,7 +77,7 @@ INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-76, -74 , -72,
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-77, -74 , -73, -1);
 
 -- Knowledge System
-INSERT INTO applications (id, name) VALUES (-80, 'InfographicEngine');
+INSERT INTO applications (id, name) VALUES (-80, 'KnowledgeSystem');
 INSERT INTO roles (id, name, description) VALUES (-81, 'knowledgesystem_viewer', '');
 INSERT INTO roles (id, name, description) VALUES (-82, 'knowledgesystem_editor', '');
 INSERT INTO roles (id, name, description) VALUES (-83, 'knowledgesystem_admin', '');
@@ -86,7 +86,7 @@ INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-85, -84 , -81,
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-86, -84 , -82, -1);
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-87, -84 , -83, -1);
 
--- Knowledge System
+-- Facts Dashboard
 INSERT INTO applications (id, name) VALUES (-90, 'FactsDashboard');
 INSERT INTO roles (id, name, description) VALUES (-91, 'factsdashboard_employee', '');
 INSERT INTO roles (id, name, description) VALUES (-92, 'factsdashboard_teamleader', '');

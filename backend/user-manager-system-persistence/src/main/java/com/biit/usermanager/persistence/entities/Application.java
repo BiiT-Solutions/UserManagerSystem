@@ -17,7 +17,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "applications")
 public class Application extends Element {
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
