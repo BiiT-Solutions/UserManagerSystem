@@ -118,3 +118,10 @@ INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-192, -54 , -51
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-193, -54 , -51, -153);
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-194, -54 , -51, -154);
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-195, -54 , -51, -155);
+-- Facts Dashboard
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-200, -94 , -91, -150);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-201, -94 , -91, -151);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-202, -94 , -91, -152);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-203, -94 , -91, -153);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-204, -94 , -91, -154);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-205, -94 , -91, -155);
