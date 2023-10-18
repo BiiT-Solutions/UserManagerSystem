@@ -125,3 +125,10 @@ INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-202, -94 , -91
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-203, -94 , -91, -153);
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-204, -94 , -91, -154);
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-205, -94 , -91, -155);
+-- Infographic Engine
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-210, -74 , -71, -150);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-211, -74 , -71, -151);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-212, -74 , -71, -152);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-213, -74 , -71, -153);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-214, -74 , -71, -154);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-215, -74 , -71, -155);
