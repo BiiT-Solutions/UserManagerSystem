@@ -132,3 +132,49 @@ INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-212, -74 , -71
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-213, -74 , -71, -153);
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-214, -74 , -71, -154);
 INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-215, -74 , -71, -155);
+
+-- DEMO
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-301, '00976408-5ad8-48c4-a787-009cdaedf666', 'saurabh.laddha@maistering.com', 'saurabh.laddha@maistering.com', 'Saurabh', 'Laddha', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512345', 0, 0, 0);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-302, '7e629f88-9a84-404f-8148-8f85b1ce02d0', 'subir.sarbabidya@maistering.com', 'subir.sarbabidya@maistering.com', 'Subir', 'Sarbabidya', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512346', 0, 0, 0);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-303, '79b3bc0b-123a-41f7-b4fc-f669fead4292', 'prathap.chandran@maistering.com', 'prathap.chandran@maistering.com', 'Prathap', 'Chandran', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512347', 0, 0, 0);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-304, 'd854b342-028e-43b9-bdbe-31ee2a950846', 'krzysztof.sadowski@maistering.com', 'krzysztof.sadowski@maistering.com', 'Krzysztof', 'Sadowski', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512348', 0, 0, 0);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-305, '7c67fd66-3a9e-49e1-ab07-b3d2c54fe50a', 'kim.jacobs@maistering.com', 'kim.jacobs@maistering.com', 'Kim', 'Jacobs', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512349', 0, 0, 0);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-306, 'abf8e8ec-9074-4fab-bd0b-8f2ee850f44f', 'christian.clinciu@maistering.com', 'christian.clinciu@maistering.com', 'Christian', 'Clinciu', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512341', 0, 0, 0);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-307, '0414d7b8-521a-4c61-bc25-ac65f3a27797', 'hvandoorn@biit-solutions.com', 'hvandoorn@biit-solutions.com', 'Henny', 'van Doom', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512342', 0, 0, 0);
+INSERT INTO users (id, user_uuid, username, email, name, lastname, password, phone, account_locked, account_blocked, account_expired) VALUES (-308, 'd7e85fc3-014c-4719-a5dc-3297d71ab792', 'jorge.hortelano@maistering.com', 'jorge.hortelano@maistering.com', 'Jorge', 'Hortelano', '$2a$12$0i7PVFNJuYx8JeFSB8BPf.1U1O6t9C22Dxx.UMch6Q37aNrrmKnAy', '+3455512343', 0, 0, 0);
+-- Kafka Proxy Permissions
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-310, -24 , -22, -301);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-311, -24 , -22, -302);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-312, -24 , -22, -303);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-313, -24 , -22, -304);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-314, -24 , -22, -305);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-315, -24 , -22, -306);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-316, -24 , -22, -307);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-317, -24 , -22, -308);
+-- Fact Manager Permissions
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-320, -54 , -51, -301);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-321, -54 , -51, -302);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-322, -54 , -51, -303);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-323, -54 , -51, -304);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-324, -54 , -51, -305);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-325, -54 , -51, -306);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-326, -54 , -51, -307);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-327, -54 , -51, -308);
+-- Facts Dashboard
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-330, -94 , -91, -301);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-331, -94 , -91, -302);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-332, -94 , -91, -303);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-333, -94 , -91, -304);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-334, -94 , -91, -305);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-335, -94 , -91, -306);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-336, -94 , -91, -307);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-337, -94 , -91, -308);
+-- Infographic Engine
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-340, -74 , -71, -301);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-341, -74 , -71, -302);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-342, -74 , -71, -303);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-343, -74 , -71, -304);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-344, -74 , -71, -305);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-345, -74 , -71, -306);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-346, -74 , -71, -307);
+INSERT INTO user_roles (id, user_group, role, user_role) VALUES (-347, -74 , -71, -308);
