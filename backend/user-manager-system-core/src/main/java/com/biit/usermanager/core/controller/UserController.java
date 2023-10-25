@@ -5,25 +5,20 @@ import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.usermanager.core.converters.ApplicationConverter;
+import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.UserConverter;
-import com.biit.usermanager.core.converters.models.GroupConverterRequest;
+import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
-import com.biit.usermanager.core.exceptions.InvalidParameterException;
-import com.biit.usermanager.core.exceptions.InvalidPasswordException;
-import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
-import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.exceptions.*;
 import com.biit.usermanager.core.providers.ApplicationProvider;
+import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
-import com.biit.usermanager.core.providers.UserRoleProvider;
-import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.User;
-import com.biit.usermanager.persistence.entities.UserRole;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,23 +28,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
 @Order(1)
 @Qualifier("userController")
-public class UserController extends BasicElementController<User, UserDTO, UserRepository,
+public class UserController extends BasicElementController<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
-    private final UserRoleProvider userRoleProvider;
+    private final ApplicationRoleProvider applicationRoleProvider;
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
@@ -58,17 +45,20 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     private final ApplicationConverter applicationConverter;
     private final GroupProvider groupProvider;
     private final GroupConverter groupConverter;
+    private final ApplicationRoleConverter applicationRoleConverter;
 
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
-                             UserRoleProvider userRoleProvider, ApplicationConverter applicationConverter,
-                             ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter) {
+                             ApplicationRoleProvider applicationRoleProvider, ApplicationConverter applicationConverter,
+                             ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter,
+                             ApplicationRoleConverter applicationRoleConverter) {
         super(provider, converter);
-        this.userRoleProvider = userRoleProvider;
+        this.applicationRoleProvider = applicationRoleProvider;
         this.applicationProvider = applicationProvider;
         this.groupProvider = groupProvider;
         this.applicationConverter = applicationConverter;
         this.groupConverter = groupConverter;
+        this.applicationRoleConverter = applicationRoleConverter;
     }
 
     @Override
@@ -155,9 +145,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
                     new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
             final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                     new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
-            final Collection<GroupDTO> groups = groupConverter.convertAll(groupProvider.findByApplication(application).stream()
-                    .map(group -> new GroupConverterRequest(group, application)).collect(Collectors.toList()));
-            final UserDTO grantedUser = setGrantedAuthorities(userDTO, groups);
+            final UserDTO grantedUser = setGrantedAuthorities(userDTO, application);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser.getGrantedAuthorities());
             return Optional.of(grantedUser);
         } catch (Exception e) {
@@ -188,10 +176,8 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
                     new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
             final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                     new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
-            final Collection<GroupDTO> groups = groupConverter.convertAll(groupProvider.findByApplication(application).stream()
-                    .map(group -> new GroupConverterRequest(group, application)).collect(Collectors.toList()));
             try {
-                final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, groups);
+                final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, application);
                 UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
                 return Optional.of(grantedUserDTO);
             } catch (ApplicationNotFoundException e) {
@@ -249,18 +235,18 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
 
     @Override
     public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+        final User user = getProvider().findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
         //Check old password.
-        if (oldPassword != null && !BCrypt.checkpw(bcryptSalt + oldPassword, userDTO.getPassword())) {
+        if (oldPassword != null && !BCrypt.checkpw(bcryptSalt + oldPassword, user.getPassword())) {
             UserManagerLogger.warning(this.getClass(), "Provided password is incorrect!.");
             throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
         }
 
-        userDTO.setPassword(newPassword);
-        userDTO.setUpdatedBy(updatedBy);
+        user.setPassword(newPassword);
+        user.setUpdatedBy(updatedBy);
         UserManagerLogger.info(this.getClass(), "Password updated!.");
-        return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
+        return getConverter().convert(new UserConverterRequest(getProvider().save(user)));
     }
 
     /**
@@ -272,19 +258,19 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
      * @return the updated user.
      */
     public IAuthenticatedUser updatePassword(String username, String newPassword, String updatedBy) {
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
-        userDTO.setPassword(newPassword);
-        userDTO.setUpdatedBy(updatedBy);
+        final User user = getProvider().findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+        user.setPassword(newPassword);
+        user.setUpdatedBy(updatedBy);
         UserManagerLogger.info(this.getClass(), "Password updated!.");
-        return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(userDTO))));
+        return getConverter().convert(new UserConverterRequest(getProvider().save(user)));
     }
 
     public void checkPassword(String username, String password) {
-        final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+        final User user = getProvider().findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
         //Check old password.
-        if (password != null && !BCrypt.checkpw(bcryptSalt + password, userDTO.getPassword())) {
+        if (password != null && !BCrypt.checkpw(bcryptSalt + password, user.getPassword())) {
             UserManagerLogger.warning(this.getClass(), "Provided password is incorrect!.");
             throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
         }
@@ -300,7 +286,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
      * Gets the password using a user UID.
      *
      * @param uid is the database id.
-     * @return
+     * @return the password.
      */
     public String getPasswordByUid(String uid) {
         if (uid == null) {
@@ -313,14 +299,16 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
 
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
-        final UserDTO userDTO = getByUsername(createUserRequest.getUsername());
-        userDTO.setUsername(createUserRequest.getUsername());
-        userDTO.setFirstName(createUserRequest.getFirstname());
-        userDTO.setLastname(createUserRequest.getLastname());
-        userDTO.setIdCard(createUserRequest.getUniqueId());
-        userDTO.setUpdatedBy(updatedBy);
+        final User user = getProvider().findByUsername(createUserRequest.getUsername()).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + createUserRequest.getUsername() + "' found on the system."));
+
+        user.setUsername(createUserRequest.getUsername());
+        user.setName(createUserRequest.getFirstname());
+        user.setLastname(createUserRequest.getLastname());
+        user.setIdCard(createUserRequest.getUniqueId());
+        user.setUpdatedBy(updatedBy);
         UserManagerLogger.info(this.getClass(), "User '" + createUserRequest.getUsername() + "' updated!.");
-        return getConverter().convert(new UserConverterRequest(getProvider().update(getConverter().reverse(userDTO))));
+        return getConverter().convert(new UserConverterRequest(getProvider().update(user)));
     }
 
     public List<UserDTO> getByAccountBlocked(boolean accountBlocked) {
@@ -375,9 +363,7 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
         final UserDTO userDTO = getByUsername(username);
         final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                 new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
-        final GroupDTO groupDTO = groupConverter.convert(new GroupConverterRequest(
-                groupProvider.findByNameAndApplication(groupName, application).orElse(null), application));
-        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, Collections.singleton(groupDTO));
+        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, application);
         if (userWithRoles != null) {
             final Set<String> roles = userWithRoles.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
             UserManagerLogger.debug(this.getClass(), "Obtained roles '" + roles
@@ -411,33 +397,23 @@ public class UserController extends BasicElementController<User, UserDTO, UserRe
     /**
      * Populate the authorities for a user. If a group is selected, only the one of the group. If not the roles that are not at group level.
      *
-     * @param userDTO   The user to populate.
-     * @param groupDTOs The list of groups to be used. If this value is null, gets all roles of any group.
+     * @param userDTO The user to populate.
      * @return the populated user.
      */
-    private UserDTO setGrantedAuthorities(UserDTO userDTO, Collection<GroupDTO> groupDTOs) {
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, Application application) {
         if (userDTO != null) {
-            final Set<String> grantedAuthorities = new HashSet<>();
-            final List<UserRole> userRoles = new ArrayList<>();
-            if (groupDTOs == null) {
-                userRoles.addAll(new ArrayList<>(userRoleProvider.findByUser(
-                        getConverter().reverse(userDTO))));
-            } else {
-                //Roles with no group.
-                userRoles.addAll(userRoleProvider.findByUserAndGroup(
-                        getConverter().reverse(userDTO), null));
-                //Roles from groups.
-                userRoles.addAll(userRoleProvider.findByUserAndGroupIn(
-                        getConverter().reverse(userDTO),
-                        groupConverter.reverseAll(groupDTOs)
-                ));
-            }
-            userRoles.stream()
-                    .filter(userRole -> userRole.getRole() != null && userRole.getRole().getName() != null)
-                    .forEach(userRole -> grantedAuthorities.add(userRole.getRole().getName().toUpperCase()));
-            UserManagerLogger.debug(this.getClass(), "Assigning authorities '" + grantedAuthorities
+            final User databaseUser = getProvider().getById(userDTO.getId()).orElseThrow(() ->
+                    new UserNotFoundException(this.getClass(), "User '" + userDTO + "' does not exists on database."));
+
+            databaseUser.getApplicationServiceRoles().forEach(applicationServiceRole -> {
+                if (application == null || Objects.equals(applicationServiceRole.getId().getApplicationRole().getId().getApplication(), application)) {
+                    userDTO.addApplicationServiceRoles(applicationRoleConverter.convert(new ApplicationRoleConverterRequest(
+                            applicationServiceRole.getId().getApplicationRole())));
+                    userDTO.addGrantedAuthorities(applicationServiceRole.getId().getServiceRole().getGrantedAuthority());
+                }
+            });
+            UserManagerLogger.debug(this.getClass(), "Assigning authorities '" + userDTO.getGrantedAuthorities()
                     + "' to '" + userDTO.getUsername() + "'.");
-            userDTO.setGrantedAuthorities(grantedAuthorities);
         }
         return userDTO;
     }

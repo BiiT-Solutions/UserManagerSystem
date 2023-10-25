@@ -2,7 +2,7 @@ package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
 
-public class ApplicationDTO extends ElementDTO {
+public class ApplicationDTO extends ElementDTO<Long> {
     private String name = "";
     private String description = "";
 

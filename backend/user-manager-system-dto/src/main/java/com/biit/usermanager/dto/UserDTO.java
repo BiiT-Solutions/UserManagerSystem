@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,6 +14,9 @@ import java.util.Locale;
 import java.util.Set;
 
 public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticatedUser {
+    @Serial
+    private static final long serialVersionUID = 6973886025199428759L;
+
     private String idCard;
 
     private String email = "";
@@ -50,6 +54,8 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     }
 
     private Set<String> grantedAuthorities;
+
+    private Collection<ApplicationRoleDTO> applicationRoles;
 
     @JsonIgnore
     @Override
@@ -122,6 +128,28 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     public void setGrantedAuthorities(Set<String> grantedAuthorities) {
         this.grantedAuthorities = grantedAuthorities;
+    }
+
+    public void addGrantedAuthorities(String grantedAuthority) {
+        if (this.grantedAuthorities == null) {
+            this.grantedAuthorities = new HashSet<>();
+        }
+        this.grantedAuthorities.add(grantedAuthority);
+    }
+
+    public Collection<ApplicationRoleDTO> getApplicationRoles() {
+        return applicationRoles;
+    }
+
+    public void setApplicationRoles(Collection<ApplicationRoleDTO> applicationRoles) {
+        this.applicationRoles = applicationRoles;
+    }
+
+    public void addApplicationServiceRoles(ApplicationRoleDTO applicationServiceRoles) {
+        if (this.applicationRoles == null) {
+            this.applicationRoles = new HashSet<>();
+        }
+        this.applicationRoles.add(applicationServiceRoles);
     }
 
     public Set<String> getGrantedAuthorities() {

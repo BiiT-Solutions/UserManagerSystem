@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ApplicationController extends BasicElementController<Application, ApplicationDTO, ApplicationRepository,
+public class ApplicationController extends BasicElementController<Application, Long, ApplicationDTO, ApplicationRepository,
         ApplicationProvider, ApplicationConverterRequest, ApplicationConverter> {
 
     @Autowired

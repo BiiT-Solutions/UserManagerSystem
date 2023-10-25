@@ -3,13 +3,11 @@ package com.biit.usermanager.dto;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IGroup;
 
-import java.util.Set;
-
-public class GroupDTO extends ElementDTO implements IGroup<Long> {
+public class GroupDTO extends ElementDTO<Long> implements IGroup<Long> {
 
     private String name = "";
 
-    private Set<GroupDTO> subGroups;
+    private String description = "";
 
     private GroupDTO parent;
 
@@ -33,6 +31,14 @@ public class GroupDTO extends ElementDTO implements IGroup<Long> {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String getUniqueName() {
         return name;
@@ -41,14 +47,6 @@ public class GroupDTO extends ElementDTO implements IGroup<Long> {
     @Override
     public Long getUniqueId() {
         return getId();
-    }
-
-    public Set<GroupDTO> getSubGroups() {
-        return subGroups;
-    }
-
-    public void setSubGroups(Set<GroupDTO> subGroups) {
-        this.subGroups = subGroups;
     }
 
     public GroupDTO getParent() {

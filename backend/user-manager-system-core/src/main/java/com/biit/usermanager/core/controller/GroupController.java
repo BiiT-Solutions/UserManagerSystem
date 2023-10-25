@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class GroupController extends BasicElementController<Group, GroupDTO, GroupRepository,
+public class GroupController extends BasicElementController<Group, Long, GroupDTO, GroupRepository,
         GroupProvider, GroupConverterRequest, GroupConverter> {
 
     private final ApplicationConverter applicationConverter;

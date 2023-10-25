@@ -3,7 +3,7 @@ package com.biit.usermanager.dto;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IRole;
 
-public class RoleDTO extends ElementDTO implements IRole<Long> {
+public class RoleDTO extends ElementDTO<Long> implements IRole<Long> {
     private String name = "";
     private String description = "";
 

@@ -6,11 +6,15 @@ import com.biit.usermanager.entity.IUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
 
-public class BasicUserDTO extends ElementDTO implements IUser<Long>, IAuthenticatedUser {
+public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuthenticatedUser {
+
+    @Serial
+    private static final long serialVersionUID = -1718677380015570500L;
 
     private UUID uuid;
 

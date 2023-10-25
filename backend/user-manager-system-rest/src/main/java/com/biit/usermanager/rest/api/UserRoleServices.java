@@ -1,10 +1,10 @@
 package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.BasicServices;
-import com.biit.usermanager.core.controller.UserRoleController;
-import com.biit.usermanager.core.converters.UserRoleConverter;
-import com.biit.usermanager.core.converters.models.UserRoleConverterRequest;
-import com.biit.usermanager.core.providers.UserRoleProvider;
+import com.biit.usermanager.core.controller.ApplicationRoleController;
+import com.biit.usermanager.core.converters.ApplicationRoleConverter;
+import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
+import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.persistence.entities.UserRole;
 import com.biit.usermanager.persistence.repositories.UserRoleRepository;
@@ -24,10 +24,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/roles/users")
 public class UserRoleServices extends BasicServices<UserRole, UserRoleDTO, UserRoleRepository,
-        UserRoleProvider, UserRoleConverterRequest, UserRoleConverter, UserRoleController> {
+        ApplicationRoleProvider, ApplicationRoleConverterRequest, ApplicationRoleConverter, ApplicationRoleController> {
 
-    public UserRoleServices(UserRoleController userRoleController) {
-        super(userRoleController);
+    public UserRoleServices(ApplicationRoleController applicationRoleController) {
+        super(applicationRoleController);
     }
 
 

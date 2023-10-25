@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface ApplicationRepository extends ElementRepository<Application, Long> {
+
     Optional<Application> findByName(String name);
 }

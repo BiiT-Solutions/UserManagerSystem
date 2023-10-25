@@ -18,7 +18,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "roles", indexes = {
         @Index(name = "ind_name", columnList = "name")
 })
-public class Role extends Element {
+public class Role extends Element<Long> {
 
     @Column(name = "name", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
@@ -27,6 +27,15 @@ public class Role extends Element {
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
     private String description = "";
+
+    public Role() {
+        super();
+    }
+
+    public Role(String name) {
+        this();
+        setName(name);
+    }
 
     public String getName() {
         return name;

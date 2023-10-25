@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Value("#{'${user.provider.test.authorities:ADMIN,EDITOR,VIEWER}'.split(',')}")
     private List<String> authorities;
@@ -33,8 +33,6 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
-
-    private static int idCounter = 1;
 
     private final Collection<IAuthenticatedUser> usersOnMemory = new ArrayList<>();
     private final Map<IAuthenticatedUser, Set<String>> userRoles = new HashMap<>();

@@ -24,7 +24,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
                 @Index(name = "ind_parent", columnList = "parent_id"),
                 @Index(name = "ind_application", columnList = "application_id"),
         })
-public class Group extends Element {
+public class Group extends Element<Long> {
 
     @Column(name = "name", nullable = false)
     @Convert(converter = StringCryptoConverter.class)

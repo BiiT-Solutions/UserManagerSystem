@@ -26,8 +26,6 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     @Autowired
     private UserRepository userRepository;
 
-    private UserRoleRepository userRoleRepository;
-
     @Test
     public void saveUser() {
         User user = new User();
@@ -60,7 +58,7 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Optional<User> user = userRepository.findByNameAndLastname(NAME, LASTNAME);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getName(), NAME);
-        Assert.assertEquals(user.get().getLastname(),LASTNAME);
+        Assert.assertEquals(user.get().getLastname(), LASTNAME);
     }
 
     @Test(dependsOnMethods = "saveUser")
@@ -69,6 +67,7 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getEmail(), USER_EMAIL);
     }
+
     @Test(dependsOnMethods = "saveUser")
     public void getUserByIdCard() {
         Optional<User> user = userRepository.findByIdCard(USER_IDCARD);
@@ -103,7 +102,7 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     }
 
     @AfterClass(alwaysRun = true)
-    public void cleanUpUsers(){
+    public void cleanUpUsers() {
         userRepository.deleteAll();
         Assert.assertEquals(userRepository.count(), 0);
     }

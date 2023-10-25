@@ -10,7 +10,7 @@ import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
-import com.biit.usermanager.core.providers.UserRoleProvider;
+import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.dto.BasicUserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 
 @Primary
 @Controller
-public class BasicUserController extends BasicElementController<User, BasicUserDTO, UserRepository,
+public class BasicUserController extends BasicElementController<User, Long, BasicUserDTO, UserRepository,
         UserProvider, BasicUserConverterRequest, BasicUserConverter> {
-    private final UserRoleProvider userRoleProvider;
+    private final ApplicationRoleProvider applicationRoleProvider;
 
     private final ApplicationProvider applicationProvider;
     private final ApplicationConverter applicationConverter;
@@ -38,10 +38,10 @@ public class BasicUserController extends BasicElementController<User, BasicUserD
 
     @Autowired
     protected BasicUserController(UserProvider provider, BasicUserConverter converter,
-                                  UserRoleProvider userRoleProvider, ApplicationConverter applicationConverter,
+                                  ApplicationRoleProvider applicationRoleProvider, ApplicationConverter applicationConverter,
                                   ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter) {
         super(provider, converter);
-        this.userRoleProvider = userRoleProvider;
+        this.applicationRoleProvider = applicationRoleProvider;
         this.applicationProvider = applicationProvider;
         this.groupProvider = groupProvider;
         this.applicationConverter = applicationConverter;
@@ -111,7 +111,7 @@ public class BasicUserController extends BasicElementController<User, BasicUserD
     public BasicUserDTO getByPhone(String phone) {
         return getConverter().convert(new BasicUserConverterRequest(getProvider().findByPhone(phone).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(),
-                "No User with username '" + phone + "' found on the system."))));
+                        "No User with username '" + phone + "' found on the system."))));
     }
 
     public List<BasicUserDTO> getAllByExpired(boolean accountExpired) {

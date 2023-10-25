@@ -11,19 +11,28 @@ import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "users")
-public class User extends Element {
+@Table(name = "users", indexes = {
+        @Index(name = "ind_username", columnList = "username"),
+        @Index(name = "ind_email", columnList = "email")
+})
+public class User extends Element<Long> {
     private static final int UUID_COLUMN_LENGTH = 36;
 
     @Column(name = "id_card", unique = true)
@@ -101,6 +110,17 @@ public class User extends Element {
     @Column(name = "account_expired", nullable = false)
     @Convert(converter = BooleanCryptoConverter.class)
     private boolean accountExpired = false;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "users_by_application_service_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = {
+                    @JoinColumn(name = "application_service_role_application", referencedColumnName = "application_role_application"),
+                    @JoinColumn(name = "application_service_role_role", referencedColumnName = "application_role_role"),
+                    @JoinColumn(name = "application_service_role_service", referencedColumnName = "service_role_service"),
+                    @JoinColumn(name = "application_service_role_name", referencedColumnName = "service_role_name"),
+            })
+    private List<ApplicationServiceRole> applicationServiceRoles;
 
     public UUID getUuid() {
         return uuid;
@@ -252,6 +272,14 @@ public class User extends Element {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public List<ApplicationServiceRole> getApplicationServiceRoles() {
+        return applicationServiceRoles;
+    }
+
+    public void setApplicationServiceRoles(List<ApplicationServiceRole> applicationServiceRoles) {
+        this.applicationServiceRoles = applicationServiceRoles;
     }
 
     @Override

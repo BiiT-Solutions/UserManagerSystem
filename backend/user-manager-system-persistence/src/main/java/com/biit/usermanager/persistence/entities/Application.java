@@ -15,7 +15,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "applications")
-public class Application extends Element {
+public class Application extends Element<Long> {
 
     @Column(name = "name", nullable = false, unique = true)
     @Convert(converter = StringCryptoConverter.class)
@@ -24,6 +24,15 @@ public class Application extends Element {
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
     private String description = "";
+
+    public Application() {
+        super();
+    }
+
+    public Application(String name) {
+        this();
+        setName(name);
+    }
 
 
     public String getName() {

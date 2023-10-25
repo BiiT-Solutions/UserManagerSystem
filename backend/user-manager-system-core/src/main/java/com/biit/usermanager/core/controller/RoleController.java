@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class RoleController extends BasicElementController<Role, RoleDTO, RoleRepository,
+public class RoleController extends BasicElementController<Role, Long, RoleDTO, RoleRepository,
         RoleProvider, RoleConverterRequest, RoleConverter> {
 
     @Value("${spring.application.name}")
