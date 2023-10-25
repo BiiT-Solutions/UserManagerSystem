@@ -10,6 +10,7 @@
                 <include name="backendServiceRoleRepository"/>
                 <include name="applicationServiceRoleRepository"/>
                 <include name="applicationRole"/>
+                <include name="userApplicationBackendServiceRoles"/>
             </run>
         </groups>
         <classes>
@@ -19,7 +20,8 @@
             <class name="com.biit.usermanager.persistence.repositories.GroupRepositoryTest"/>
             <class name="com.biit.usermanager.persistence.repositories.BackendBackendBackendServiceRoleRepositoryTest"/>
             <class name="com.biit.usermanager.persistence.repositories.ApplicationRepositoryTest"/>
-            <class name="com.biit.usermanager.persistence.repositories.ApplicationBackendBackendBackendServiceRoleRepositoryTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepositoryTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRolesTests"/>
         </classes>
     </test>
 </suite>

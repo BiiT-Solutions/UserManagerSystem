@@ -18,11 +18,14 @@ import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
+import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Application;
+import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,11 +61,13 @@ public class UserController extends BasicElementController<User, Long, UserDTO, 
     private final GroupConverter groupConverter;
     private final ApplicationRoleConverter applicationRoleConverter;
 
+    private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
+
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationRoleProvider applicationRoleProvider, ApplicationConverter applicationConverter,
                              ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter,
-                             ApplicationRoleConverter applicationRoleConverter) {
+                             ApplicationRoleConverter applicationRoleConverter, UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
         super(provider, converter);
         this.applicationRoleProvider = applicationRoleProvider;
         this.applicationProvider = applicationProvider;
@@ -70,6 +75,7 @@ public class UserController extends BasicElementController<User, Long, UserDTO, 
         this.applicationConverter = applicationConverter;
         this.groupConverter = groupConverter;
         this.applicationRoleConverter = applicationRoleConverter;
+        this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
     }
 
     @Override
@@ -413,10 +419,10 @@ public class UserController extends BasicElementController<User, Long, UserDTO, 
      */
     private UserDTO setGrantedAuthorities(UserDTO userDTO, Application application) {
         if (userDTO != null) {
-            final User databaseUser = getProvider().getById(userDTO.getId()).orElseThrow(() ->
-                    new UserNotFoundException(this.getClass(), "User '" + userDTO + "' does not exists on database."));
 
-            databaseUser.getApplicationServiceRoles().forEach(applicationServiceRole -> {
+            List<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles = userApplicationBackendServiceRoleProvider.findByUserId(userDTO.getId());
+
+            user.getApplicationBackendServiceRole().forEach(applicationServiceRole -> {
                 if (application == null || Objects.equals(applicationServiceRole.getId().getApplicationRole().getId().getApplication(), application)) {
                     userDTO.addApplicationServiceRoles(applicationRoleConverter.convert(new ApplicationRoleConverterRequest(
                             applicationServiceRole.getId().getApplicationRole())));
@@ -432,5 +438,11 @@ public class UserController extends BasicElementController<User, Long, UserDTO, 
     public void checkUsernameExists(String username) {
         getProvider().findByUsername(username).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No uses exists with the username '" + username + "'."));
+    }
+
+    public void setApplicationBackendServiceRole(UserDTO userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
+        final User user = reverse(userDTO);
+        user.setApplicationBackendServiceRoles(applicationBackendServiceRoles);
+        getProvider().save(user);
     }
 }

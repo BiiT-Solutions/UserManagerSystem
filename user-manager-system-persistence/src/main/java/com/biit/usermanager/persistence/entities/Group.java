@@ -20,7 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "groups", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
         indexes = {
-                @Index(name = "IND_NAME", columnList = "name"),
+                @Index(name = "ind_group_name", columnList = "name"),
                 @Index(name = "ind_parent", columnList = "parent_id"),
                 @Index(name = "ind_application", columnList = "application_id"),
         })

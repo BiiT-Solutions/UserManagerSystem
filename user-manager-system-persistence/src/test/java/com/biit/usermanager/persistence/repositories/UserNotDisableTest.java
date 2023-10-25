@@ -13,7 +13,6 @@ import java.util.List;
 
 @SpringBootTest
 @Test(groups = {"userRepository"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class UserNotDisableTest extends AbstractTestNGSpringContextTests {
     private final static String USER_NAME_1 = "Ana";
     private final static String USER_NAME_2 = "Adrian";

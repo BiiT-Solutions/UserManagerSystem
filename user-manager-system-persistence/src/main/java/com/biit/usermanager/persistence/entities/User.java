@@ -112,15 +112,27 @@ public class User extends Element<Long> {
     private boolean accountExpired = false;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "users_by_application_service_role",
+    @JoinTable(name = "users_by_application_backend_service_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = {
-                    @JoinColumn(name = "application_service_role_application", referencedColumnName = "application_role_application"),
-                    @JoinColumn(name = "application_service_role_role", referencedColumnName = "application_role_role"),
-                    @JoinColumn(name = "application_service_role_service", referencedColumnName = "backend_service_role_service"),
-                    @JoinColumn(name = "application_service_role_name", referencedColumnName = "backend_service_role_name"),
+                    @JoinColumn(name = "application_backend_service_role_application", referencedColumnName = "application_role_application"),
+                    @JoinColumn(name = "application_backend_service_role_role", referencedColumnName = "application_role_role"),
+                    @JoinColumn(name = "application_backend_service_role_service", referencedColumnName = "backend_service_role_service"),
+                    @JoinColumn(name = "application_backend_service_role_name", referencedColumnName = "backend_service_role_name"),
             })
     private List<ApplicationBackendServiceRole> applicationBackendServiceRoles;
+
+    public User() {
+        super();
+    }
+
+    public User(String username, String name, String lastname, String password) {
+        this();
+        setUsername(username);
+        setName(name);
+        setLastname(lastname);
+        setPassword(password);
+    }
 
     public UUID getUuid() {
         return uuid;
@@ -274,11 +286,11 @@ public class User extends Element<Long> {
         this.country = country;
     }
 
-    public List<ApplicationBackendServiceRole> getApplicationServiceRoles() {
+    public List<ApplicationBackendServiceRole> getApplicationBackendServiceRole() {
         return applicationBackendServiceRoles;
     }
 
-    public void setApplicationServiceRoles(List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
+    public void setApplicationBackendServiceRoles(List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
         this.applicationBackendServiceRoles = applicationBackendServiceRoles;
     }
 

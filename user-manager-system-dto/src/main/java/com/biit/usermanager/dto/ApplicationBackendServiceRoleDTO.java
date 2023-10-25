@@ -6,6 +6,15 @@ public class ApplicationBackendServiceRoleDTO extends CreatedElementDTO {
 
     private ApplicationBackendServiceRoleIdDTO id;
 
+    public ApplicationBackendServiceRoleDTO() {
+        super();
+    }
+
+    public ApplicationBackendServiceRoleDTO(ApplicationRoleDTO applicationRole, BackendServiceRoleDTO serviceRole) {
+        this();
+        setId(new ApplicationBackendServiceRoleIdDTO(applicationRole, serviceRole));
+    }
+
     public ApplicationBackendServiceRoleIdDTO getId() {
         return id;
     }

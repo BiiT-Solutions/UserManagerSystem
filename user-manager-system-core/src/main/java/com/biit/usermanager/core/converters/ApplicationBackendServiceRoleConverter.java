@@ -1,18 +1,19 @@
 package com.biit.usermanager.core.converters;
 
 import com.biit.server.controller.converters.ElementConverter;
+import com.biit.usermanager.core.converters.models.ApplicationBackendServiceRoleConverterRequest;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
-import com.biit.usermanager.core.converters.models.ApplicationServiceRoleConverterRequest;
 import com.biit.usermanager.core.converters.models.BackendServiceRoleConverterRequest;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleIdDTO;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRoleId;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApplicationBackendServiceRoleConverter extends ElementConverter<ApplicationBackendServiceRole,
-        ApplicationBackendServiceRoleDTO, ApplicationServiceRoleConverterRequest> {
+        ApplicationBackendServiceRoleDTO, ApplicationBackendServiceRoleConverterRequest> {
 
     private final ApplicationRoleConverter applicationRoleConverter;
     private final BackendServiceRoleConverter backendServiceRoleConverter;
@@ -23,7 +24,7 @@ public class ApplicationBackendServiceRoleConverter extends ElementConverter<App
     }
 
     @Override
-    protected ApplicationBackendServiceRoleDTO convertElement(ApplicationServiceRoleConverterRequest from) {
+    protected ApplicationBackendServiceRoleDTO convertElement(ApplicationBackendServiceRoleConverterRequest from) {
         final ApplicationBackendServiceRoleDTO applicationBackendServiceRoleDTO = new ApplicationBackendServiceRoleDTO();
         BeanUtils.copyProperties(from.getEntity(), applicationBackendServiceRoleDTO);
         applicationBackendServiceRoleDTO.setId(new ApplicationBackendServiceRoleIdDTO(
@@ -40,6 +41,10 @@ public class ApplicationBackendServiceRoleConverter extends ElementConverter<App
         }
         final ApplicationBackendServiceRole applicationBackendServiceRole = new ApplicationBackendServiceRole();
         BeanUtils.copyProperties(to, applicationBackendServiceRole);
+        applicationBackendServiceRole.setId(new ApplicationBackendServiceRoleId(
+                applicationRoleConverter.reverse(to.getId().getApplicationRole()),
+                backendServiceRoleConverter.reverse(to.getId().getBackendServiceRole())
+        ));
         return applicationBackendServiceRole;
     }
 

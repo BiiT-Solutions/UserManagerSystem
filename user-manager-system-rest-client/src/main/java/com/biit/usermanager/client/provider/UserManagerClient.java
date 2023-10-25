@@ -11,8 +11,8 @@ import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import com.biit.usermanager.client.provider.converters.UserDTOConverter;
 import com.biit.usermanager.client.provider.models.Email;
 import com.biit.usermanager.client.validators.EmailValidator;
+import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.dto.UserDTO;
-import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.logger.UserManagerClientLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,6 +24,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -369,9 +370,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor
                                 .getRolesByUserAndGroupAndApplication(username, groupName, applicationName), result.getStatus());
 
-                final List<UserRoleDTO> userRoles = mapper.readValue(result.readEntity(String.class), new TypeReference<List<UserRoleDTO>>() {
-                });
-                userRoles.forEach(userRoleDTO -> roles.add(userRoleDTO.getRole().getName()));
+                final List<BackendServiceRoleDTO> backendServiceRoleDTOs = Arrays.asList(
+                        mapper.readValue(result.readEntity(String.class), BackendServiceRoleDTO[].class));
+                backendServiceRoleDTOs.forEach(backendServiceRoleDTO -> roles.add(backendServiceRoleDTO.getGrantedAuthority()));
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);

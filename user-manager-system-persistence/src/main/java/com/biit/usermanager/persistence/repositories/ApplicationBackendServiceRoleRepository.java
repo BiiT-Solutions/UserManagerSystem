@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface ApplicationServiceRoleRepository extends CreatedElementRepository<ApplicationBackendServiceRole, ApplicationBackendServiceRoleId> {
+public interface ApplicationBackendServiceRoleRepository extends CreatedElementRepository<ApplicationBackendServiceRole, ApplicationBackendServiceRoleId> {
 
     Optional<ApplicationBackendServiceRole> findByIdApplicationRoleAndIdBackendServiceRole(
             ApplicationRole applicationRole, BackendServiceRole backendServiceRole);

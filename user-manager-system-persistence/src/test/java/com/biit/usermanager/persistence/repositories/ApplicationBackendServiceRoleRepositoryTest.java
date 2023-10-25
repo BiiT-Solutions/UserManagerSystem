@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @SpringBootTest
 @Test(groups = {"applicationServiceRoleRepository"})
-public class ApplicationBackendBackendBackendServiceRoleRepositoryTest extends AbstractTestNGSpringContextTests {
+public class ApplicationBackendServiceRoleRepositoryTest extends AbstractTestNGSpringContextTests {
 
     private static final String ROLE_NAME = "AdminFrontend";
     private static final String APPLICATION_NAME = "Frontend";
@@ -39,7 +39,7 @@ public class ApplicationBackendBackendBackendServiceRoleRepositoryTest extends A
     private ApplicationRoleRepository applicationRoleRepository;
 
     @Autowired
-    private ApplicationServiceRoleRepository applicationServiceRoleRepository;
+    private ApplicationBackendServiceRoleRepository applicationBackendServiceRoleRepository;
 
     private ApplicationRole applicationRole;
     private BackendServiceRole backendServiceRole;
@@ -71,31 +71,31 @@ public class ApplicationBackendBackendBackendServiceRoleRepositoryTest extends A
     @Test
     public void saveApplicationServiceRole() {
         ApplicationBackendServiceRole applicationBackendServiceRole = new ApplicationBackendServiceRole(applicationRole, backendServiceRole);
-        applicationBackendServiceRole = applicationServiceRoleRepository.save(applicationBackendServiceRole);
+        applicationBackendServiceRole = applicationBackendServiceRoleRepository.save(applicationBackendServiceRole);
         Assert.assertNotNull(applicationBackendServiceRole.getId());
     }
 
     @Test(dependsOnMethods = "saveApplicationServiceRole")
     public void findApplicationServiceRoleByServiceRole() {
-        List<ApplicationBackendServiceRole> applicationBackendServiceRole = applicationServiceRoleRepository.findByIdBackendServiceRole(backendServiceRole);
+        List<ApplicationBackendServiceRole> applicationBackendServiceRole = applicationBackendServiceRoleRepository.findByIdBackendServiceRole(backendServiceRole);
         Assert.assertEquals(applicationBackendServiceRole.size(), 1);
     }
 
     @Test(dependsOnMethods = "saveApplicationServiceRole")
     public void findApplicationServiceRoleByApplicationRole() {
-        List<ApplicationBackendServiceRole> applicationBackendServiceRole = applicationServiceRoleRepository.findByIdApplicationRole(applicationRole);
+        List<ApplicationBackendServiceRole> applicationBackendServiceRole = applicationBackendServiceRoleRepository.findByIdApplicationRole(applicationRole);
         Assert.assertEquals(applicationBackendServiceRole.size(), 1);
     }
 
     @Test(dependsOnMethods = "saveApplicationServiceRole")
     public void findApplicationServiceRole() {
-        Optional<ApplicationBackendServiceRole> applicationServiceRole = applicationServiceRoleRepository.findByIdApplicationRoleAndIdBackendServiceRole(applicationRole, backendServiceRole);
+        Optional<ApplicationBackendServiceRole> applicationServiceRole = applicationBackendServiceRoleRepository.findByIdApplicationRoleAndIdBackendServiceRole(applicationRole, backendServiceRole);
         Assert.assertTrue(applicationServiceRole.isPresent());
     }
 
     @AfterClass(alwaysRun = true)
     public void wipeOut() {
-        applicationServiceRoleRepository.deleteAll();
+        applicationBackendServiceRoleRepository.deleteAll();
         applicationRoleRepository.deleteAll();
         applicationRepository.deleteAll();
         roleRepository.deleteAll();

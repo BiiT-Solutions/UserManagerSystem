@@ -6,8 +6,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 
+import java.io.Serializable;
+
 @Embeddable
-public class ApplicationBackendServiceRoleId {
+public class ApplicationBackendServiceRoleId implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({

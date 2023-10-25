@@ -2,17 +2,24 @@ package com.biit.usermanager.client;
 
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.client.provider.UserManagerClient;
+import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
+import com.biit.usermanager.core.controller.ApplicationRoleController;
+import com.biit.usermanager.core.controller.BackendServiceController;
+import com.biit.usermanager.core.controller.BackendServiceRoleController;
 import com.biit.usermanager.core.controller.GroupController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
-import com.biit.usermanager.core.controller.UserRoleController;
+import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
+import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.dto.ApplicationDTO;
+import com.biit.usermanager.dto.ApplicationRoleDTO;
+import com.biit.usermanager.dto.BackendServiceDTO;
+import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
-import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.rest.UserManagerServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +43,9 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_FIRST_NAME = "Test";
     private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
-    private static final String[] USER_ROLES = new String[]{"ADMIN", "VIEWER"};
+    private static final String[] APPLICATION_ROLES = new String[]{"ADMIN", "VIEWER"};
+    private static final String[] BACKEND_ROLES = new String[]{"WRITER", "READER"};
+    private static final String BACKEND_SERVICE = "DATABASE";
     private static final String DEFAULT_GROUP = "Standard_Users";
 
     @Value("${bcrypt.salt:}")
@@ -55,7 +64,18 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private GroupController groupController;
 
     @Autowired
-    private UserRoleController userRoleController;
+    private ApplicationRoleController applicationRoleController;
+
+    @Autowired
+    private BackendServiceRoleController backendServiceRoleController;
+    @Autowired
+    private BackendServiceController backendServiceController;
+
+    @Autowired
+    private ApplicationBackendServiceRoleController applicationBackendServiceRoleController;
+
+    @Autowired
+    private ApplicationBackendServiceRoleConverter applicationBackendServiceRoleConverter;
 
     @Autowired
     private UserManagerClient userManagerClient;
@@ -75,19 +95,33 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         //Create a group
         final GroupDTO groupDTO = groupController.create(new GroupDTO(DEFAULT_GROUP, applicationDTO), null);
 
-        //Set the roles
-        final List<RoleDTO> roles = new ArrayList<>();
-        final List<RoleDTO> groupRoles = new ArrayList<>();
-        for (final String roleName : USER_ROLES) {
-            roles.add(roleController.create(new RoleDTO(roleName, null), null));
-            groupRoles.add(roleController.create(new RoleDTO(applicationName + "_" + roleName, null), null));
+        //Set the application roles
+        final List<RoleDTO> roleDTOs = new ArrayList<>();
+        for (final String roleName : APPLICATION_ROLES) {
+            roleDTOs.add(roleController.create(new RoleDTO(roleName, null), null));
         }
 
-        //Assign the basic roles.
-        roles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, null), null));
+        //Assign the application roles.
+        final List<ApplicationRoleDTO> applicationRoles = new ArrayList<>();
+        roleDTOs.forEach(roleDTO -> applicationRoles.add(applicationRoleController.create(new ApplicationRoleDTO(applicationDTO, roleDTO), null)));
 
-        //Assign group roles.
-        groupRoles.forEach(roleDTO -> userRoleController.create(new UserRoleDTO(admin, roleDTO, groupDTO), null));
+        //Set the backend roles.
+        final BackendServiceDTO backendServiceDTO = backendServiceController.create(new BackendServiceDTO(BACKEND_SERVICE), null);
+
+        final List<BackendServiceRoleDTO> backendRoles = new ArrayList<>();
+        for (final String roleName : BACKEND_ROLES) {
+            backendRoles.add(backendServiceRoleController.create(new BackendServiceRoleDTO(backendServiceDTO, roleName), null));
+        }
+
+        //Assign the backend to an application.
+        final List<ApplicationBackendServiceRoleDTO> applicationBackendServiceRoleDTOs = new ArrayList<>();
+        for (ApplicationRoleDTO applicationRole : applicationRoles) {
+            for (BackendServiceRoleDTO backendRole : backendRoles) {
+                applicationBackendServiceRoleDTOs.add(applicationBackendServiceRoleController.create(new ApplicationBackendServiceRoleDTO(applicationRole, backendRole), null));
+            }
+        }
+
+        userController.setApplicationBackendServiceRole(admin, applicationBackendServiceRoleConverter.reverseAll(applicationBackendServiceRoleDTOs));
     }
 
     @Test
@@ -140,5 +174,10 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
         Assert.assertTrue(user.isPresent());
         Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, userManagerClient.getPasswordByUid(user.get().getUID())));
+    }
+
+    @Test
+    public void getUserGrantedAuthorities() {
+
     }
 }

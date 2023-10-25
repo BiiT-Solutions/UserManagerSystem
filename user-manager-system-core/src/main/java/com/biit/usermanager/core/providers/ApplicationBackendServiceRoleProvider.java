@@ -5,7 +5,7 @@ import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRoleId;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
-import com.biit.usermanager.persistence.repositories.ApplicationServiceRoleRepository;
+import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +14,10 @@ import java.util.Optional;
 
 @Service
 public class ApplicationBackendServiceRoleProvider extends CreatedElementProvider<ApplicationBackendServiceRole,
-        ApplicationBackendServiceRoleId, ApplicationServiceRoleRepository> {
+        ApplicationBackendServiceRoleId, ApplicationBackendServiceRoleRepository> {
 
     @Autowired
-    public ApplicationBackendServiceRoleProvider(ApplicationServiceRoleRepository repository) {
+    public ApplicationBackendServiceRoleProvider(ApplicationBackendServiceRoleRepository repository) {
         super(repository);
     }
 

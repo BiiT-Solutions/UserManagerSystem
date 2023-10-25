@@ -24,8 +24,8 @@ public class UserUrlConstructor {
         return "/users";
     }
 
-    public String getUserRoles() {
-        return "/roles/users";
+    public String getBackendServiceRoles() {
+        return "/backend-service-roles";
     }
 
     public String getUserByName(String username) {
@@ -89,7 +89,7 @@ public class UserUrlConstructor {
     }
 
     public String getRolesByUserAndGroupAndApplication(String username, String groupName, String applicationName) {
-        return getUserRoles() + "/usernames/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/groups/" + groupName
+        return getBackendServiceRoles() + "/users/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/groups/" + groupName
                 + "/applications/" + applicationName;
     }
 

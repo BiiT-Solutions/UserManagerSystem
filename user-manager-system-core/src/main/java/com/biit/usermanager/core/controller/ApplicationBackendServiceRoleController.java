@@ -5,21 +5,21 @@ import com.biit.server.controller.CreatedElementController;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
-import com.biit.usermanager.core.converters.models.ApplicationServiceRoleConverterRequest;
+import com.biit.usermanager.core.converters.models.ApplicationBackendServiceRoleConverterRequest;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.RoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRoleId;
-import com.biit.usermanager.persistence.repositories.ApplicationServiceRoleRepository;
+import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class ApplicationBackendServiceRoleController extends CreatedElementController<ApplicationBackendServiceRole,
-        ApplicationBackendServiceRoleId, ApplicationBackendServiceRoleDTO, ApplicationServiceRoleRepository,
-        ApplicationBackendServiceRoleProvider, ApplicationServiceRoleConverterRequest, ApplicationBackendServiceRoleConverter> {
+        ApplicationBackendServiceRoleId, ApplicationBackendServiceRoleDTO, ApplicationBackendServiceRoleRepository,
+        ApplicationBackendServiceRoleProvider, ApplicationBackendServiceRoleConverterRequest, ApplicationBackendServiceRoleConverter> {
 
     private final ApplicationProvider applicationProvider;
 
@@ -42,8 +42,8 @@ public class ApplicationBackendServiceRoleController extends CreatedElementContr
     }
 
     @Override
-    protected ApplicationServiceRoleConverterRequest createConverterRequest(ApplicationBackendServiceRole entity) {
-        return new ApplicationServiceRoleConverterRequest(entity);
+    protected ApplicationBackendServiceRoleConverterRequest createConverterRequest(ApplicationBackendServiceRole entity) {
+        return new ApplicationBackendServiceRoleConverterRequest(entity);
     }
 
 }

@@ -19,7 +19,7 @@ import java.io.Serializable;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "roles", indexes = {
-        @Index(name = "IND_NAME", columnList = "name")
+        @Index(name = "ind_role_name", columnList = "name")
 })
 public class Role extends Element<Long> implements Serializable {
     @Serial

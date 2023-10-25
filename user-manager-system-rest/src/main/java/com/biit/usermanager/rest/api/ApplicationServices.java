@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/applications")
-public class ApplicationServices extends BasicServices<Application, ApplicationDTO, ApplicationRepository,
+public class ApplicationServices extends BasicServices<Application, Long, ApplicationDTO, ApplicationRepository,
         ApplicationProvider, ApplicationConverterRequest, ApplicationConverter, ApplicationController> {
 
     public ApplicationServices(ApplicationController controller) {

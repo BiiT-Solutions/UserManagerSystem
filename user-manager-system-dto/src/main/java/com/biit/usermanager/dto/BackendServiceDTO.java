@@ -8,6 +8,15 @@ public class BackendServiceDTO extends ElementDTO<Long> {
 
     private String description = "";
 
+    public BackendServiceDTO() {
+        super();
+    }
+
+    public BackendServiceDTO(String name) {
+        this();
+        setName(name);
+    }
+
     public String getName() {
         return name;
     }

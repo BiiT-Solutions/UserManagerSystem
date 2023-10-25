@@ -34,7 +34,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserServices extends BasicServices<User, UserDTO, UserRepository,
+public class UserServices extends BasicServices<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter, UserController> {
 
     public UserServices(UserController userController) {

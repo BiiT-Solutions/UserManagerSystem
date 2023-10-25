@@ -6,6 +6,15 @@ public class ApplicationRoleDTO extends CreatedElementDTO {
 
     private ApplicationRoleIdDTO id;
 
+    public ApplicationRoleDTO() {
+        super();
+    }
+
+    public ApplicationRoleDTO(ApplicationDTO application, RoleDTO role) {
+        this();
+        setId(new ApplicationRoleIdDTO(application, role));
+    }
+
     public ApplicationRoleIdDTO getId() {
         return id;
     }

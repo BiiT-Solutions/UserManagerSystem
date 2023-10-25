@@ -8,6 +8,7 @@ import com.biit.usermanager.core.converters.models.RoleConverterRequest;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.ApplicationRoleIdDTO;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
+import com.biit.usermanager.persistence.entities.ApplicationRoleId;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -41,8 +42,12 @@ public class ApplicationRoleConverter extends ElementConverter<ApplicationRole, 
         if (to == null) {
             return null;
         }
-        final ApplicationRole userRole = new ApplicationRole();
-        BeanUtils.copyProperties(to, userRole);
-        return userRole;
+        final ApplicationRole applicationRole = new ApplicationRole();
+        BeanUtils.copyProperties(to, applicationRole);
+        applicationRole.setId(new ApplicationRoleId(
+                applicationConverter.reverse(to.getId().getApplication()),
+                roleConverter.reverse(to.getId().getRole())
+        ));
+        return applicationRole;
     }
 }
