@@ -10,7 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Embeddable
-public class ApplicationServiceRoleId implements Serializable {
+public class ApplicationBackendServiceRoleId implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 7873629144113150212L;
@@ -25,19 +25,19 @@ public class ApplicationServiceRoleId implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name = "service_role_service", referencedColumnName = "service"),
-            @JoinColumn(name = "service_role_name", referencedColumnName = "name")
+            @JoinColumn(name = "backend_service_role_service", referencedColumnName = "backend_service"),
+            @JoinColumn(name = "backend_service_role_name", referencedColumnName = "name")
     })
-    private ServiceRole serviceRole;
+    private BackendServiceRole backendServiceRole;
 
-    public ApplicationServiceRoleId() {
+    public ApplicationBackendServiceRoleId() {
         super();
     }
 
-    public ApplicationServiceRoleId(ApplicationRole applicationRole, ServiceRole serviceRole) {
+    public ApplicationBackendServiceRoleId(ApplicationRole applicationRole, BackendServiceRole backendServiceRole) {
         this();
         setApplicationRole(applicationRole);
-        setServiceRole(serviceRole);
+        setServiceRole(backendServiceRole);
     }
 
     public ApplicationRole getApplicationRole() {
@@ -48,11 +48,11 @@ public class ApplicationServiceRoleId implements Serializable {
         this.applicationRole = applicationRole;
     }
 
-    public ServiceRole getServiceRole() {
-        return serviceRole;
+    public BackendServiceRole getServiceRole() {
+        return backendServiceRole;
     }
 
-    public void setServiceRole(ServiceRole serviceRole) {
-        this.serviceRole = serviceRole;
+    public void setServiceRole(BackendServiceRole backendServiceRole) {
+        this.backendServiceRole = backendServiceRole;
     }
 }

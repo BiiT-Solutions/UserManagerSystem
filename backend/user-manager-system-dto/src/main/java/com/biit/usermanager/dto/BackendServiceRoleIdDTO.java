@@ -2,27 +2,27 @@ package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.CreatedElementDTO;
 
-public class ServiceRoleIdDTO extends CreatedElementDTO {
+public class BackendServiceRoleIdDTO extends CreatedElementDTO {
 
-    private ServiceDTO service;
+    private BackendServiceDTO service;
 
     private String name;
 
-    public ServiceRoleIdDTO() {
+    public BackendServiceRoleIdDTO() {
         super();
     }
 
-    public ServiceRoleIdDTO(ServiceDTO service, String name) {
+    public BackendServiceRoleIdDTO(BackendServiceDTO service, String name) {
         super();
         setService(service);
         setName(name);
     }
 
-    public ServiceDTO getService() {
+    public BackendServiceDTO getService() {
         return service;
     }
 
-    public void setService(ServiceDTO service) {
+    public void setService(BackendServiceDTO service) {
         this.service = service;
     }
 

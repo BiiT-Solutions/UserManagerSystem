@@ -120,7 +120,7 @@ public class User extends Element<Long> {
                     @JoinColumn(name = "application_service_role_service", referencedColumnName = "service_role_service"),
                     @JoinColumn(name = "application_service_role_name", referencedColumnName = "service_role_name"),
             })
-    private List<ApplicationServiceRole> applicationServiceRoles;
+    private List<ApplicationBackendServiceRole> applicationBackendServiceRoles;
 
     public UUID getUuid() {
         return uuid;
@@ -274,12 +274,12 @@ public class User extends Element<Long> {
         this.country = country;
     }
 
-    public List<ApplicationServiceRole> getApplicationServiceRoles() {
-        return applicationServiceRoles;
+    public List<ApplicationBackendServiceRole> getApplicationServiceRoles() {
+        return applicationBackendServiceRoles;
     }
 
-    public void setApplicationServiceRoles(List<ApplicationServiceRole> applicationServiceRoles) {
-        this.applicationServiceRoles = applicationServiceRoles;
+    public void setApplicationServiceRoles(List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
+        this.applicationBackendServiceRoles = applicationBackendServiceRoles;
     }
 
     @Override

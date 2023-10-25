@@ -12,26 +12,26 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "service_roles")
-public class ServiceRole extends CreatedElement {
+@Table(name = "backend_service_roles")
+public class BackendServiceRole extends CreatedElement {
 
     @EmbeddedId
-    private ServiceRoleId id;
+    private BackendServiceRoleId id;
 
-    public ServiceRole() {
+    public BackendServiceRole() {
         super();
     }
 
-    public ServiceRole(Service service, String name) {
+    public BackendServiceRole(BackendService backendService, String name) {
         super();
-        setId(new ServiceRoleId(service, name));
+        setId(new BackendServiceRoleId(backendService, name));
     }
 
-    public ServiceRoleId getId() {
+    public BackendServiceRoleId getId() {
         return id;
     }
 
-    public void setId(ServiceRoleId id) {
+    public void setId(BackendServiceRoleId id) {
         this.id = id;
     }
 
@@ -44,7 +44,7 @@ public class ServiceRole extends CreatedElement {
     }
 
     @JsonIgnore
-    public Service getService() {
+    public BackendService getService() {
         if (id == null) {
             return null;
         }

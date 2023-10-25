@@ -12,35 +12,35 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Embeddable
-public class ServiceRoleId implements Serializable {
+public class BackendServiceRoleId implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 7130482204365537896L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "service")
-    private Service service;
+    private BackendService backendService;
 
     @Column(name = "name", nullable = false)
     @Convert(converter = StringCryptoConverter.class)
     private String name;
 
-    public ServiceRoleId() {
+    public BackendServiceRoleId() {
         super();
     }
 
-    public ServiceRoleId(Service service, String name) {
+    public BackendServiceRoleId(BackendService backendService, String name) {
         super();
-        setService(service);
+        setService(backendService);
         setName(name);
     }
 
-    public Service getService() {
-        return service;
+    public BackendService getService() {
+        return backendService;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setService(BackendService backendService) {
+        this.backendService = backendService;
     }
 
     public String getName() {

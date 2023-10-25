@@ -2,9 +2,9 @@ package com.biit.usermanager.persistence.repositories;
 
 import com.biit.server.persistence.repositories.CreatedElementRepository;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
-import com.biit.usermanager.persistence.entities.ApplicationServiceRole;
-import com.biit.usermanager.persistence.entities.ApplicationServiceRoleId;
-import com.biit.usermanager.persistence.entities.ServiceRole;
+import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRoleId;
+import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
@@ -13,12 +13,12 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface ApplicationServiceRoleRepository extends CreatedElementRepository<ApplicationServiceRole, ApplicationServiceRoleId> {
+public interface ApplicationServiceRoleRepository extends CreatedElementRepository<ApplicationBackendServiceRole, ApplicationBackendServiceRoleId> {
 
-    Optional<ApplicationServiceRole> findByIdApplicationRoleAndIdServiceRole(ApplicationRole applicationRole, ServiceRole serviceRole);
+    Optional<ApplicationBackendServiceRole> findByIdApplicationRoleAndIdServiceRole(ApplicationRole applicationRole, BackendServiceRole backendServiceRole);
 
-    List<ApplicationServiceRole> findByIdApplicationRole(ApplicationRole applicationRole);
+    List<ApplicationBackendServiceRole> findByIdApplicationRole(ApplicationRole applicationRole);
 
-    List<ApplicationServiceRole> findByIdServiceRole(ServiceRole serviceRole);
+    List<ApplicationBackendServiceRole> findByIdServiceRole(BackendServiceRole backendServiceRole);
 
 }

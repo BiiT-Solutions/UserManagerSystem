@@ -14,7 +14,7 @@ Let's see the next example:
 ![Architecture](documentation/UserManagerSystem.svg)
 
 On this example we have different applications that are deployed on a different server. `Application A` wants to consume
-a service that is on `Application B`. For this purpose, `Application A` sends its credentials for `Application B`. A
+a backendService that is on `Application B`. For this purpose, `Application A` sends its credentials for `Application B`. A
 typical user and password. But `Application B` does not have the information to know if this user is allowed to access
 or not to its own API.
 
@@ -159,7 +159,7 @@ And include the correct path on the ComponentScan:
 @ComponentScan({"...", "com.biit.usermanager.security"})
 ```
 
-On the `application.properties` remember to set the JWT user and password for accessing to the service that will check
+On the `application.properties` remember to set the JWT user and password for accessing to the backendService that will check
 the user:
 
 ```

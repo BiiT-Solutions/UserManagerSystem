@@ -2,15 +2,15 @@ package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.CreatedElementDTO;
 
-public class ApplicationServiceRoleDTO extends CreatedElementDTO {
+public class ApplicationBackendServiceRoleDTO extends CreatedElementDTO {
 
-    private ApplicationServiceRoleIdDTO id;
+    private ApplicationBackendServiceRoleIdDTO id;
 
-    public ApplicationServiceRoleIdDTO getId() {
+    public ApplicationBackendServiceRoleIdDTO getId() {
         return id;
     }
 
-    public void setId(ApplicationServiceRoleIdDTO id) {
+    public void setId(ApplicationBackendServiceRoleIdDTO id) {
         this.id = id;
     }
 

@@ -1,8 +1,8 @@
 package com.biit.usermanager.persistence.repositories;
 
 
-import com.biit.usermanager.persistence.entities.Service;
-import com.biit.usermanager.persistence.entities.ServiceRole;
+import com.biit.usermanager.persistence.entities.BackendService;
+import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -15,37 +15,37 @@ import java.util.Optional;
 
 @SpringBootTest
 @Test(groups = {"serviceRoleRepository"})
-public class ServiceRoleRepositoryTest extends AbstractTestNGSpringContextTests {
+public class BackendBackendServiceRoleRepositoryTest extends AbstractTestNGSpringContextTests {
 
     private static final String SERVICE_ROLE_NAME = "TestName";
     private static final String SERVICE_NAME = "ServiceName";
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private BackendServiceRepository backendServiceRepository;
 
     @Autowired
     private ServiceRoleRepository serviceRoleRepository;
 
-    private Service service;
+    private BackendService backendService;
 
     @BeforeClass
     public void saveApplication() {
-        service = new Service(SERVICE_NAME);
-        Assert.assertNull(service.getId());
-        service = serviceRepository.save(service);
-        Assert.assertNotNull(service.getId());
+        backendService = new BackendService(SERVICE_NAME);
+        Assert.assertNull(backendService.getId());
+        backendService = backendServiceRepository.save(backendService);
+        Assert.assertNotNull(backendService.getId());
     }
 
     @Test
     public void saveServiceRole() {
-        ServiceRole serviceRole = new ServiceRole(service, SERVICE_ROLE_NAME);
-        serviceRole = serviceRoleRepository.save(serviceRole);
-        Assert.assertNotNull(serviceRole.getId());
+        BackendServiceRole backendServiceRole = new BackendServiceRole(backendService, SERVICE_ROLE_NAME);
+        backendServiceRole = serviceRoleRepository.save(backendServiceRole);
+        Assert.assertNotNull(backendServiceRole.getId());
     }
 
     @Test(dependsOnMethods = "saveServiceRole")
     public void getServiceRoleByName() {
-        Optional<ServiceRole> serviceRole = serviceRoleRepository.findByIdServiceAndIdName(service, SERVICE_ROLE_NAME);
+        Optional<BackendServiceRole> serviceRole = serviceRoleRepository.findByIdServiceAndIdName(backendService, SERVICE_ROLE_NAME);
         Assert.assertTrue(serviceRole.isPresent());
         Assert.assertEquals(serviceRole.get().getName(), SERVICE_ROLE_NAME);
     }
@@ -53,9 +53,9 @@ public class ServiceRoleRepositoryTest extends AbstractTestNGSpringContextTests 
     @AfterClass(alwaysRun = true)
     public void wipeOut() {
         serviceRoleRepository.deleteAll();
-        serviceRepository.deleteAll();
+        backendServiceRepository.deleteAll();
         Assert.assertEquals(serviceRoleRepository.count(), 0);
-        Assert.assertEquals(serviceRepository.count(), 0);
+        Assert.assertEquals(backendServiceRepository.count(), 0);
     }
 
 }

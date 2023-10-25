@@ -1,9 +1,9 @@
 package com.biit.usermanager.persistence.repositories;
 
 import com.biit.server.persistence.repositories.CreatedElementRepository;
-import com.biit.usermanager.persistence.entities.Service;
-import com.biit.usermanager.persistence.entities.ServiceRole;
-import com.biit.usermanager.persistence.entities.ServiceRoleId;
+import com.biit.usermanager.persistence.entities.BackendService;
+import com.biit.usermanager.persistence.entities.BackendServiceRole;
+import com.biit.usermanager.persistence.entities.BackendServiceRoleId;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
@@ -12,11 +12,11 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface ServiceRoleRepository extends CreatedElementRepository<ServiceRole, ServiceRoleId> {
+public interface ServiceRoleRepository extends CreatedElementRepository<BackendServiceRole, BackendServiceRoleId> {
 
-    List<ServiceRole> findByIdService(Service service);
+    List<BackendServiceRole> findByIdService(BackendService backendService);
 
-    List<ServiceRole> findByIdName(String name);
+    List<BackendServiceRole> findByIdName(String name);
 
-    Optional<ServiceRole> findByIdServiceAndIdName(Service service, String name);
+    Optional<BackendServiceRole> findByIdServiceAndIdName(BackendService backendService, String name);
 }

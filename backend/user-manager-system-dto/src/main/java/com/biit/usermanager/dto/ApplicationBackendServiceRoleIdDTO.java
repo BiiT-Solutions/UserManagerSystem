@@ -1,16 +1,16 @@
 package com.biit.usermanager.dto;
 
-public class ApplicationServiceRoleIdDTO {
+public class ApplicationBackendServiceRoleIdDTO {
 
     private ApplicationRoleDTO applicationRole;
 
-    private ServiceRoleDTO serviceRole;
+    private BackendServiceRoleDTO serviceRole;
 
-    public ApplicationServiceRoleIdDTO() {
+    public ApplicationBackendServiceRoleIdDTO() {
         super();
     }
 
-    public ApplicationServiceRoleIdDTO(ApplicationRoleDTO applicationRole, ServiceRoleDTO serviceRole) {
+    public ApplicationBackendServiceRoleIdDTO(ApplicationRoleDTO applicationRole, BackendServiceRoleDTO serviceRole) {
         super();
         setApplicationRole(applicationRole);
         setServiceRole(serviceRole);
@@ -24,11 +24,11 @@ public class ApplicationServiceRoleIdDTO {
         this.applicationRole = applicationRole;
     }
 
-    public ServiceRoleDTO getServiceRole() {
+    public BackendServiceRoleDTO getServiceRole() {
         return serviceRole;
     }
 
-    public void setServiceRole(ServiceRoleDTO serviceRole) {
+    public void setServiceRole(BackendServiceRoleDTO serviceRole) {
         this.serviceRole = serviceRole;
     }
 

@@ -51,16 +51,6 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
         return new ApplicationRoleConverterRequest(entity);
     }
 
-    @Override
-    public ApplicationRoleDTO create(ApplicationRoleDTO applicationRoleDTO, String creatorName) {
-        return null;
-    }
-
-    @Override
-    public Collection<ApplicationRoleDTO> create(Collection<ApplicationRoleDTO> applicationRoleDTOS, String creatorName) {
-        return null;
-    }
-
     public List<ApplicationRoleDTO> getByApplication(String applicationName) {
         return convertAll(getProvider().findByApplication(applicationProvider.findByName(applicationName).orElseThrow(() ->
                 new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."))));
