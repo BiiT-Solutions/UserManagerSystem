@@ -1,0 +1,25 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="1" verbose="1" name="UserManager">
+    <test name="UserManager" enabled="true" preserve-order="true">
+        <groups>
+            <run>
+                <include name="userRepository"/>
+                <include name="roleRepository"/>
+                <include name="groupRepository"/>
+                <include name="applicationRepository"/>
+                <include name="backendServiceRoleRepository"/>
+                <include name="applicationServiceRoleRepository"/>
+                <include name="applicationRole"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.biit.usermanager.persistence.repositories.UserRepositoryTests"/>
+            <class name="com.biit.usermanager.persistence.repositories.UserNotDisableTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.ApplicationRoleTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.GroupRepositoryTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.BackendBackendBackendServiceRoleRepositoryTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.ApplicationRepositoryTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.ApplicationBackendBackendBackendServiceRoleRepositoryTest"/>
+        </classes>
+    </test>
+</suite>
