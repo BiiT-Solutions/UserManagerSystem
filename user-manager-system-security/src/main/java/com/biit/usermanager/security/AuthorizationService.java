@@ -196,7 +196,6 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
     public Set<IRole<String>> getUserRoles(IUser<Long> user, IGroup<Long> organization) throws UserManagementException, UserDoesNotExistException,
             InvalidCredentialsException, OrganizationDoesNotExistException {
         throw new UnsupportedOperationException("Not implemented");
-
     }
 
     @Override

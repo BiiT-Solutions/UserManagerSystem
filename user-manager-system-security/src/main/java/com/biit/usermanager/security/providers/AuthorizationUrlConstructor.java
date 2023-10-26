@@ -21,13 +21,14 @@ public class AuthorizationUrlConstructor {
         return "/users";
     }
 
+    public String getUserByUsername(String username) {
+        return "/users/usernames/" + username;
+    }
+
     private String getRoles() {
         return "/roles";
     }
 
-    private String getUserRoles() {
-        return "/roles/users";
-    }
 
     private String getGroups() {
         return "/groups";
@@ -37,21 +38,6 @@ public class AuthorizationUrlConstructor {
         return getUsers();
     }
 
-    public String getUserInGroup() {
-        return getUsers();
-    }
-
-    public String getUserRolesByGroup(String groupName, String applicationName) {
-        return getUserRoles() + "/groups/" + groupName + "/applications/" + applicationName;
-    }
-
-    public String getUserByGroupAndRole(String groupName, String applicationName, String roleName) {
-        return getUserRoles() + "/groups/" + groupName + "/applications/" + applicationName + "/roles/" + roleName;
-    }
-
-    public String getUserRolesByUser(String username) {
-        return getUserRoles() + "/usernames/" + username;
-    }
 
     public String getGroups(Long id) {
         return getGroups() + "/" + id;
@@ -69,27 +55,8 @@ public class AuthorizationUrlConstructor {
         return getGroups() + "/no-parent";
     }
 
-    public String getAllGroupsWithParent() {
-        return getGroups() + "/has-parent";
-    }
-
-    public String getUserRoleById(Long id) {
-        return getUserRoles() + "/" + id;
-    }
-
-    public String getRoleById(Long id) {
-        return getRoles() + "/" + id;
-    }
-
     public String getRoleByName(String name) {
         return getRoles() + "/names/" + name;
     }
 
-    public String getUserRolesFromUserGroupAndApplication(String username, String groupName, String applicationName) {
-        return getUserRoles() + "/usernames/" + username + "/groups/" + groupName + "/applications/" + applicationName;
-    }
-
-    public String addUserRoles() {
-        return getUserRoles();
-    }
 }
