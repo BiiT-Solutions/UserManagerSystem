@@ -6,13 +6,16 @@ import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRo
 
 import java.util.List;
 
-public interface UserApplicationBackendServiceRoleRepository extends StorableObjectRepository<UserApplicationBackendServiceRole, UserApplicationBackendServiceRoleId> {
+public interface UserApplicationBackendServiceRoleRepository extends StorableObjectRepository<UserApplicationBackendServiceRole,
+        UserApplicationBackendServiceRoleId> {
 
     List<UserApplicationBackendServiceRole> findByIdUserId(Long userId);
 
-    List<UserApplicationBackendServiceRole> findByIdApplicationId(Long applicationId);
+    List<UserApplicationBackendServiceRole> findByIdApplicationName(String applicationName);
 
-    List<UserApplicationBackendServiceRole> findByIdBackendServiceId(Long roleId);
+    List<UserApplicationBackendServiceRole> findByIdRoleName(String roleName);
+
+    List<UserApplicationBackendServiceRole> findByIdBackendServiceName(String backendServiceName);
 
     List<UserApplicationBackendServiceRole> findByIdBackendServiceRole(String roleName);
 }

@@ -1,6 +1,6 @@
 package com.biit.usermanager.rest.api;
 
-import com.biit.server.rest.BasicServices;
+import com.biit.server.rest.ElementServices;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.UserConverter;
@@ -34,7 +34,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserServices extends BasicServices<User, Long, UserDTO, UserRepository,
+public class UserServices extends ElementServices<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter, UserController> {
 
     public UserServices(UserController userController) {

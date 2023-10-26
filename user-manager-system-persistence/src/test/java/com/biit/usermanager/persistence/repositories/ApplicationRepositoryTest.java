@@ -22,16 +22,14 @@ public class ApplicationRepositoryTest extends AbstractTestNGSpringContextTests 
 
     @Test
     public void saveApplication() {
-        Application application = new Application();
-        application.setName(APPLICATION_NAME);
-        Assert.assertNull(application.getId());
+        Application application = new Application(APPLICATION_NAME);
         application = applicationRepository.save(application);
         Assert.assertNotNull(application.getId());
     }
 
     @Test(dependsOnMethods = "saveApplication")
     public void getApplicationByName() {
-        Optional<Application> application = applicationRepository.findByName(APPLICATION_NAME);
+        Optional<Application> application = applicationRepository.findById(APPLICATION_NAME);
         Assert.assertTrue(application.isPresent());
         Assert.assertEquals(application.get().getName(), APPLICATION_NAME);
 

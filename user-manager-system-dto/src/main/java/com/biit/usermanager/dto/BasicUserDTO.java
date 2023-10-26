@@ -13,6 +13,8 @@ import java.util.UUID;
 
 public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuthenticatedUser {
 
+    private Long id;
+
     @Serial
     private static final long serialVersionUID = -1718677380015570500L;
 
@@ -26,6 +28,16 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
 
     public BasicUserDTO() {
         uuid = UUID.randomUUID();
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

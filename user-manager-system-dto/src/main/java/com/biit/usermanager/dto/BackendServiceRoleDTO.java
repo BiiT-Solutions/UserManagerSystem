@@ -23,8 +23,4 @@ public class BackendServiceRoleDTO extends CreatedElementDTO {
     public void setId(BackendServiceRoleIdDTO id) {
         this.id = id;
     }
-
-    public String getGrantedAuthority() {
-        return id.getService().getName().toUpperCase() + "_" + id.getName().toUpperCase();
-    }
 }

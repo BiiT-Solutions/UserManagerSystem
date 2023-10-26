@@ -59,7 +59,6 @@ public class ApplicationBackendServiceRoleRepositoryTest extends AbstractTestNGS
         Assert.assertNotNull(applicationRole.getId());
 
         BackendService backendService = new BackendService(SERVICE_NAME);
-        Assert.assertNull(backendService.getId());
         backendService = backendServiceRepository.save(backendService);
         Assert.assertNotNull(backendService.getId());
 

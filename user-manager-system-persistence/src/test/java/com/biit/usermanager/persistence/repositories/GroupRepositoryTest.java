@@ -31,9 +31,7 @@ public class GroupRepositoryTest extends AbstractTestNGSpringContextTests {
 
     @BeforeClass
     public void saveApplication() {
-        application = new Application();
-        application.setName(APPLICATION_NAME);
-        Assert.assertNull(application.getId());
+        application = new Application(APPLICATION_NAME);
         application = applicationRepository.save(application);
         Assert.assertNotNull(application.getId());
     }
@@ -42,7 +40,6 @@ public class GroupRepositoryTest extends AbstractTestNGSpringContextTests {
     public void saveGroup() {
         Group group = new Group();
         group.setName(GROUP_NAME);
-        Assert.assertNull(group.getId());
         group.setApplication(application);
         group = groupRepository.save(group);
         Assert.assertNotNull(group.getId());

@@ -5,10 +5,8 @@ import com.biit.usermanager.persistence.entities.Organization;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 @Transactional
-public interface OrganizationRepository extends ElementRepository<Organization, Long> {
-    Optional<Organization> findByName(String name);
+public interface OrganizationRepository extends ElementRepository<Organization, String> {
+
 }

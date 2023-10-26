@@ -1,6 +1,6 @@
 package com.biit.usermanager.rest.api;
 
-import com.biit.server.rest.BasicServices;
+import com.biit.server.rest.ElementServices;
 import com.biit.usermanager.core.controller.BasicUserController;
 import com.biit.usermanager.core.converters.BasicUserConverter;
 import com.biit.usermanager.core.converters.models.BasicUserConverterRequest;
@@ -27,7 +27,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users/basic")
-public class BasicUserServices extends BasicServices<User, Long, BasicUserDTO, UserRepository,
+public class BasicUserServices extends ElementServices<User, Long, BasicUserDTO, UserRepository,
         UserProvider, BasicUserConverterRequest, BasicUserConverter, BasicUserController> {
 
     public BasicUserServices(BasicUserController userController) {

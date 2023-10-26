@@ -7,6 +7,8 @@ import com.biit.usermanager.core.converters.models.ApplicationRoleConverterReque
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
+import com.biit.usermanager.persistence.entities.ApplicationRoleId;
+import com.biit.usermanager.persistence.repositories.ApplicationRoleRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -22,8 +24,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/application-roles")
-public class ApplicationRoleServices extends CreatedElementServices<ApplicationRole, ApplicationRoleDTO,
-        ApplicationRoleProvider, ApplicationRoleConverterRequest, ApplicationRoleConverter, ApplicationRoleController> {
+public class ApplicationRoleServices extends CreatedElementServices<
+        ApplicationRole,
+        ApplicationRoleId,
+        ApplicationRoleDTO,
+        ApplicationRoleRepository,
+        ApplicationRoleProvider,
+        ApplicationRoleConverterRequest,
+        ApplicationRoleConverter,
+        ApplicationRoleController
+        > {
 
     public ApplicationRoleServices(ApplicationRoleController applicationRoleController) {
         super(applicationRoleController);

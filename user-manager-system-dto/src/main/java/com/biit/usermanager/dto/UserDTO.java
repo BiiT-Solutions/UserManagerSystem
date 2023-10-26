@@ -55,7 +55,7 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private Set<String> grantedAuthorities;
 
-    private Collection<ApplicationRoleDTO> applicationRoles;
+    private Collection<String> applicationRoles;
 
     @JsonIgnore
     @Override
@@ -137,15 +137,15 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
         this.grantedAuthorities.add(grantedAuthority);
     }
 
-    public Collection<ApplicationRoleDTO> getApplicationRoles() {
+    public Collection<String> getApplicationRoles() {
         return applicationRoles;
     }
 
-    public void setApplicationRoles(Collection<ApplicationRoleDTO> applicationRoles) {
+    public void setApplicationRoles(Collection<String> applicationRoles) {
         this.applicationRoles = applicationRoles;
     }
 
-    public void addApplicationServiceRoles(ApplicationRoleDTO applicationServiceRoles) {
+    public void addApplicationServiceRoles(String applicationServiceRoles) {
         if (this.applicationRoles == null) {
             this.applicationRoles = new HashSet<>();
         }

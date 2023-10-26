@@ -1,6 +1,6 @@
 package com.biit.usermanager.rest.api;
 
-import com.biit.server.rest.BasicServices;
+import com.biit.server.rest.ElementServices;
 import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/applications")
-public class ApplicationServices extends BasicServices<Application, Long, ApplicationDTO, ApplicationRepository,
+public class ApplicationServices extends ElementServices<Application, String, ApplicationDTO, ApplicationRepository,
         ApplicationProvider, ApplicationConverterRequest, ApplicationConverter, ApplicationController> {
 
     public ApplicationServices(ApplicationController controller) {

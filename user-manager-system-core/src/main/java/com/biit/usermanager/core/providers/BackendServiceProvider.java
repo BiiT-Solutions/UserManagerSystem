@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class BackendServiceProvider extends ElementProvider<BackendService, Long, BackendServiceRepository> {
+public class BackendServiceProvider extends ElementProvider<BackendService, String, BackendServiceRepository> {
 
     public BackendServiceProvider(BackendServiceRepository repository) {
         super(repository);
     }
 
     public Optional<BackendService> findByName(String name) {
-        return getRepository().findByName(name);
+        return getRepository().findById(name);
     }
 }

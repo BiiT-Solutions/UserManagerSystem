@@ -1,14 +1,7 @@
 package com.biit.usermanager.persistence.entities;
 
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serializable;
 
@@ -19,13 +12,13 @@ public class UserApplicationBackendServiceRoleId implements Serializable {
     private Long userId;
 
     @Column(name = "application_backend_service_role_application", nullable = false)
-    private Long applicationId;
+    private String applicationName;
 
     @Column(name = "application_backend_service_role_role", nullable = false)
-    private Long roleId;
+    private String roleName;
 
     @Column(name = "application_backend_service_role_service", nullable = false)
-    private Long backendServiceId;
+    private String backendServiceName;
 
     @Column(name = "application_backend_service_role_name", nullable = false)
     private String backendServiceRole;
@@ -39,28 +32,28 @@ public class UserApplicationBackendServiceRoleId implements Serializable {
         this.userId = userId;
     }
 
-    public Long getApplicationId() {
-        return applicationId;
+    public String getApplicationName() {
+        return applicationName;
     }
 
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
-    public Long getBackendServiceId() {
-        return backendServiceId;
+    public String getBackendServiceName() {
+        return backendServiceName;
     }
 
-    public void setBackendServiceId(Long backendServiceId) {
-        this.backendServiceId = backendServiceId;
+    public void setBackendServiceName(String backendServiceName) {
+        this.backendServiceName = backendServiceName;
     }
 
     public String getBackendServiceRole() {

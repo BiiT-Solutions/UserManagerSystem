@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.server.controller.BasicElementController;
+import com.biit.server.controller.ElementController;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.BasicUserConverter;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Primary
 @Controller
-public class BasicUserController extends BasicElementController<User, Long, BasicUserDTO, UserRepository,
+public class BasicUserController extends ElementController<User, Long, BasicUserDTO, UserRepository,
         UserProvider, BasicUserConverterRequest, BasicUserConverter> {
     private final ApplicationRoleProvider applicationRoleProvider;
 

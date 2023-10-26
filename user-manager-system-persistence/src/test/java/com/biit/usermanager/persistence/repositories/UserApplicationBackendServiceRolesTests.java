@@ -104,7 +104,7 @@ public class UserApplicationBackendServiceRolesTests extends AbstractTestNGSprin
         List<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles = userApplicationBackendServiceRoleRepository.findAll();
         Assert.assertEquals(userApplicationBackendServiceRoles.size(), BACKEND_ROLES.length * APPLICATION_ROLES.length);
         Assert.assertEquals(userApplicationBackendServiceRoles.get(0).getId().getUserId(), admin.getId());
-        Assert.assertEquals(userApplicationBackendServiceRoles.get(0).getId().getApplicationId(), application.getId());
+        Assert.assertEquals(userApplicationBackendServiceRoles.get(0).getId().getApplicationName(), application.getId());
     }
 
     @AfterClass

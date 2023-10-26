@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.server.controller.BasicElementController;
+import com.biit.server.controller.ElementController;
 import com.biit.usermanager.core.converters.BackendServiceConverter;
 import com.biit.usermanager.core.converters.models.BackendServiceConverterRequest;
 import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
@@ -11,7 +11,7 @@ import com.biit.usermanager.persistence.repositories.BackendServiceRepository;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class BackendServiceController extends BasicElementController<BackendService, Long, BackendServiceDTO, BackendServiceRepository,
+public class BackendServiceController extends ElementController<BackendService, String, BackendServiceDTO, BackendServiceRepository,
         BackendServiceProvider, BackendServiceConverterRequest, BackendServiceConverter> {
 
     protected BackendServiceController(BackendServiceProvider provider, BackendServiceConverter converter) {

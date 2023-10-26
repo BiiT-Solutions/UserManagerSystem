@@ -23,7 +23,7 @@ public class ApplicationRoleProvider extends CreatedElementProvider<ApplicationR
         return getRepository().findByIdApplication(application);
     }
 
-    public List<ApplicationRole> findByApplicationId(Long applicationId) {
+    public List<ApplicationRole> findByApplicationId(String applicationId) {
         return getRepository().findByIdApplicationId(applicationId);
     }
 

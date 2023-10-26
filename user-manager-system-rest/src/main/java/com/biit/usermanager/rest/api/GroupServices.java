@@ -1,6 +1,6 @@
 package com.biit.usermanager.rest.api;
 
-import com.biit.server.rest.BasicServices;
+import com.biit.server.rest.ElementServices;
 import com.biit.usermanager.core.controller.GroupController;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
@@ -26,7 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/groups")
-public class GroupServices extends BasicServices<Group, Long, GroupDTO, GroupRepository,
+public class GroupServices extends ElementServices<Group, Long, GroupDTO, GroupRepository,
         GroupProvider, GroupConverterRequest, GroupConverter, GroupController> {
 
     public GroupServices(GroupController groupController) {

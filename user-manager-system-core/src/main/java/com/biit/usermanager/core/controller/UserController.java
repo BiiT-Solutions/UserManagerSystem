@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.server.controller.BasicElementController;
+import com.biit.server.controller.ElementController;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
@@ -8,7 +8,6 @@ import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.UserConverter;
-import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
@@ -20,6 +19,7 @@ import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
+import com.biit.usermanager.core.utils.RoleNameGenerator;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Application;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Controller
 @Order(1)
 @Qualifier("userController")
-public class UserController extends BasicElementController<User, Long, UserDTO, UserRepository,
+public class UserController extends ElementController<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
     private final ApplicationRoleProvider applicationRoleProvider;
 
@@ -67,7 +67,8 @@ public class UserController extends BasicElementController<User, Long, UserDTO, 
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationRoleProvider applicationRoleProvider, ApplicationConverter applicationConverter,
                              ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter,
-                             ApplicationRoleConverter applicationRoleConverter, UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
+                             ApplicationRoleConverter applicationRoleConverter,
+                             UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
         super(provider, converter);
         this.applicationRoleProvider = applicationRoleProvider;
         this.applicationProvider = applicationProvider;
@@ -419,17 +420,19 @@ public class UserController extends BasicElementController<User, Long, UserDTO, 
      */
     private UserDTO setGrantedAuthorities(UserDTO userDTO, Application application) {
         if (userDTO != null) {
+            final List<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles =
+                    userApplicationBackendServiceRoleProvider.findByUserId(userDTO.getId());
 
-            List<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles = userApplicationBackendServiceRoleProvider.findByUserId(userDTO.getId());
-
-            user.getApplicationBackendServiceRole().forEach(applicationServiceRole -> {
-                if (application == null || Objects.equals(applicationServiceRole.getId().getApplicationRole().getId().getApplication(), application)) {
-                    userDTO.addApplicationServiceRoles(applicationRoleConverter.convert(new ApplicationRoleConverterRequest(
-                            applicationServiceRole.getId().getApplicationRole())));
-                    userDTO.addGrantedAuthorities(applicationServiceRole.getId().getBackendServiceRole().getGrantedAuthority());
+            userApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole -> {
+                if (application == null || Objects.equals(userApplicationBackendServiceRole.getId().getApplicationName(), application.getName())) {
+                    userDTO.addApplicationServiceRoles(RoleNameGenerator.createApplicationRoleName(userApplicationBackendServiceRole));
+                    userDTO.addGrantedAuthorities(RoleNameGenerator.createApplicationRoleName(userApplicationBackendServiceRole));
                 }
             });
-            UserManagerLogger.debug(this.getClass(), "Assigning authorities '" + userDTO.getGrantedAuthorities()
+
+            UserManagerLogger.debug(this.getClass(), "Assigning application roles '" + userDTO.getApplicationRoles()
+                    + "' to '" + userDTO.getUsername() + "'.");
+            UserManagerLogger.debug(this.getClass(), "Assigning backend roles '" + userDTO.getGrantedAuthorities()
                     + "' to '" + userDTO.getUsername() + "'.");
         }
         return userDTO;

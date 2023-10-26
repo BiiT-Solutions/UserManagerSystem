@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.BasicElementController;
+import com.biit.server.controller.ElementController;
 import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class RoleController extends BasicElementController<Role, Long, RoleDTO, RoleRepository,
+public class RoleController extends ElementController<Role, String, RoleDTO, RoleRepository,
         RoleProvider, RoleConverterRequest, RoleConverter> {
 
     @Value("${spring.application.name}")

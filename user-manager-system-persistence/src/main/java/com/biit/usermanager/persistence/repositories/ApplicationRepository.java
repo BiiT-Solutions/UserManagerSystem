@@ -5,11 +5,8 @@ import com.biit.usermanager.persistence.entities.Application;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 @Transactional
-public interface ApplicationRepository extends ElementRepository<Application, Long> {
+public interface ApplicationRepository extends ElementRepository<Application, String> {
 
-    Optional<Application> findByName(String name);
 }

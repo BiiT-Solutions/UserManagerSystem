@@ -16,7 +16,7 @@ public interface ApplicationRoleRepository extends CreatedElementRepository<Appl
 
     List<ApplicationRole> findByIdApplication(Application application);
 
-    List<ApplicationRole> findByIdApplicationId(Long applicationId);
+    List<ApplicationRole> findByIdApplicationId(String applicationId);
 
     List<ApplicationRole> findByIdRole(Role role);
 }

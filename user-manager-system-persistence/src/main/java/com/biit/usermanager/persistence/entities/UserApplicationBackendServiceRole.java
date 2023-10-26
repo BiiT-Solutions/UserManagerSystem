@@ -13,7 +13,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "users_by_application_backend_service_role", indexes = {
-        @Index(name = "IND_USER", columnList = "user_id"),
+        @Index(name = "ind_user", columnList = "user_id"),
 })
 public class UserApplicationBackendServiceRole extends StorableObject {
 

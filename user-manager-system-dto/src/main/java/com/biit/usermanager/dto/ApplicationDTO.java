@@ -1,9 +1,11 @@
 package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ApplicationDTO extends ElementDTO<Long> {
-    private String name = "";
+public class ApplicationDTO extends ElementDTO<String> {
+
+    private String name;
     private String description = "";
 
     public ApplicationDTO() {
@@ -12,16 +14,23 @@ public class ApplicationDTO extends ElementDTO<Long> {
 
     public ApplicationDTO(String name, String description) {
         this();
-        this.name = name;
-        this.description = description;
+        setId(name);
+        setDescription(description);
     }
 
-    public String getName() {
+    @Override
+    public String getId() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public void setId(String id) {
+        this.name = id;
+    }
+
+    @JsonIgnore
+    public String getName() {
+        return getId();
     }
 
     public String getDescription() {
@@ -35,7 +44,7 @@ public class ApplicationDTO extends ElementDTO<Long> {
     @Override
     public String toString() {
         return "ApplicationDTO{"
-                + "name='" + name + '\''
+                + "name='" + getName() + '\''
                 + "}";
     }
 }

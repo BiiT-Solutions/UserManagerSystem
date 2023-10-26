@@ -59,10 +59,6 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
         return convertAll(getProvider().findByApplication(applicationConverter.reverse(application)));
     }
 
-    public List<ApplicationRoleDTO> getByApplication(Long applicationId) {
-        return convertAll(getProvider().findByApplicationId(applicationId));
-    }
-
     public List<ApplicationRoleDTO> getByRole(String roleName) {
         return convertAll(getProvider().findByRole(roleProvider.findByName(roleName).orElseThrow(() ->
                 new RoleNotFoundException(this.getClass(), "Role with name '" + roleName + "' not found."))));

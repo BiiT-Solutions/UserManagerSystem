@@ -5,12 +5,9 @@ import com.biit.usermanager.persistence.entities.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 
 @Repository
 @Transactional
-public interface RoleRepository extends ElementRepository<Role, Long> {
+public interface RoleRepository extends ElementRepository<Role, String> {
 
-    Optional<Role> findByName(String name);
 }

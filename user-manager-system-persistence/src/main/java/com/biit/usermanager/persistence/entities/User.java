@@ -12,6 +12,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -34,6 +37,10 @@ import java.util.UUID;
 })
 public class User extends Element<Long> {
     private static final int UUID_COLUMN_LENGTH = 36;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "id_card", unique = true)
     @Convert(converter = StringCryptoConverter.class)
@@ -132,6 +139,16 @@ public class User extends Element<Long> {
         setName(name);
         setLastname(lastname);
         setPassword(password);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public UUID getUuid() {

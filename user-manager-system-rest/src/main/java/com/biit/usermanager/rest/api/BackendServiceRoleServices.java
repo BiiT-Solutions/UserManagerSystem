@@ -7,6 +7,8 @@ import com.biit.usermanager.core.converters.models.BackendServiceRoleConverterRe
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
+import com.biit.usermanager.persistence.entities.BackendServiceRoleId;
+import com.biit.usermanager.persistence.repositories.BackendServiceRoleRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -22,8 +24,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/backend-service-roles")
-public class BackendServiceRoleServices extends CreatedElementServices<BackendServiceRole, BackendServiceRoleDTO,
-        BackendServiceRoleProvider, BackendServiceRoleConverterRequest, BackendServiceRoleConverter, BackendServiceRoleController> {
+public class BackendServiceRoleServices extends CreatedElementServices<
+        BackendServiceRole,
+        BackendServiceRoleId,
+        BackendServiceRoleDTO,
+        BackendServiceRoleRepository,
+        BackendServiceRoleProvider,
+        BackendServiceRoleConverterRequest,
+        BackendServiceRoleConverter,
+        BackendServiceRoleController
+        > {
 
     public BackendServiceRoleServices(BackendServiceRoleController backendServiceRoleController) {
         super(backendServiceRoleController);

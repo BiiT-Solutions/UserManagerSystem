@@ -2,9 +2,12 @@ package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class RoleDTO extends ElementDTO<Long> implements IRole<Long> {
-    private String name = "";
+public class RoleDTO extends ElementDTO<String> implements IRole<String> {
+
+    private String name;
+
     private String description = "";
 
     public RoleDTO() {
@@ -13,16 +16,23 @@ public class RoleDTO extends ElementDTO<Long> implements IRole<Long> {
 
     public RoleDTO(String name, String description) {
         this();
-        setName(name);
+        setId(name);
         setDescription(description);
     }
 
-    public String getName() {
+    @Override
+    public String getId() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public void setId(String id) {
+        this.name = id;
+    }
+
+    @JsonIgnore
+    public String getName() {
+        return getId();
     }
 
     public String getDescription() {
@@ -39,14 +49,14 @@ public class RoleDTO extends ElementDTO<Long> implements IRole<Long> {
     }
 
     @Override
-    public Long getUniqueId() {
+    public String getUniqueId() {
         return getId();
     }
 
     @Override
     public String toString() {
         return "RoleDTO{"
-                + "name='" + name + '\''
+                + "name='" + getName() + '\''
                 + "}";
     }
 }

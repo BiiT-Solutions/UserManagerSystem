@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.BasicElementController;
+import com.biit.server.controller.ElementController;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class GroupController extends BasicElementController<Group, Long, GroupDTO, GroupRepository,
+public class GroupController extends ElementController<Group, Long, GroupDTO, GroupRepository,
         GroupProvider, GroupConverterRequest, GroupConverter> {
 
     private final ApplicationConverter applicationConverter;

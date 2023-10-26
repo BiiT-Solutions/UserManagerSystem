@@ -6,6 +6,7 @@ import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -18,13 +19,14 @@ import java.io.Serializable;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "applications")
-public class Application extends Element<Long> implements Serializable {
+public class Application extends Element<String> implements Serializable {
+
+    @Id
+    @Column(name = "name")
+    private String name;
+
     @Serial
     private static final long serialVersionUID = 1082379190202846511L;
-
-    @Column(name = "name", nullable = false, unique = true)
-    @Convert(converter = StringCryptoConverter.class)
-    private String name = "";
 
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
@@ -36,16 +38,22 @@ public class Application extends Element<Long> implements Serializable {
 
     public Application(String name) {
         this();
-        setName(name);
+        setId(name);
+    }
+
+    @Override
+    public String getId() {
+        return name;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.name = id;
     }
 
 
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return getId();
     }
 
     public String getDescription() {
@@ -59,7 +67,7 @@ public class Application extends Element<Long> implements Serializable {
     @Override
     public String toString() {
         return "Application{"
-                + "name='" + name + '\''
+                + "name='" + getName() + '\''
                 + "}";
     }
 }

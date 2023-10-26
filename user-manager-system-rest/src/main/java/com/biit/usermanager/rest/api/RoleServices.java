@@ -1,6 +1,6 @@
 package com.biit.usermanager.rest.api;
 
-import com.biit.server.rest.BasicServices;
+import com.biit.server.rest.ElementServices;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/roles")
-public class RoleServices extends BasicServices<Role, Long, RoleDTO, RoleRepository,
+public class RoleServices extends ElementServices<Role, String, RoleDTO, RoleRepository,
         RoleProvider, RoleConverterRequest, RoleConverter, RoleController> {
 
     public RoleServices(RoleController roleController) {

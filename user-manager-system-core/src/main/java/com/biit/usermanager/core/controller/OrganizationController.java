@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.BasicElementController;
+import com.biit.server.controller.ElementController;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class OrganizationController extends BasicElementController<Organization, Long, OrganizationDTO, OrganizationRepository,
+public class OrganizationController extends ElementController<Organization, String, OrganizationDTO, OrganizationRepository,
         OrganizationProvider, OrganizationConverterRequest, OrganizationConverter> {
 
     @Value("${spring.application.name}")

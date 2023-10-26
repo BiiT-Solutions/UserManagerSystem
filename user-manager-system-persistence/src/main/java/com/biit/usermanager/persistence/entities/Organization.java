@@ -6,6 +6,7 @@ import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -14,15 +15,26 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "organizations")
-public class Organization extends Element<Long> {
+public class Organization extends Element<String> {
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Id
+    @Column(name = "name")
     @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
     private String description = "";
+
+    @Override
+    public String getId() {
+        return name;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.name = id;
+    }
 
     public String getName() {
         return name;

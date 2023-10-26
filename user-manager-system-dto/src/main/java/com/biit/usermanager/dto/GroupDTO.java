@@ -5,6 +5,8 @@ import com.biit.usermanager.entity.IGroup;
 
 public class GroupDTO extends ElementDTO<Long> implements IGroup<Long> {
 
+    private Long id;
+
     private String name = "";
 
     private String description = "";
@@ -21,6 +23,16 @@ public class GroupDTO extends ElementDTO<Long> implements IGroup<Long> {
         this();
         setName(name);
         setApplication(application);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class ApplicationProvider extends ElementProvider<Application, Long, ApplicationRepository> {
+public class ApplicationProvider extends ElementProvider<Application, String, ApplicationRepository> {
 
     @Autowired
     public ApplicationProvider(ApplicationRepository repository) {
@@ -17,6 +17,6 @@ public class ApplicationProvider extends ElementProvider<Application, Long, Appl
     }
 
     public Optional<Application> findByName(String name) {
-        return getRepository().findByName(name);
+        return getRepository().findById(name);
     }
 }

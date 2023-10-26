@@ -2,11 +2,21 @@ package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
 
-public class OrganizationDTO extends ElementDTO<Long> {
+public class OrganizationDTO extends ElementDTO<String> {
 
     private String name = "";
 
     private String description = "";
+
+    @Override
+    public String getId() {
+        return name;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.name = id;
+    }
 
     public String getName() {
         return name;

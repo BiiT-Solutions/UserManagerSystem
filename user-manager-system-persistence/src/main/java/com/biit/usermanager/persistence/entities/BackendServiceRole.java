@@ -9,11 +9,17 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "backend_service_roles")
-public class BackendServiceRole extends CreatedElement {
+public class BackendServiceRole extends CreatedElement implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 2293890542632212445L;
 
     @EmbeddedId
     private BackendServiceRoleId id;
@@ -49,9 +55,5 @@ public class BackendServiceRole extends CreatedElement {
             return null;
         }
         return id.getService();
-    }
-
-    public String getGrantedAuthority() {
-        return id.getService().getName().toUpperCase() + "_" + id.getName().toUpperCase();
     }
 }

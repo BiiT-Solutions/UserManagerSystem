@@ -31,7 +31,6 @@ public class BackendBackendBackendServiceRoleRepositoryTest extends AbstractTest
     @BeforeClass
     public void saveApplication() {
         backendService = new BackendService(SERVICE_NAME);
-        Assert.assertNull(backendService.getId());
         backendService = backendServiceRepository.save(backendService);
         Assert.assertNotNull(backendService.getId());
     }

@@ -6,6 +6,7 @@ import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
@@ -21,14 +22,13 @@ import java.io.Serializable;
 @Table(name = "roles", indexes = {
         @Index(name = "ind_role_name", columnList = "name")
 })
-public class Role extends Element<Long> implements Serializable {
+public class Role extends Element<String> implements Serializable {
     @Serial
     private static final long serialVersionUID = 7725491275507163890L;
 
-
-    @Column(name = "name", nullable = false, unique = true)
-    @Convert(converter = StringCryptoConverter.class)
-    private String name = "";
+    @Id
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
@@ -40,16 +40,23 @@ public class Role extends Element<Long> implements Serializable {
 
     public Role(String name) {
         this();
-        setName(name);
+        setId(name);
     }
 
-    public String getName() {
+    @Override
+    public String getId() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public void setId(String id) {
+        this.name = id;
     }
+
+    public String getName() {
+        return getId();
+    }
+
 
     public String getDescription() {
         return description;
@@ -62,7 +69,7 @@ public class Role extends Element<Long> implements Serializable {
     @Override
     public String toString() {
         return "Role{"
-                + "name='" + name + '\''
+                + "name='" + getName() + '\''
                 + "}";
     }
 }
