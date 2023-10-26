@@ -7,7 +7,6 @@ import com.biit.rest.exceptions.UnprocessableEntityException;
 import com.biit.server.client.SecurityClient;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.dto.UserDTO;
-import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.entity.IGroup;
 import com.biit.usermanager.entity.IUser;
 import com.biit.usermanager.logger.AuthenticationServiceLogger;
@@ -17,7 +16,6 @@ import com.biit.usermanager.security.exceptions.UserManagementException;
 import com.biit.usermanager.security.models.CheckCredentialsRequest;
 import com.biit.usermanager.security.providers.AuthenticationUrlConstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,10 +24,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class AuthenticationService implements IAuthenticationService<Long, Long> {
@@ -82,28 +76,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
 
     @Override
     public IGroup<Long> getDefaultGroup(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
-        if (user == null) {
-            throw new UserDoesNotExistException("No user selected.");
-        }
-        try {
-            try (Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
-                    authenticationUrlConstructor.getRolesByUser(user.getUniqueName()))) {
-                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getRolesByUser(user.getUniqueName()),
-                        response.getStatus());
-                if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
-                    throw new UserDoesNotExistException("No roles found for user '" + user + "'");
-                }
-                return mapper.readValue(response.readEntity(String.class), new TypeReference<List<UserRoleDTO>>() {
-                }).stream().map(UserRoleDTO::getGroup).filter(Objects::nonNull).findFirst().orElse(null);
-            }
-        } catch (NotFoundException e) {
-            throw new UserDoesNotExistException("Error connection to the User Manager System", e);
-        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
-            throw new UserManagementException("Error connection to the User Manager System", e);
-        } catch (NotAuthorizedException e) {
-            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
-        }
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Cacheable(value = "users-by-mail", key = "#email")
@@ -158,25 +131,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
 
     @Override
     public boolean isInGroup(IGroup<Long> group, IUser<Long> user) throws UserManagementException, InvalidCredentialsException {
-        try {
-            try (Response response = securityClient.get(authenticationUrlConstructor.getUserManagerServerUrl(),
-                    authenticationUrlConstructor.getRolesByUserAndGroupAndApplication(user.getUniqueName(),
-                            group.getUniqueName(), applicationName))) {
-                AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        authenticationUrlConstructor.getUserManagerServerUrl() + authenticationUrlConstructor.getRolesByUserAndGroupAndApplication(
-                                user.getUniqueName(), group.getUniqueName(), applicationName),
-                        response.getStatus());
-                if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
-                    throw new InvalidCredentialsException("Invalid JWT credentials!");
-                }
-                return !(new ArrayList<>(mapper.readValue(response.readEntity(String.class), new TypeReference<List<UserRoleDTO>>() {
-                }))).isEmpty();
-            }
-        } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
-            throw new UserManagementException("Error connection to the User Manager System", e);
-        } catch (NotAuthorizedException e) {
-            throw new InvalidCredentialsException("Error connection to the User Manager System", e);
-        }
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @CacheEvict(allEntries = true, value = {"users", "users-by-mail"})

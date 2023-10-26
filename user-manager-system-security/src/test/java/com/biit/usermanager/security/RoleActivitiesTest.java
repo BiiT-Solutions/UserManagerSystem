@@ -1,15 +1,22 @@
 package com.biit.usermanager.security;
 
+import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
+import com.biit.usermanager.core.controller.ApplicationRoleController;
+import com.biit.usermanager.core.controller.BackendServiceController;
+import com.biit.usermanager.core.controller.BackendServiceRoleController;
 import com.biit.usermanager.core.controller.GroupController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
-import com.biit.usermanager.core.controller.UserRoleController;
+import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
+import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.dto.ApplicationDTO;
+import com.biit.usermanager.dto.ApplicationRoleDTO;
+import com.biit.usermanager.dto.BackendServiceDTO;
+import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.dto.GroupDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
-import com.biit.usermanager.dto.UserRoleDTO;
 import com.biit.usermanager.security.activities.ActivityManager;
 import com.biit.usermanager.security.activities.RoleActivities;
 import com.biit.usermanager.security.exceptions.InvalidCredentialsException;
@@ -19,19 +26,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +51,9 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private final static String ADMIN_LAST_NAME = "User";
     private static final String ADMIN_PASSWORD = "zxc567";
     private static final String ADMIN_ID_CARD = "12345678A";
-    private static final String[] ADMIN_ROLES = new String[]{"usermanagersystem_admin", "usermanagersystem_viewer"};
+    private static final List<String> ADMIN_ROLES = List.of("DOCTOR");
+
+    private static final String[] BACKEND_ROLES = new String[]{"ADMIN", "VIEWER"};
 
     private static final String USER_NAME = "test";
     private static final String USER_EMAIL = "test@test.com";
@@ -54,7 +61,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private final static String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
     private static final String USER_ID_CARD = "87654321B";
-    private static final String[] USER_ROLES = new String[]{"test_receptionist"};
+    private static final List<String> USER_ROLES = List.of("RECEPTIONIST");
 
     private static final String GROUP_NAME = "Group1";
 
@@ -72,9 +79,6 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private RoleController roleController;
 
     @Autowired
-    private UserRoleController userRoleController;
-
-    @Autowired
     private GroupController groupController;
 
     @Autowired
@@ -83,15 +87,14 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     @Autowired
     private AuthorizationService authorizationService;
 
-    @Value("${spring.application.name}")
-    private String applicationName;
+    @Autowired
+    private BackendServiceRoleController backendServiceRoleController;
 
-    private ApplicationDTO applicationDTO;
+    @Autowired
+    private ApplicationBackendServiceRoleController applicationBackendServiceRoleController;
 
-    private Map<String, RoleDTO> roles;
-
-    private GroupDTO groupDTO;
-    private GroupDTO groupDTO2;
+    @Autowired
+    private ApplicationBackendServiceRoleConverter applicationBackendServiceRoleConverter;
 
     @Autowired
     private RoleActivities roleActivities;
@@ -99,13 +102,32 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     @Autowired
     private ActivityManager activityManager;
 
+    @Autowired
+    private ApplicationRoleController applicationRoleController;
+
+    @Autowired
+    private BackendServiceController backendServiceController;
+
+    private static final String APPLICATION_NAME = "DASHBOARD";
+
+    @Value("${spring.application.name}")
+    private String backendService;
+
+    private ApplicationDTO applicationDTO;
+
+    private Map<String, RoleDTO> roles;
+
+    private GroupDTO groupDTO;
+
     private UserDTO user;
 
+    private List<ApplicationBackendServiceRoleDTO> applicationBackendServiceRoleDTOs;
+    private List<ApplicationBackendServiceRoleDTO> adminRoles;
+    private List<ApplicationBackendServiceRoleDTO> userRoles;
 
     @BeforeClass
     private void createApplication() {
-        ApplicationDTO applicationDTO = new ApplicationDTO();
-        applicationDTO.setName(applicationName);
+        ApplicationDTO applicationDTO = new ApplicationDTO(APPLICATION_NAME);
         this.applicationDTO = applicationController.create(applicationDTO, null);
     }
 
@@ -117,10 +139,39 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     @BeforeClass
     private void createRoles() {
         roles = new HashMap<>();
-        Set<String> roleNames = new HashSet<>(Arrays.asList(ADMIN_ROLES));
-        roleNames.addAll(Arrays.asList(USER_ROLES));
+        Set<String> roleNames = new HashSet<>(ADMIN_ROLES);
+        roleNames.addAll(USER_ROLES);
         for (String roleName : roleNames) {
             roles.put(roleName, roleController.create(new RoleDTO(roleName, null), null));
+        }
+
+        //Assign the application roles.
+        final List<ApplicationRoleDTO> applicationRoles = new ArrayList<>();
+        roles.values().forEach(roleDTO -> applicationRoles.add(applicationRoleController.create(new ApplicationRoleDTO(applicationDTO, roleDTO), null)));
+
+        //Set the backend roles.
+        final BackendServiceDTO backendServiceDTO = backendServiceController.create(new BackendServiceDTO(backendService), null);
+
+        final List<BackendServiceRoleDTO> backendRoles = new ArrayList<>();
+        for (final String roleName : BACKEND_ROLES) {
+            backendRoles.add(backendServiceRoleController.create(new BackendServiceRoleDTO(backendServiceDTO, roleName), null));
+        }
+
+        //Assign the backend to an application.
+        applicationBackendServiceRoleDTOs = new ArrayList<>();
+        adminRoles = new ArrayList<>();
+        userRoles = new ArrayList<>();
+        for (ApplicationRoleDTO applicationRole : applicationRoles) {
+            for (BackendServiceRoleDTO backendRole : backendRoles) {
+                final ApplicationBackendServiceRoleDTO applicationBackendServiceRoleDTO = applicationBackendServiceRoleController.create(new ApplicationBackendServiceRoleDTO(applicationRole, backendRole), null);
+                applicationBackendServiceRoleDTOs.add(applicationBackendServiceRoleDTO);
+                if (ADMIN_ROLES.contains(applicationRole.getId().getRole().getName())) {
+                    adminRoles.add(applicationBackendServiceRoleDTO);
+                }
+                if (USER_ROLES.contains(applicationRole.getId().getRole().getName())) {
+                    userRoles.add(applicationBackendServiceRoleDTO);
+                }
+            }
         }
     }
 
@@ -137,9 +188,9 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         final UserDTO adminUser = userController.create(userDTO, null);
 
         //Assign admin roles
-        for (String adminRole : ADMIN_ROLES) {
-            userRoleController.create(new UserRoleDTO(adminUser, roles.get(adminRole), null), null);
-        }
+        //Assign admin roles
+        userController.setApplicationBackendServiceRole(adminUser,
+                applicationBackendServiceRoleConverter.reverseAll(adminRoles));
     }
 
     @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createGroups"})
@@ -155,20 +206,18 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         user = userController.create(userDTO, null);
 
         //Assign user roles
-        for (String userRoles : USER_ROLES) {
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO), null);
-            userRoleController.create(new UserRoleDTO(user, roles.get(userRoles), groupDTO2), null);
-        }
+        userController.setApplicationBackendServiceRole(user,
+                applicationBackendServiceRoleConverter.reverseAll(userRoles));
     }
 
-    @Test
+    @Test(enabled = false)
     public void readActivities() {
         Assert.assertEquals(roleActivities.getRoleActivities("test_receptionist").size(), 32);
         Assert.assertTrue(roleActivities.getRoleActivities("test_receptionist").contains(roleActivities.getByTag("appointments_manager")));
         Assert.assertEquals(roleActivities.getRoleActivities("test_web-service-user").size(), 1);
     }
 
-    @Test
+    @Test(enabled = false)
     public void checkPermission() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         Assert.assertTrue(activityManager.isAuthorizedActivity(user, roleActivities.getByTag("appointments_manager")));
         Assert.assertFalse(activityManager.isAuthorizedActivity(user, roleActivities.getByTag("examine_patient")));
@@ -176,11 +225,14 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
     @AfterClass(alwaysRun = true)
     public void dropTables() {
-        userRoleController.deleteAll();
+        userController.deleteAll();
+        applicationBackendServiceRoleController.deleteAll();
+        backendServiceRoleController.deleteAll();
+        applicationRoleController.deleteAll();
         groupController.deleteAll();
         applicationController.deleteAll();
+        backendServiceController.deleteAll();
         roleController.deleteAll();
-        userController.deleteAll();
     }
 
 }

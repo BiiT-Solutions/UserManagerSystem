@@ -284,7 +284,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
     public IAuthenticatedUser updatePassword(String username, String newPassword, String updatedBy) {
         final User user = getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
-        user.setPassword(newPassword);
+        user.setPassword(bcryptSalt + newPassword);
         user.setUpdatedBy(updatedBy);
         UserManagerLogger.info(this.getClass(), "Password updated!.");
         return getConverter().convert(new UserConverterRequest(getProvider().save(user)));

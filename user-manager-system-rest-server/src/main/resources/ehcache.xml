@@ -6,11 +6,11 @@
         http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
         http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
 
-    <backendService>
+    <service>
         <!--  jsr-107-compliant-atomics is for using with JCache -->
         <jsr107:defaults enable-management="true" enable-statistics="true" default-template="default-cache-template" jsr-107-compliant-atomics="true">
         </jsr107:defaults>
-    </backendService>
+    </service>
 
 
     <cache-template name="default-cache-template">

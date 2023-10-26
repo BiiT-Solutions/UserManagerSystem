@@ -18,19 +18,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class ActivityManager implements IActivityManager<Long, Long, Long> {
+public class ActivityManager implements IActivityManager<Long, Long, String> {
 
     private final AuthorizationService authorizationService;
 
-    private final IRoleActivities roleActivities;
+    private final IRoleActivities<String> roleActivities;
 
-    public ActivityManager(AuthorizationService authorizationService, IRoleActivities roleActivities) {
+    public ActivityManager(AuthorizationService authorizationService, IRoleActivities<String> roleActivities) {
         this.authorizationService = authorizationService;
         this.roleActivities = roleActivities;
     }
 
     @Override
-    public Set<IActivity> getRoleActivities(IRole<Long> role) {
+    public Set<IActivity> getRoleActivities(IRole<String> role) {
         return roleActivities.getRoleActivities(role);
     }
 
@@ -72,7 +72,7 @@ public class ActivityManager implements IActivityManager<Long, Long, Long> {
             UserDoesNotExistException {
         final Set<IActivity> activities = new HashSet<>();
         if (user != null) {
-            final Set<IRole<Long>> roles = authorizationService.getUserRoles(user);
+            final Set<IRole<String>> roles = authorizationService.getUserRoles(user);
 
             // Add roles obtained by group.
             final Set<IGroup<Long>> userGroups = authorizationService.getUserGroups(user);
@@ -85,7 +85,7 @@ public class ActivityManager implements IActivityManager<Long, Long, Long> {
             }
 
             // Activities by role.
-            for (final IRole<Long> role : roles) {
+            for (final IRole<String> role : roles) {
                 final Set<IActivity> roleActivities = getRoleActivities(role);
                 activities.addAll(roleActivities);
             }
@@ -99,7 +99,7 @@ public class ActivityManager implements IActivityManager<Long, Long, Long> {
         final Set<IActivity> groupActivities = new HashSet<>();
         if (user != null && group != null) {
             // Add roles obtained by group.
-            for (final IRole<Long> role : authorizationService.getUserRoles(user, group)) {
+            for (final IRole<String> role : authorizationService.getUserRoles(user, group)) {
                 groupActivities.addAll(getRoleActivities(role));
             }
         }
@@ -107,7 +107,7 @@ public class ActivityManager implements IActivityManager<Long, Long, Long> {
     }
 
     @Override
-    public IRoleActivities getRoleActivities() {
+    public IRoleActivities<String> getRoleActivities() {
         return roleActivities;
     }
 

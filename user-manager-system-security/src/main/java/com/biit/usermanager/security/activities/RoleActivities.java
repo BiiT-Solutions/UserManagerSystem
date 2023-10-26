@@ -11,14 +11,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Repository
-public class RoleActivities implements IRoleActivities {
+public class RoleActivities implements IRoleActivities<String> {
 
     private final Set<IActivity> activities = new HashSet<>();
 
     private final Set<RoleDefinition> definedRoles = new HashSet<>();
 
     @Override
-    public Set<IActivity> getRoleActivities(IRole<Long> role) {
+    public Set<IActivity> getRoleActivities(IRole<String> role) {
         if (role != null) {
             return getRoleActivities(role.getUniqueName());
         }

@@ -12,6 +12,11 @@ public class ApplicationDTO extends ElementDTO<String> {
         super();
     }
 
+    public ApplicationDTO(String name) {
+        this();
+        setId(name);
+    }
+
     public ApplicationDTO(String name, String description) {
         this();
         setId(name);
