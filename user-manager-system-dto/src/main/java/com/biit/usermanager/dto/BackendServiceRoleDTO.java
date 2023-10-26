@@ -23,4 +23,11 @@ public class BackendServiceRoleDTO extends CreatedElementDTO {
     public void setId(BackendServiceRoleIdDTO id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "BackendServiceRoleDTO{"
+                + "name=" + id
+                + '}';
+    }
 }

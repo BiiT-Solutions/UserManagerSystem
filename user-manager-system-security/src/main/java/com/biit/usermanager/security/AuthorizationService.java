@@ -45,7 +45,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
     private final ObjectMapper mapper;
 
     @Value("${spring.application.name}")
-    private String applicationName;
+    private String serviceName;
 
     public AuthorizationService(AuthorizationUrlConstructor authorizationUrlConstructor, SecurityClient securityClient, ObjectMapper mapper) {
         this.authorizationUrlConstructor = authorizationUrlConstructor;
@@ -82,10 +82,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName(), applicationName))) {
+                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName(), serviceName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesByGroup(group.getUniqueName(), applicationName), response.getStatus());
+                                .getUserRolesByGroup(group.getUniqueName(), serviceName), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -131,10 +131,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getGroupByName(groupName, applicationName))) {
+                    authorizationUrlConstructor.getGroupByName(groupName, serviceName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getGroupByName(groupName, applicationName), response.getStatus());
+                                .getGroupByName(groupName, serviceName), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -286,10 +286,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), applicationName))) {
+                    authorizationUrlConstructor.getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), serviceName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), applicationName),
+                                .getUserRolesFromUserGroupAndApplication(user.getUniqueName(), organization.getUniqueName(), serviceName),
                         response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
@@ -312,10 +312,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName(), applicationName))) {
+                    authorizationUrlConstructor.getUserRolesByGroup(group.getUniqueName(), serviceName))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserRolesByGroup(group.getUniqueName(), applicationName), response.getStatus());
+                                .getUserRolesByGroup(group.getUniqueName(), serviceName), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
@@ -340,10 +340,10 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, L
         }
         try {
             try (Response response = securityClient.get(authorizationUrlConstructor.getUserManagerServerUrl(),
-                    authorizationUrlConstructor.getUserByGroupAndRole(group.getUniqueName(), applicationName, role.getUniqueName()))) {
+                    authorizationUrlConstructor.getUserByGroupAndRole(group.getUniqueName(), serviceName, role.getUniqueName()))) {
                 AuthenticationServiceLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         authorizationUrlConstructor.getUserManagerServerUrl() + authorizationUrlConstructor
-                                .getUserByGroupAndRole(group.getUniqueName(), applicationName, role.getUniqueName()), response.getStatus());
+                                .getUserByGroupAndRole(group.getUniqueName(), serviceName, role.getUniqueName()), response.getStatus());
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }

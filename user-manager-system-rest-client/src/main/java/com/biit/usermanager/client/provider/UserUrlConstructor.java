@@ -44,6 +44,14 @@ public class UserUrlConstructor {
                 + URLEncoder.encode(applicationName, StandardCharsets.UTF_8);
     }
 
+    public String getUserByNameAndBackendService(String username, String backendServiceName) {
+        if (backendServiceName == null) {
+            return getUserByName(username);
+        }
+        return getUsers() + "/usernames/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/service/"
+                + URLEncoder.encode(backendServiceName, StandardCharsets.UTF_8);
+    }
+
     public String getUserByEmailAndApplication(String email, String applicationName) {
         if (applicationName == null) {
             return getUserByEmail(email);

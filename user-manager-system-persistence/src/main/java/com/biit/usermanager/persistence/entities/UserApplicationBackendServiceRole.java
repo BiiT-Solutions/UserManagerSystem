@@ -27,4 +27,11 @@ public class UserApplicationBackendServiceRole extends StorableObject {
     public void setId(UserApplicationBackendServiceRoleId id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "UserApplicationBackendServiceRole{"
+                + "id=" + id
+                + '}';
+    }
 }

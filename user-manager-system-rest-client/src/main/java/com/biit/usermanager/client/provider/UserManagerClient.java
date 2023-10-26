@@ -13,6 +13,7 @@ import com.biit.usermanager.client.provider.models.Email;
 import com.biit.usermanager.client.validators.EmailValidator;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.dto.utils.RoleNameGenerator;
 import com.biit.usermanager.logger.UserManagerClientLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -71,12 +72,12 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Optional<IAuthenticatedUser> findByUsername(String username, String applicationName) {
+    public Optional<IAuthenticatedUser> findByUsername(String username, String backendService) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
-                    userUrlConstructor.getUserByNameAndApplication(username, applicationName))) {
+                    userUrlConstructor.getUserByNameAndBackendService(username, backendService))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByNameAndApplication(username, applicationName),
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByNameAndBackendService(username, backendService),
                         response.getStatus());
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
@@ -372,7 +373,8 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
                 final List<BackendServiceRoleDTO> backendServiceRoleDTOs = Arrays.asList(
                         mapper.readValue(result.readEntity(String.class), BackendServiceRoleDTO[].class));
-                backendServiceRoleDTOs.forEach(backendServiceRoleDTO -> roles.add(backendServiceRoleDTO.getGrantedAuthority()));
+                backendServiceRoleDTOs.forEach(backendServiceRoleDTO -> roles.add(
+                        RoleNameGenerator.createRoleName(backendServiceRoleDTO)));
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);

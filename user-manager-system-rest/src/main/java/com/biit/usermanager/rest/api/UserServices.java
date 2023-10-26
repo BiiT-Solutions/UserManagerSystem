@@ -75,7 +75,19 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                                @Parameter(description = "Name of an existing application", required = true)
                                                @PathVariable("applicationName") String applicationName,
                                                HttpServletRequest request) {
-        return (UserDTO) getController().findByUsername(username, applicationName).orElseThrow(() ->
+        return (UserDTO) getController().findByUsernameAndApplication(username, applicationName).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get user by username and backend service", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/usernames/{username}/service/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getByUsernameAndBackendService(@Parameter(description = "Username of an existing user", required = true)
+                                               @PathVariable("username") String username,
+                                               @Parameter(description = "Name of an existing service", required = true)
+                                               @PathVariable("backendServiceName") String backendServiceName,
+                                               HttpServletRequest request) {
+        return (UserDTO) getController().findByUsername(username, backendServiceName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
 

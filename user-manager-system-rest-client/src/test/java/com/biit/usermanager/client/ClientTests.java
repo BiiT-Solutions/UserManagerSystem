@@ -43,9 +43,9 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_FIRST_NAME = "Test";
     private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
-    private static final String[] APPLICATION_ROLES = new String[]{"ADMIN", "VIEWER"};
-    private static final String[] BACKEND_ROLES = new String[]{"WRITER", "READER"};
-    private static final String BACKEND_SERVICE = "DATABASE";
+    private static final String[] APPLICATION_ROLES = new String[]{"WRITER", "READER"};
+    private static final String[] BACKEND_ROLES = new String[]{"ADMIN", "VIEWER"};
+    private static final String APPLICATION_NAME = "DASHBOARD";
     private static final String DEFAULT_GROUP = "Standard_Users";
 
     @Value("${bcrypt.salt:}")
@@ -81,7 +81,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private UserManagerClient userManagerClient;
 
     @Value("${spring.application.name}")
-    private String applicationName;
+    private String backendService;
 
 
     @BeforeClass
@@ -90,7 +90,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null);
 
         //Create the application
-        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(applicationName, ""), null);
+        final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
 
         //Create a group
         final GroupDTO groupDTO = groupController.create(new GroupDTO(DEFAULT_GROUP, applicationDTO), null);
@@ -106,7 +106,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         roleDTOs.forEach(roleDTO -> applicationRoles.add(applicationRoleController.create(new ApplicationRoleDTO(applicationDTO, roleDTO), null)));
 
         //Set the backend roles.
-        final BackendServiceDTO backendServiceDTO = backendServiceController.create(new BackendServiceDTO(BACKEND_SERVICE), null);
+        final BackendServiceDTO backendServiceDTO = backendServiceController.create(new BackendServiceDTO(backendService), null);
 
         final List<BackendServiceRoleDTO> backendRoles = new ArrayList<>();
         for (final String roleName : BACKEND_ROLES) {
@@ -142,22 +142,22 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     }
 
     @Test
-    public void findUserByNameAndApplication() {
+    public void findUserByNameAndService() {
         //Application + default authorities.
-        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, applicationName);
+        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, backendService);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
-        Assert.assertEquals(user.get().getAuthorities().size(), 4);
+        Assert.assertEquals(user.get().getAuthorities().size(), 2);
 
         //Only default authorities.
         user = userManagerClient.findByUsername(USER_NAME, null);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
-        Assert.assertEquals(user.get().getAuthorities().size(), 4);
+        Assert.assertEquals(user.get().getAuthorities().size(), 2);
 
         System.out.println(" #------------------------------------ Expected Exception ----------------------------");
         try {
-            userManagerClient.findByUsername(USER_NAME, applicationName + "_bad");
+            userManagerClient.findByUsername(USER_NAME, backendService + "_bad");
         } catch (Exception ignored) {
 
         }

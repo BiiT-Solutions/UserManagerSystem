@@ -4,19 +4,16 @@ import com.biit.server.controller.ElementController;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
-import com.biit.usermanager.core.converters.ApplicationConverter;
-import com.biit.usermanager.core.converters.ApplicationRoleConverter;
-import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
+import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
-import com.biit.usermanager.core.providers.ApplicationRoleProvider;
-import com.biit.usermanager.core.providers.GroupProvider;
+import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.utils.RoleNameGenerator;
@@ -24,6 +21,7 @@ import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.UserRepository;
@@ -50,32 +48,22 @@ import java.util.stream.Collectors;
 @Qualifier("userController")
 public class UserController extends ElementController<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
-    private final ApplicationRoleProvider applicationRoleProvider;
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
     private final ApplicationProvider applicationProvider;
-    private final ApplicationConverter applicationConverter;
-    private final GroupProvider groupProvider;
-    private final GroupConverter groupConverter;
-    private final ApplicationRoleConverter applicationRoleConverter;
+    private final BackendServiceProvider backendServiceProvider;
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
 
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
-                             ApplicationRoleProvider applicationRoleProvider, ApplicationConverter applicationConverter,
-                             ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter,
-                             ApplicationRoleConverter applicationRoleConverter,
+                             ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
                              UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
         super(provider, converter);
-        this.applicationRoleProvider = applicationRoleProvider;
         this.applicationProvider = applicationProvider;
-        this.groupProvider = groupProvider;
-        this.applicationConverter = applicationConverter;
-        this.groupConverter = groupConverter;
-        this.applicationRoleConverter = applicationRoleConverter;
+        this.backendServiceProvider = backendServiceProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
     }
 
@@ -87,7 +75,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
     public UserDTO getByUsername(String username) {
         final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
-        return setGrantedAuthorities(userDTO, null);
+        return setGrantedAuthorities(userDTO, null, null);
     }
 
     public UserDTO checkCredentials(String username, String email, String password) {
@@ -117,7 +105,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
                 throw e;
             }
         }
-        final UserDTO userDTO = setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null);
+        final UserDTO userDTO = setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null, null);
         UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", userDTO.getGrantedAuthorities());
         return userDTO;
     }
@@ -127,7 +115,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(),
                             "No User with email '" + email + "' found on the system."))));
-            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null);
+            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
             return grantedUserDTO;
         } catch (Exception e) {
@@ -154,7 +142,25 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByUsername(String username, String applicationName) {
+    public Optional<IAuthenticatedUser> findByUsername(String username, String backendServiceName) {
+        if (backendServiceName == null) {
+            return findByUsername(username);
+        }
+        try {
+            final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
+                    new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+            final BackendService backendService = backendServiceProvider.findByName(backendServiceName).orElseThrow(() ->
+                    new BackendServiceNotFoundException(this.getClass(), "Service with name '" + backendServiceName + "' not found."));
+            final UserDTO grantedUser = setGrantedAuthorities(userDTO, null, backendService);
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser.getGrantedAuthorities());
+            return Optional.of(grantedUser);
+        } catch (Exception e) {
+            UserManagerLogger.warning(this.getClass(), "No User with username '" + username + "' found on the system.");
+            throw e;
+        }
+    }
+
+    public Optional<IAuthenticatedUser> findByUsernameAndApplication(String username, String applicationName) {
         if (applicationName == null) {
             return findByUsername(username);
         }
@@ -163,7 +169,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
                     new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
             final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                     new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
-            final UserDTO grantedUser = setGrantedAuthorities(userDTO, application);
+            final UserDTO grantedUser = setGrantedAuthorities(userDTO, application, null);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser.getGrantedAuthorities());
             return Optional.of(grantedUser);
         } catch (Exception e) {
@@ -177,7 +183,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
-            return Optional.of(setGrantedAuthorities(userDTO, null));
+            return Optional.of(setGrantedAuthorities(userDTO, null, null));
         } catch (Exception e) {
             UserManagerLogger.warning(this.getClass(), "No User with email '" + email + "' found on the system.");
             throw e;
@@ -195,7 +201,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
             final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                     new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
             try {
-                final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, application);
+                final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, application, null);
                 UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
                 return Optional.of(grantedUserDTO);
             } catch (ApplicationNotFoundException e) {
@@ -213,7 +219,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUuid(UUID.fromString(uid)).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
-            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null);
+            final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
             UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
             return Optional.of(grantedUserDTO);
         } catch (IllegalArgumentException e) {
@@ -381,7 +387,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
         final UserDTO userDTO = getByUsername(username);
         final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                 new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
-        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, application);
+        final UserDTO userWithRoles = setGrantedAuthorities(userDTO, application, null);
         if (userWithRoles != null) {
             final Set<String> roles = userWithRoles.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
             UserManagerLogger.debug(this.getClass(), "Obtained roles '" + roles
@@ -418,15 +424,18 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
      * @param userDTO The user to populate.
      * @return the populated user.
      */
-    private UserDTO setGrantedAuthorities(UserDTO userDTO, Application application) {
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, Application application, BackendService backendService) {
         if (userDTO != null) {
             final List<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles =
                     userApplicationBackendServiceRoleProvider.findByUserId(userDTO.getId());
 
             userApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole -> {
-                if (application == null || Objects.equals(userApplicationBackendServiceRole.getId().getApplicationName(), application.getName())) {
+                if ((application == null
+                        || Objects.equals(userApplicationBackendServiceRole.getId().getApplicationName(), application.getName()))
+                        && (backendService == null
+                        || Objects.equals(userApplicationBackendServiceRole.getId().getBackendServiceName(), backendService.getName()))) {
                     userDTO.addApplicationServiceRoles(RoleNameGenerator.createApplicationRoleName(userApplicationBackendServiceRole));
-                    userDTO.addGrantedAuthorities(RoleNameGenerator.createApplicationRoleName(userApplicationBackendServiceRole));
+                    userDTO.addGrantedAuthorities(RoleNameGenerator.createBackendRoleName(userApplicationBackendServiceRole));
                 }
             });
 
