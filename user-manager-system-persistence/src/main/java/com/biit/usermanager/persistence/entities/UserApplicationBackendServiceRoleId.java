@@ -11,16 +11,16 @@ public class UserApplicationBackendServiceRoleId implements Serializable {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "application_backend_service_role_application", nullable = false)
+    @Column(name = "application_role_application", nullable = false)
     private String applicationName;
 
-    @Column(name = "application_backend_service_role_role", nullable = false)
+    @Column(name = "application_role_role", nullable = false)
     private String roleName;
 
-    @Column(name = "application_backend_service_role_service", nullable = false)
+    @Column(name = "backend_service_role_service", nullable = false)
     private String backendServiceName;
 
-    @Column(name = "application_backend_service_role_name", nullable = false)
+    @Column(name = "backend_service_role_name", nullable = false)
     private String backendServiceRole;
 
 
