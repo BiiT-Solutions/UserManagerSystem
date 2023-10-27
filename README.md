@@ -14,7 +14,8 @@ Let's see the next example:
 ![Architecture](documentation/UserManagerSystem.svg)
 
 On this example we have different applications that are deployed on a different server. `Application A` wants to consume
-a backendService that is on `Application B`. For this purpose, `Application A` sends its credentials for `Application B`. A
+a backendService that is on `Application B`. For this purpose, `Application A` sends its credentials
+for `Application B`. A
 typical user and password. But `Application B` does not have the information to know if this user is allowed to access
 or not to its own API.
 
@@ -159,7 +160,8 @@ And include the correct path on the ComponentScan:
 @ComponentScan({"...", "com.biit.usermanager.security"})
 ```
 
-On the `application.properties` remember to set the JWT user and password for accessing to the backendService that will check
+On the `application.properties` remember to set the JWT user and password for accessing to the backendService that will
+check
 the user:
 
 ```
@@ -260,11 +262,70 @@ jwt.password=asd123
 user.provider.test.authorities=ADMIN,EDITOR,VIEWER
 ```
 
-If you do not set the parameter `user.provider.test.authorities`, by default has already the value `ADMIN,EDITOR,VIEWER`. That
-will generate the authorities `<<yourapplication>>_ADMIN`, `<<yourapplication>>_EDITOR` and `<<yourapplication>>_VIEWER`. 
+If you do not set the parameter `user.provider.test.authorities`, by default has already the
+value `ADMIN,EDITOR,VIEWER`. That
+will generate the authorities `<<yourapplication>>_ADMIN`, `<<yourapplication>>_EDITOR`
+and `<<yourapplication>>_VIEWER`.
 
 # Dependencies
 
 As it uses `Rest Server Security`, all configurations for this library must be configured.
 Check [this project](https://git.biit-solutions.com/BiiT/RestServicesSecurity) for extra information.
 
+# Data Relation
+
+Applications (Frontend Applications) can have Roles. The selection of a role for one application is an Application Role.
+Backend Services can have also roles called BackendServiceRole.
+ApplicationBackendServiceRole is the assignation of application roles to BackendServiceRole.
+Users can have one or more ApplicationBackendServiceRole. This defines the actions a user can do on the backend and the
+options that can interact in the frontend.
+
+```
+ +-------------------------+             +----------------------+
+ |                         |             |                      |
+ |                         |             |                      |
+ |      Organizations      |             |        Roles         |
+ |                         |             |                      |
+ |                         |             |                      |
+ +-----------+-------------+             +-----------+----------+
+             |                                       |
+             |                                       |
+             |                                       |
+             |                                       |
++------------+-------------+              +----------+------------+
+|                          |              |                       |
+|                          |              |                       |
+|      Applications        +--------------+   Application Role    |
+|                          |              |                       |
+|                          |              |                       |
++--------------------------+              +------------+----------+
+                                                       |
+                                                       |
+                                                       |
+                                                       |
+                                         +-------------+----------------------+
+                                         |                                    |
+                                         |                                    |
+                     +-------------------+   ApplicationBackendServiceRole    |
+                     |                   |                                    |
+                     |                   |                                    |
+                     |                   +------------------+-----------------+
+        +------------+-------------+                        |
+        |                          |                        |
+        |                          |                        |
+        |   BackendServiceRole     |                        |
+        |                          |                        |
+        |                          |               +--------+----------+
+        +--------+-----------------+               |                   |
+                 |                                 |                   |
+                 |                                 |       User        |
+                 |                                 |                   |
+                 |                                 |                   |
+ +---------------+----------+                      +-------------------+
+ |                          |
+ |                          |
+ |      BackendServices     |
+ |                          |
+ |                          |
+ +--------------------------+
+```

@@ -21,12 +21,12 @@ import java.io.Serializable;
 @Table(name = "applications")
 public class Application extends Element<String> implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1082379190202846511L;
+
     @Id
     @Column(name = "name")
     private String name;
-
-    @Serial
-    private static final long serialVersionUID = 1082379190202846511L;
 
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)

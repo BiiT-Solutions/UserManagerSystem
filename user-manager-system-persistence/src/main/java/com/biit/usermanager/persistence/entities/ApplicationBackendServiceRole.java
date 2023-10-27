@@ -11,7 +11,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "application_service_roles")
+@Table(name = "application_backend_service_roles")
 public class ApplicationBackendServiceRole extends CreatedElement {
 
     @EmbeddedId

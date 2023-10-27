@@ -120,12 +120,12 @@ public class User extends Element<Long> {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_by_application_backend_service_role",
-            joinColumns = @JoinColumn(name = "user_id"),
+            joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = {
-                    @JoinColumn(name = "application_backend_service_role_application", referencedColumnName = "application_role_application"),
-                    @JoinColumn(name = "application_backend_service_role_role", referencedColumnName = "application_role_role"),
-                    @JoinColumn(name = "application_backend_service_role_service", referencedColumnName = "backend_service_role_service"),
-                    @JoinColumn(name = "application_backend_service_role_name", referencedColumnName = "backend_service_role_name"),
+                    @JoinColumn(name = "application_role_application", referencedColumnName = "application_role_application"),
+                    @JoinColumn(name = "application_role_role", referencedColumnName = "application_role_role"),
+                    @JoinColumn(name = "backend_service_role_service", referencedColumnName = "backend_service_role_service"),
+                    @JoinColumn(name = "backend_service_role_name", referencedColumnName = "backend_service_role_name"),
             })
     private List<ApplicationBackendServiceRole> applicationBackendServiceRoles;
 

@@ -23,12 +23,12 @@ import java.io.Serializable;
 })
 public class BackendService extends Element<String> implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 6148111365121732288L;
+
     @Id
     @Column(name = "name")
     private String name;
-
-    @Serial
-    private static final long serialVersionUID = 6148111365121732288L;
 
     @Column(name = "description")
     @Convert(converter = StringCryptoConverter.class)
