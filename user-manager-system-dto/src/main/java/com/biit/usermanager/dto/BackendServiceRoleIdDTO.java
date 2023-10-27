@@ -4,7 +4,7 @@ import com.biit.server.controllers.models.CreatedElementDTO;
 
 public class BackendServiceRoleIdDTO extends CreatedElementDTO {
 
-    private BackendServiceDTO service;
+    private BackendServiceDTO backendService;
 
     private String name;
 
@@ -12,18 +12,18 @@ public class BackendServiceRoleIdDTO extends CreatedElementDTO {
         super();
     }
 
-    public BackendServiceRoleIdDTO(BackendServiceDTO service, String name) {
+    public BackendServiceRoleIdDTO(BackendServiceDTO backendService, String name) {
         super();
-        setService(service);
+        setBackendService(backendService);
         setName(name);
     }
 
-    public BackendServiceDTO getService() {
-        return service;
+    public BackendServiceDTO getBackendService() {
+        return backendService;
     }
 
-    public void setService(BackendServiceDTO service) {
-        this.service = service;
+    public void setBackendService(BackendServiceDTO backendService) {
+        this.backendService = backendService;
     }
 
     public String getName() {
@@ -37,7 +37,7 @@ public class BackendServiceRoleIdDTO extends CreatedElementDTO {
     @Override
     public String toString() {
         return "BackendServiceRoleIdDTO{"
-                + "service=" + service
+                + "service=" + backendService
                 + ", name='" + name + '\''
                 + '}';
     }

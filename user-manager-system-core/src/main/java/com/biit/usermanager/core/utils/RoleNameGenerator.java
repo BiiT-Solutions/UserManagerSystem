@@ -15,14 +15,14 @@ public final class RoleNameGenerator {
         if (backendServiceRole == null) {
             return null;
         }
-        return backendServiceRole.getId().getService().getName().toUpperCase() + "_" + backendServiceRole.getId().getName().toUpperCase();
+        return backendServiceRole.getId().getBackendService().getName().toUpperCase() + "_" + backendServiceRole.getId().getName().toUpperCase();
     }
 
     public static String createRoleName(BackendServiceRoleDTO backendServiceRole) {
         if (backendServiceRole == null) {
             return null;
         }
-        return backendServiceRole.getId().getService().getName().toUpperCase() + "_" + backendServiceRole.getId().getName().toUpperCase();
+        return backendServiceRole.getId().getBackendService().getName().toUpperCase() + "_" + backendServiceRole.getId().getName().toUpperCase();
     }
 
     public static String createRoleName(ApplicationRoleDTO applicationRoleDTO) {

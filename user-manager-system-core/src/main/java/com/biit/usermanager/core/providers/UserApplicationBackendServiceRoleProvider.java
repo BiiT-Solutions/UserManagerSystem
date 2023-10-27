@@ -6,7 +6,8 @@ import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserApplicationBackendServiceRoleProvider extends StorableObjectProvider<UserApplicationBackendServiceRole,
@@ -16,23 +17,29 @@ public class UserApplicationBackendServiceRoleProvider extends StorableObjectPro
         super(repository);
     }
 
-    public List<UserApplicationBackendServiceRole> findByUserId(Long userId) {
+    public Set<UserApplicationBackendServiceRole> findByUserId(Long userId) {
         return getRepository().findByIdUserId(userId);
     }
 
-    public List<UserApplicationBackendServiceRole> findByApplicationName(String applicationName) {
+    public Set<UserApplicationBackendServiceRole> findByApplicationName(String applicationName) {
         return getRepository().findByIdApplicationName(applicationName);
     }
 
-    public List<UserApplicationBackendServiceRole> findByApplicationRoleName(String roleName) {
+    public Set<UserApplicationBackendServiceRole> findByApplicationRoleName(String roleName) {
         return getRepository().findByIdRoleName(roleName);
     }
 
-    public List<UserApplicationBackendServiceRole> findByBackendServiceName(String backendServiceName) {
+    public Set<UserApplicationBackendServiceRole> findByBackendServiceName(String backendServiceName) {
         return getRepository().findByIdBackendServiceName(backendServiceName);
     }
 
-    public List<UserApplicationBackendServiceRole> findByBackendServiceRole(String roleName) {
+    public Set<UserApplicationBackendServiceRole> findByBackendServiceRole(String roleName) {
         return getRepository().findByIdBackendServiceRole(roleName);
+    }
+
+    public Optional<UserApplicationBackendServiceRole> findBy(
+            Long userId, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
+        return getRepository().findByIdUserIdAndIdApplicationNameAndIdRoleNameAndIdBackendServiceNameAndIdBackendServiceRole(
+                userId, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 }

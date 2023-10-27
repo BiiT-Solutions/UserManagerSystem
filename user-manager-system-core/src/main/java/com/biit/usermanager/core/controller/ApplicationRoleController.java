@@ -7,7 +7,6 @@ import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
-import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.RoleProvider;
@@ -60,11 +59,14 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
     }
 
     public List<ApplicationRoleDTO> getByRole(String roleName) {
-        return convertAll(getProvider().findByRole(roleProvider.findByName(roleName).orElseThrow(() ->
-                new RoleNotFoundException(this.getClass(), "Role with name '" + roleName + "' not found."))));
+        return convertAll(getProvider().findByRoleId(roleName));
     }
 
     public List<ApplicationRoleDTO> getByRole(RoleDTO role) {
         return convertAll(getProvider().findByRole(roleConverter.reverse(role)));
+    }
+
+    public ApplicationRoleDTO getByApplicationAndRole(String applicationName, String roleName) {
+        return convert(getProvider().findByApplicationIdAndRoleId(applicationName, roleName));
     }
 }

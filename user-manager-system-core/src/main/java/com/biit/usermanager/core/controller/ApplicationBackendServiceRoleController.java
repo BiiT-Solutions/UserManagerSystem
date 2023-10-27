@@ -51,6 +51,13 @@ public class ApplicationBackendServiceRoleController extends CreatedElementContr
         return new ApplicationBackendServiceRoleConverterRequest(entity);
     }
 
+    public ApplicationBackendServiceRoleDTO findByApplicationRoleAndServiceRole(
+            String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
+        return convert(getProvider().findByApplicationRoleAndServiceRole(applicationName, applicationRoleName, backendServiceName, backendServiceRoleName).orElseThrow(() ->
+                new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application '" + applicationName + "' with role '"
+                        + applicationRoleName + "' and backend service '" + backendServiceName + "' role '" + backendServiceRoleName + "'")));
+    }
+
     public ApplicationBackendServiceRoleDTO findByApplicationRoleAndServiceRole(ApplicationRole applicationRole, BackendServiceRole backendServiceRole) {
         return convert(getProvider().findByApplicationRoleAndServiceRole(applicationRole, backendServiceRole).orElseThrow(() ->
                 new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application role '"

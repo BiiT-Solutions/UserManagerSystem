@@ -19,4 +19,6 @@ public interface BackendServiceRoleRepository extends CreatedElementRepository<B
     List<BackendServiceRole> findByIdName(String name);
 
     Optional<BackendServiceRole> findByIdBackendServiceAndIdName(BackendService backendService, String name);
+
+    Optional<BackendServiceRole> findByIdBackendServiceIdAndIdName(String backendServiceName, String name);
 }

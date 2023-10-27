@@ -17,7 +17,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 @Test(groups = {"userApplicationBackendServiceRoles"})
@@ -88,7 +90,7 @@ public class UserApplicationBackendServiceRolesTests extends AbstractTestNGSprin
         }
 
         //Assign the backend to an application.
-        final List<ApplicationBackendServiceRole> applicationBackendServiceRoleDTOs = new ArrayList<>();
+        final Set<ApplicationBackendServiceRole> applicationBackendServiceRoleDTOs = new HashSet<>();
         for (ApplicationRole applicationRole : applicationRoles) {
             for (BackendServiceRole backendRole : backendRoles) {
                 applicationBackendServiceRoleDTOs.add(applicationBackendServiceRoleRepository.save(new ApplicationBackendServiceRole(applicationRole, backendRole)));

@@ -83,10 +83,10 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Get user by username and backend service", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/service/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndBackendService(@Parameter(description = "Username of an existing user", required = true)
-                                               @PathVariable("username") String username,
-                                               @Parameter(description = "Name of an existing service", required = true)
-                                               @PathVariable("backendServiceName") String backendServiceName,
-                                               HttpServletRequest request) {
+                                                  @PathVariable("username") String username,
+                                                  @Parameter(description = "Name of an existing service", required = true)
+                                                  @PathVariable("backendServiceName") String backendServiceName,
+                                                  HttpServletRequest request) {
         return (UserDTO) getController().findByUsername(username, backendServiceName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
@@ -213,5 +213,24 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public void deleteUser(@Parameter(description = "username", required = true)
                            @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(username, authentication.getName());
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Assign roles to a user. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}/backend-service/{backendServiceName}/backend-service-role/{backendServiceRoleName}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getRolesFromApplicationAndRoles(
+            @Parameter(description = "Username of an existing user", required = true)
+            @PathVariable("username") String username,
+            @Parameter(description = "Application name", required = true)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Application Role name", required = true)
+            @PathVariable("applicationRoleName") String applicationRoleName,
+            @Parameter(description = "Backend Service name", required = true)
+            @PathVariable("backendServiceName") String backendServiceName,
+            @Parameter(description = "Backend Role name", required = true)
+            @PathVariable("backendServiceRoleName") String backendServiceRoleName,
+            HttpServletRequest request) {
+        return getController().assign(username, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 }

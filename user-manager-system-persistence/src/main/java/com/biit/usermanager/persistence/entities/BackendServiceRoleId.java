@@ -31,15 +31,15 @@ public class BackendServiceRoleId implements Serializable {
 
     public BackendServiceRoleId(BackendService backendService, String name) {
         super();
-        setService(backendService);
+        setBackendService(backendService);
         setName(name);
     }
 
-    public BackendService getService() {
+    public BackendService getBackendService() {
         return backendService;
     }
 
-    public void setService(BackendService backendService) {
+    public void setBackendService(BackendService backendService) {
         this.backendService = backendService;
     }
 

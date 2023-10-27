@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ApplicationRoleProvider extends CreatedElementProvider<ApplicationRole, ApplicationRoleId, ApplicationRoleRepository> {
@@ -27,7 +28,15 @@ public class ApplicationRoleProvider extends CreatedElementProvider<ApplicationR
         return getRepository().findByIdApplicationId(applicationId);
     }
 
+    public Optional<ApplicationRole> findByApplicationIdAndRoleId(String applicationId, String roleId) {
+        return getRepository().findByIdApplicationIdAndIdRoleId(applicationId, roleId);
+    }
+
     public List<ApplicationRole> findByRole(Role role) {
         return getRepository().findByIdRole(role);
+    }
+
+    public List<ApplicationRole> findByRoleId(String roleId) {
+        return getRepository().findByIdRoleId(roleId);
     }
 }

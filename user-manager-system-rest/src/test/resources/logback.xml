@@ -32,23 +32,18 @@
     <!-- Custom ones -->
     <logger name="com.biit.usermanager.logger.EncryptorLogger" additivity="false" level="ERROR">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </logger>
     <logger name="com.biit.usermanager.logger.UserManagerLogger" additivity="false" level="DEBUG">
-        <appender-ref ref="DAILY"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
     <logger name="com.biit.usermanager.logger.FrontendLogger" additivity="false" level="DEBUG">
-        <appender-ref ref="DAILY"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
     <logger name="com.biit.usermanager.logger.BasicLogger" additivity="false" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </logger>
     <logger name="com.biit.usermanager.logger.RestAccessLogging" additivity="false" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </logger>
     <logger name="com.biit.server.logger.RestServerLogger" additivity="false" level="INFO">
         <appender-ref ref="CONSOLE"/>
@@ -56,9 +51,11 @@
     <logger name="com.biit.usermanager.logger.RestServerExceptionLogger" additivity="false" level="INFO">
         <appender-ref ref="CONSOLE"/>
     </logger>
+    <logger name="com.biit.server.logger.RestServerExceptionLogger" additivity="false" level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
     <logger name="com.biit.server.logger.LoggedException" additivity="false" level="ERROR">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </logger>
     <logger name="com.biit.server.client.logger.RestServerClientLogger" additivity="false" level="INFO">
         <appender-ref ref="CONSOLE"/>
@@ -72,19 +69,17 @@
     <logger name="com.biit.usermanager.logger.AuthenticationServiceLogger" additivity="false" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </logger>
-    <logger name="com.biit.server.logger.DtoControllerLogger" additivity="false" level="INFO">
+    <logger name="com.biit.server.logger.DtoControllerLogger" additivity="false" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </logger>
 
     <!-- Default ones -->
     <logger name="org.springframework" additivity="false" level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </logger>
     <logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" additivity="false"
             level="ERROR">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </logger>
     <logger name="org.springframework.context.support.PostProcessorRegistrationDelegate" additivity="false"
             level="ERROR">
@@ -111,11 +106,9 @@
     </logger>
     <logger name="org.springframework.boot.web.embedded.tomcat.TomcatWebServer" additivity="false" level="ERROR">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </logger>
 
     <root level="ERROR">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="DAILY"/>
     </root>
 </configuration>

@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -19,4 +20,8 @@ public interface ApplicationRoleRepository extends CreatedElementRepository<Appl
     List<ApplicationRole> findByIdApplicationId(String applicationId);
 
     List<ApplicationRole> findByIdRole(Role role);
+
+    List<ApplicationRole> findByIdRoleId(String roleId);
+
+    Optional<ApplicationRole> findByIdApplicationIdAndIdRoleId(String applicationId, String roleId);
 }

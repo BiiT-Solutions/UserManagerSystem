@@ -25,7 +25,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -127,7 +130,7 @@ public class User extends Element<Long> {
                     @JoinColumn(name = "backend_service_role_service", referencedColumnName = "backend_service_role_service"),
                     @JoinColumn(name = "backend_service_role_name", referencedColumnName = "backend_service_role_name"),
             })
-    private List<ApplicationBackendServiceRole> applicationBackendServiceRoles;
+    private Set<ApplicationBackendServiceRole> applicationBackendServiceRoles;
 
     public User() {
         super();
@@ -303,12 +306,19 @@ public class User extends Element<Long> {
         this.country = country;
     }
 
-    public List<ApplicationBackendServiceRole> getApplicationBackendServiceRole() {
+    public Set<ApplicationBackendServiceRole> getApplicationBackendServiceRole() {
         return applicationBackendServiceRoles;
     }
 
-    public void setApplicationBackendServiceRoles(List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
+    public void setApplicationBackendServiceRoles(Set<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
         this.applicationBackendServiceRoles = applicationBackendServiceRoles;
+    }
+
+    public void addApplicationBackendServiceRoles(ApplicationBackendServiceRole applicationBackendServiceRole) {
+        if (this.applicationBackendServiceRoles == null) {
+            this.applicationBackendServiceRoles = new HashSet<>();
+        }
+        this.applicationBackendServiceRoles.add(applicationBackendServiceRole);
     }
 
     @Override

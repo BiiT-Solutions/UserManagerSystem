@@ -54,6 +54,6 @@ public class BackendServiceRole extends CreatedElement implements Serializable {
         if (id == null) {
             return null;
         }
-        return id.getService();
+        return id.getBackendService();
     }
 }

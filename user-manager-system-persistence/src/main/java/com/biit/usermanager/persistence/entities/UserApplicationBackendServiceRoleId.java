@@ -23,6 +23,13 @@ public class UserApplicationBackendServiceRoleId implements Serializable {
     @Column(name = "backend_service_role_name", nullable = false)
     private String backendServiceRole;
 
+    public UserApplicationBackendServiceRoleId(Long userId, String applicationName, String roleName, String backendServiceName, String backendServiceRole) {
+        this.userId = userId;
+        this.applicationName = applicationName;
+        this.roleName = roleName;
+        this.backendServiceName = backendServiceName;
+        this.backendServiceRole = backendServiceRole;
+    }
 
     public Long getUserId() {
         return userId;

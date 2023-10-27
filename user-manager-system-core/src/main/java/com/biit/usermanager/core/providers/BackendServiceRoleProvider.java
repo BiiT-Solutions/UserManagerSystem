@@ -17,7 +17,7 @@ public class BackendServiceRoleProvider extends CreatedElementProvider<BackendSe
         super(repository);
     }
 
-    public List<BackendServiceRole> findByService(BackendService backendService) {
+    public List<BackendServiceRole> findByBackendService(BackendService backendService) {
         return getRepository().findByIdBackendService(backendService);
     }
 
@@ -25,8 +25,12 @@ public class BackendServiceRoleProvider extends CreatedElementProvider<BackendSe
         return getRepository().findByIdName(name);
     }
 
-    public Optional<BackendServiceRole> findByServiceAndName(BackendService backendService, String name) {
+    public Optional<BackendServiceRole> findByBackendServiceAndName(BackendService backendService, String name) {
         return getRepository().findByIdBackendServiceAndIdName(backendService, name);
+    }
+
+    public Optional<BackendServiceRole> findByBackendServiceAndName(String backendServiceName, String roleName) {
+        return getRepository().findByIdBackendServiceIdAndIdName(backendServiceName, roleName);
     }
 
 }

@@ -43,7 +43,8 @@ public class ApplicationRoleServices extends CreatedElementServices<
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get application's roles by application name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ApplicationRoleDTO> getRolesFromUserGroupAndApplication(
+    public List<ApplicationRoleDTO> getRolesFromApplication(
+            @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
             HttpServletRequest request) {
         return getController().getByApplication(applicationName);
@@ -56,5 +57,17 @@ public class ApplicationRoleServices extends CreatedElementServices<
                                                      @PathVariable("roleName") String roleName,
                                                      HttpServletRequest request) {
         return getController().getByRole(roleName);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get application's roles by application name", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/applications/{applicationName}/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApplicationRoleDTO getRolesFromApplicationAndRoles(
+            @Parameter(description = "Application name", required = true)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Role name", required = true)
+            @PathVariable("roleName") String roleName,
+            HttpServletRequest request) {
+        return getController().getByApplicationAndRole(applicationName, roleName);
     }
 }

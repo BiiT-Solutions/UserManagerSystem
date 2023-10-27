@@ -20,6 +20,15 @@ public class UserApplicationBackendServiceRole extends StorableObject {
     @EmbeddedId
     private UserApplicationBackendServiceRoleId id;
 
+    public UserApplicationBackendServiceRole() {
+        super();
+    }
+
+    public UserApplicationBackendServiceRole(Long userId, String applicationName, String roleName, String backendServiceName, String backendServiceRole) {
+        this();
+        setId(new UserApplicationBackendServiceRoleId(userId, applicationName, roleName, backendServiceName, backendServiceRole));
+    }
+
     public UserApplicationBackendServiceRoleId getId() {
         return id;
     }

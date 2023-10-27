@@ -25,7 +25,7 @@ public class BackendServiceRoleConverter extends ElementConverter<BackendService
         BeanUtils.copyProperties(from.getEntity(), backendServiceRoleDTO);
 
         backendServiceRoleDTO.setId(new BackendServiceRoleIdDTO(backendServiceConverter.convertElement(
-                new BackendServiceConverterRequest(from.getEntity().getId().getService())), from.getEntity().getId().getName()));
+                new BackendServiceConverterRequest(from.getEntity().getId().getBackendService())), from.getEntity().getId().getName()));
 
         return backendServiceRoleDTO;
     }
@@ -38,7 +38,7 @@ public class BackendServiceRoleConverter extends ElementConverter<BackendService
         final BackendServiceRole backendServiceRole = new BackendServiceRole();
         BeanUtils.copyProperties(to, backendServiceRole);
 
-        backendServiceRole.setId(new BackendServiceRoleId(backendServiceConverter.reverse(to.getId().getService()), to.getId().getName()));
+        backendServiceRole.setId(new BackendServiceRoleId(backendServiceConverter.reverse(to.getId().getBackendService()), to.getId().getName()));
 
         return backendServiceRole;
     }

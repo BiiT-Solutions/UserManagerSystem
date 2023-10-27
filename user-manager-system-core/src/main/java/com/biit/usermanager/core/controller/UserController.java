@@ -7,13 +7,18 @@ import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
+import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
+import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.ApplicationProvider;
+import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
+import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.utils.RoleNameGenerator;
@@ -21,7 +26,9 @@ import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.BackendService;
+import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.UserRepository;
@@ -57,14 +64,24 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
 
+    private final ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider;
+
+    private final ApplicationRoleProvider applicationRoleProvider;
+    private final BackendServiceRoleProvider backendServiceRoleProvider;
+
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
-                             UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
+                             UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
+                             ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
+                             ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider) {
         super(provider, converter);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
+        this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
+        this.applicationRoleProvider = applicationRoleProvider;
+        this.backendServiceRoleProvider = backendServiceRoleProvider;
     }
 
     @Override
@@ -426,7 +443,7 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
      */
     private UserDTO setGrantedAuthorities(UserDTO userDTO, Application application, BackendService backendService) {
         if (userDTO != null) {
-            final List<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles =
+            final Set<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles =
                     userApplicationBackendServiceRoleProvider.findByUserId(userDTO.getId());
 
             userApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole -> {
@@ -454,7 +471,43 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
 
     public void setApplicationBackendServiceRole(UserDTO userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
         final User user = reverse(userDTO);
-        user.setApplicationBackendServiceRoles(applicationBackendServiceRoles);
+        user.setApplicationBackendServiceRoles(new HashSet<>(applicationBackendServiceRoles));
         getProvider().save(user);
+    }
+
+    public UserDTO assign(
+            String username, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
+        final User user = getProvider().findByUsername(username).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
+
+        //Ensure it does not exist yet.
+        if (userApplicationBackendServiceRoleProvider.findBy(user.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName).isPresent()) {
+            throw new InvalidParameterException(this.getClass(), "User '" + username + "' already has role '" + applicationRoleName + "' for application '"
+                    + applicationName + "' and service '" + backendServiceName + "' with role '" + backendServiceRoleName + "'.");
+        }
+
+        final Optional<ApplicationBackendServiceRole> optionalApplicationBackendServiceRole = applicationBackendServiceRoleProvider
+                .findByApplicationRoleAndServiceRole(applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
+
+        //Create it if it does not exist.
+        if (optionalApplicationBackendServiceRole.isEmpty()) {
+            final ApplicationRole applicationRole = applicationRoleProvider
+                    .findByApplicationIdAndRoleId(applicationName, applicationRoleName).orElseThrow(() ->
+                            new ApplicationRoleNotFoundException(this.getClass(), "No application role defined for application '"
+                                    + applicationName + "' and role '" + applicationRoleName + "'"));
+
+            final BackendServiceRole backendServiceRole = backendServiceRoleProvider
+                    .findByBackendServiceAndName(backendServiceName, backendServiceRoleName).orElseThrow(() ->
+                            new BackendServiceRoleNotFoundException(this.getClass(), "No backend service role defined for backend '"
+                                    + backendServiceName + "' and role '" + backendServiceRoleName + "'."));
+
+            applicationBackendServiceRoleProvider.save(new ApplicationBackendServiceRole(applicationRole, backendServiceRole));
+        }
+
+        //Add directly to the join column.
+        userApplicationBackendServiceRoleProvider.save(new UserApplicationBackendServiceRole(user.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName));
+
+        //Load again all roles.
+        return setGrantedAuthorities(convert(user), null, null);
     }
 }

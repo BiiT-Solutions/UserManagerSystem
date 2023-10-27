@@ -29,12 +29,4 @@ public class RoleServices extends ElementServices<Role, String, RoleDTO, RoleRep
         super(roleController);
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Gets a role by name.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/names/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RoleDTO getByName(@Parameter(description = "Name of an existing role", required = true) @PathVariable("name") String name,
-                             HttpServletRequest request) {
-        return getController().getByName(name);
-    }
-
 }
