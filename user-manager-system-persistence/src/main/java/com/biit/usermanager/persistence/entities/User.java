@@ -119,7 +119,7 @@ public class User extends Element<Long> {
     private boolean accountExpired = false;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "users_by_application_backend_service_role",
+    @JoinTable(name = "users_by_application_backend_service_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = {
                     @JoinColumn(name = "application_role_application", referencedColumnName = "application_role_application"),
