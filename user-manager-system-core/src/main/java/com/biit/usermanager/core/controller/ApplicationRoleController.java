@@ -7,9 +7,9 @@ import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
+import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
-import com.biit.usermanager.core.providers.RoleProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.RoleDTO;
@@ -29,17 +29,14 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
 
     private final ApplicationConverter applicationConverter;
 
-    private final RoleProvider roleProvider;
-
     private final RoleConverter roleConverter;
 
     @Autowired
-    protected ApplicationRoleController(ApplicationRoleProvider provider, ApplicationRoleConverter converter, RoleProvider roleProvider,
+    protected ApplicationRoleController(ApplicationRoleProvider provider, ApplicationRoleConverter converter,
                                         ApplicationProvider applicationProvider, ApplicationConverter applicationConverter,
                                         RoleConverter roleConverter) {
         super(provider, converter);
         this.roleConverter = roleConverter;
-        this.roleProvider = roleProvider;
         this.applicationProvider = applicationProvider;
         this.applicationConverter = applicationConverter;
     }
@@ -67,6 +64,8 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
     }
 
     public ApplicationRoleDTO getByApplicationAndRole(String applicationName, String roleName) {
-        return convert(getProvider().findByApplicationIdAndRoleId(applicationName, roleName));
+        return convert(getProvider().findByApplicationIdAndRoleId(applicationName, roleName).orElseThrow(
+                () -> new ApplicationRoleNotFoundException(this.getClass(),
+                        "No role exists for application '" + applicationName + "' with name '" + roleName + "'.")));
     }
 }

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -276,7 +277,7 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
         Assert.assertNotNull(jwtToken);
 
         MvcResult createResult = this.mockMvc
-                .perform(post("/backend-service")
+                .perform(post("/backend-services")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtToken)
                         .content(toJson(new BackendServiceDTO(NEW_BACKEND_NAME)))
@@ -295,7 +296,7 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
 
         //Get Backend
         MvcResult backendResult = this.mockMvc
-                .perform(get("/backend-service/" + NEW_BACKEND_NAME)
+                .perform(get("/backend-services/" + NEW_BACKEND_NAME)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtToken)
                         .with(csrf()))
@@ -317,7 +318,7 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(backendServiceRoleDTO.getId().getName(), NEW_BACKEND_ROLE_NAME);
     }
 
-    @Test(dependsOnMethods = "createBackendRoles")
+    @Test(dependsOnMethods = {"createBackendRoles", "createApplicationRoles"})
     public void assignApplicationRolesToBackend() throws Exception {
         //Get ApplicationRole
         MvcResult applicationRoleResult = this.mockMvc
@@ -331,7 +332,7 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
 
         //Get BackendServiceRole
         MvcResult backendServiceRoleResult = this.mockMvc
-                .perform(get("/backend-service-roles/backend-service/" + NEW_BACKEND_NAME + "/role/" + NEW_BACKEND_ROLE_NAME)
+                .perform(get("/backend-service-roles/backend-services/" + NEW_BACKEND_NAME + "/roles/" + NEW_BACKEND_ROLE_NAME)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtToken)
                         .with(csrf()))
@@ -374,15 +375,69 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
                 .perform(post("/users/usernames/" + USER_NAME
                         + "/applications/" + NEW_APPLICATION_NAME
                         + "/application-roles/" + NEW_ROLE_NAME
-                        + "/backend-service/" + NEW_BACKEND_NAME
-                        + "/backend-service-role/" + NEW_BACKEND_ROLE_NAME)
+                        + "/backend-services/" + NEW_BACKEND_NAME
+                        + "/backend-service-roles/" + NEW_BACKEND_ROLE_NAME)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtToken)
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
         final UserDTO userDTO = fromJson(applicationBackendServiceRoleResult.getResponse().getContentAsString(), UserDTO.class);
-        Assert.assertTrue(userDTO.getGrantedAuthorities().contains(NEW_BACKEND_NAME + "_" + NEW_BACKEND_ROLE_NAME));
-        Assert.assertTrue(userDTO.getApplicationRoles().contains(NEW_APPLICATION_NAME + "_" + NEW_ROLE_NAME));
+        Assert.assertTrue(userDTO.getGrantedAuthorities().contains(NEW_BACKEND_NAME.toUpperCase() + "_" + NEW_BACKEND_ROLE_NAME.toUpperCase()));
+        Assert.assertTrue(userDTO.getApplicationRoles().contains(NEW_APPLICATION_NAME.toUpperCase() + "_" + NEW_ROLE_NAME.toUpperCase()));
+    }
+
+    @Test(dependsOnMethods = "assignRolesToUser")
+    public void deleteRolesFromUser() throws Exception {
+        //Get User
+        MvcResult userResult = this.mockMvc
+                .perform(get("/users/usernames/" + USER_NAME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        UserDTO user = fromJson(userResult.getResponse().getContentAsString(), UserDTO.class);
+
+        //Delete permission
+        MvcResult applicationBackendServiceRoleResult = this.mockMvc
+                .perform(delete("/users/usernames/" + USER_NAME
+                        + "/applications/" + NEW_APPLICATION_NAME
+                        + "/application-roles/" + NEW_ROLE_NAME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        final UserDTO userDTO = fromJson(applicationBackendServiceRoleResult.getResponse().getContentAsString(), UserDTO.class);
+        Assert.assertFalse(userDTO.getGrantedAuthorities().contains(NEW_BACKEND_NAME.toUpperCase() + "_" + NEW_BACKEND_ROLE_NAME.toUpperCase()));
+        Assert.assertFalse(userDTO.getApplicationRoles().contains(NEW_APPLICATION_NAME.toUpperCase() + "_" + NEW_ROLE_NAME.toUpperCase()));
+    }
+
+    @Test(dependsOnMethods = "deleteRolesFromUser")
+    public void assignRolesFromUserByApplication() throws Exception {
+        //Get User
+        MvcResult userResult = this.mockMvc
+                .perform(get("/users/usernames/" + USER_NAME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        UserDTO user = fromJson(userResult.getResponse().getContentAsString(), UserDTO.class);
+
+        //Assign permissions again, but only by application
+        MvcResult applicationBackendServiceRoleResult = this.mockMvc
+                .perform(post("/users/usernames/" + USER_NAME
+                        + "/applications/" + NEW_APPLICATION_NAME
+                        + "/application-roles/" + NEW_ROLE_NAME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        final UserDTO userDTO = fromJson(applicationBackendServiceRoleResult.getResponse().getContentAsString(), UserDTO.class);
+        Assert.assertTrue(userDTO.getGrantedAuthorities().contains(NEW_BACKEND_NAME.toUpperCase() + "_" + NEW_BACKEND_ROLE_NAME.toUpperCase()));
+        Assert.assertTrue(userDTO.getApplicationRoles().contains(NEW_APPLICATION_NAME.toUpperCase() + "_" + NEW_ROLE_NAME.toUpperCase()));
     }
 }

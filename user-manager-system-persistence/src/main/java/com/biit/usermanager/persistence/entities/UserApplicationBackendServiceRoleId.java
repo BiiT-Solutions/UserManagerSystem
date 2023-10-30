@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 public class UserApplicationBackendServiceRoleId implements Serializable {
@@ -23,7 +24,12 @@ public class UserApplicationBackendServiceRoleId implements Serializable {
     @Column(name = "backend_service_role_name", nullable = false)
     private String backendServiceRole;
 
+    public UserApplicationBackendServiceRoleId() {
+        super();
+    }
+
     public UserApplicationBackendServiceRoleId(Long userId, String applicationName, String roleName, String backendServiceName, String backendServiceRole) {
+        this();
         this.userId = userId;
         this.applicationName = applicationName;
         this.roleName = roleName;
@@ -69,6 +75,24 @@ public class UserApplicationBackendServiceRoleId implements Serializable {
 
     public void setBackendServiceRole(String backendServiceRole) {
         this.backendServiceRole = backendServiceRole;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final UserApplicationBackendServiceRoleId that = (UserApplicationBackendServiceRoleId) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(applicationName, that.applicationName) && Objects.equals(roleName, that.roleName)
+                && Objects.equals(backendServiceName, that.backendServiceName) && Objects.equals(backendServiceRole, that.backendServiceRole);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, applicationName, roleName, backendServiceName, backendServiceRole);
     }
 
     @Override

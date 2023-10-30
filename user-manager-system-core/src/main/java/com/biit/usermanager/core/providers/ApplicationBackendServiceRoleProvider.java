@@ -32,6 +32,10 @@ public class ApplicationBackendServiceRoleProvider extends CreatedElementProvide
                         applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 
+    public List<ApplicationBackendServiceRole> findByApplicationNameAndApplicationRole(String applicationName, String applicationRoleName) {
+        return getRepository().findByIdApplicationRoleIdApplicationIdAndIdApplicationRoleIdRoleId(applicationName, applicationRoleName);
+    }
+
     public List<ApplicationBackendServiceRole> findByApplicationRole(ApplicationRole applicationRole) {
         return getRepository().findByIdApplicationRole(applicationRole);
     }

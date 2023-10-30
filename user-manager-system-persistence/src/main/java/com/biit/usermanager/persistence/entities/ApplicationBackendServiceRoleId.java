@@ -51,4 +51,12 @@ public class ApplicationBackendServiceRoleId implements Serializable {
     public void setBackendServiceRole(BackendServiceRole backendServiceRole) {
         this.backendServiceRole = backendServiceRole;
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationBackendServiceRoleId{"
+                + "applicationRole=" + applicationRole
+                + ", backendServiceRole=" + backendServiceRole
+                + '}';
+    }
 }

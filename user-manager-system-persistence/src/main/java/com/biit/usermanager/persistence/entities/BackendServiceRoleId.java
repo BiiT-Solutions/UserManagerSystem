@@ -17,7 +17,7 @@ public class BackendServiceRoleId implements Serializable {
     @Serial
     private static final long serialVersionUID = 7130482204365537896L;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "backend_service")
     private BackendService backendService;
 
@@ -49,5 +49,13 @@ public class BackendServiceRoleId implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "BackendServiceRoleId{"
+                + "backendService=" + backendService.getId()
+                + ", name='" + name + '\''
+                + '}';
     }
 }

@@ -476,12 +476,72 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
     }
 
     public UserDTO assign(
+            String username, String applicationName, String applicationRoleName) {
+
+        final User user = getProvider().findByUsername(username).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
+
+        final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
+                .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
+
+        //Add any missing permission.
+        final List<UserApplicationBackendServiceRole> alreadyAssignedPermissions = userApplicationBackendServiceRoleProvider
+                .findBy(user.getId(), applicationName, applicationRoleName);
+
+        final Set<UserApplicationBackendServiceRole> rolesToAdd = new HashSet<>();
+        availableRoles.forEach(applicationBackendServiceRole -> {
+
+            //Collection of availableRoles launch a lazy, as these ids are not retrieved in a collection.
+            final ApplicationBackendServiceRole applicationBackendServiceRole1 =
+                    applicationBackendServiceRoleProvider.findById(applicationBackendServiceRole.getId())
+                            .orElseThrow(() -> new ApplicationRoleNotFoundException(this.getClass(),
+                                    "No application role found with id '" + applicationBackendServiceRole.getId().getApplicationRole().getId() + "'."));
+            final BackendServiceRole backendServiceRole =
+                    backendServiceRoleProvider.findById(applicationBackendServiceRole1.getId().getBackendServiceRole().getId())
+                            .orElseThrow(() -> new BackendServiceRoleNotFoundException(this.getClass(),
+                                    "No backend service role found with id '" + applicationBackendServiceRole.getId().getBackendServiceRole().getId() + "'."));
+
+            final UserApplicationBackendServiceRole userApplicationBackendServiceRole = new UserApplicationBackendServiceRole(
+                    user.getId(),
+                    applicationName,
+                    applicationRoleName,
+                    backendServiceRole.getId().getBackendService().getId(),
+                    backendServiceRole.getId().getName()
+            );
+            if (!alreadyAssignedPermissions.contains(userApplicationBackendServiceRole)) {
+                rolesToAdd.add(userApplicationBackendServiceRole);
+            }
+        });
+        userApplicationBackendServiceRoleProvider.saveAll(rolesToAdd);
+        return setGrantedAuthorities(convert(user), null, null);
+    }
+
+    public UserDTO unAssign(
+            String username, String applicationName, String applicationRoleName) {
+
+        final User user = getProvider().findByUsername(username).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
+
+        final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
+                .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
+
+        //Add any missing permission.
+        final List<UserApplicationBackendServiceRole> assignedPermissions = userApplicationBackendServiceRoleProvider
+                .findBy(user.getId(), applicationName, applicationRoleName);
+
+
+        userApplicationBackendServiceRoleProvider.deleteAll(assignedPermissions);
+        return setGrantedAuthorities(convert(user), null, null);
+    }
+
+    public UserDTO assign(
             String username, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
         final User user = getProvider().findByUsername(username).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
 
         //Ensure it does not exist yet.
-        if (userApplicationBackendServiceRoleProvider.findBy(user.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName).isPresent()) {
+        if (userApplicationBackendServiceRoleProvider
+                .findBy(user.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName).isPresent()) {
             throw new InvalidParameterException(this.getClass(), "User '" + username + "' already has role '" + applicationRoleName + "' for application '"
                     + applicationName + "' and service '" + backendServiceName + "' with role '" + backendServiceRoleName + "'.");
         }
@@ -505,7 +565,8 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
         }
 
         //Add directly to the join column.
-        userApplicationBackendServiceRoleProvider.save(new UserApplicationBackendServiceRole(user.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName));
+        userApplicationBackendServiceRoleProvider.save(
+                new UserApplicationBackendServiceRole(user.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName));
 
         //Load again all roles.
         return setGrantedAuthorities(convert(user), null, null);

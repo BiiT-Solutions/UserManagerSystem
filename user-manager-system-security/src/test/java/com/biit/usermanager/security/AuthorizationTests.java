@@ -362,13 +362,13 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     @AfterClass(alwaysRun = true)
     public void dropTables() {
-        userController.deleteAll();
-        applicationBackendServiceRoleController.deleteAll();
-        backendServiceRoleController.deleteAll();
-        applicationRoleController.deleteAll();
-        groupController.deleteAll();
-        applicationController.deleteAll();
-        backendServiceController.deleteAll();
-        roleController.deleteAll();
+        userController.deleteAll(null);
+        applicationBackendServiceRoleController.deleteAll(null);
+        backendServiceRoleController.deleteAll(null);
+        applicationRoleController.deleteAll(null);
+        groupController.deleteAll(null);
+        applicationController.deleteAll(null);
+        backendServiceController.deleteAll(null);
+        roleController.deleteAll(null);
     }
 }

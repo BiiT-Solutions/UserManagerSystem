@@ -39,7 +39,9 @@ public class ApplicationBackendServiceRoleServices extends CreatedElementService
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get application's roles.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/applications/{applicationName}/application-roles/{applicationRoleName}/backend-service/{backendServiceName}/backend-service-role/{backendServiceRoleName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/applications/{applicationName}/application-roles/{applicationRoleName}"
+            + "/backend-services/{backendServiceName}/backend-service-roles/{backendServiceRoleName}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ApplicationBackendServiceRoleDTO getRolesFromApplicationAndRoles(
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,

@@ -39,4 +39,11 @@ public class ApplicationRole extends CreatedElement implements Serializable {
     public void setId(ApplicationRoleId id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationRole{"
+                + "id=" + id
+                + '}';
+    }
 }

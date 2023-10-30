@@ -34,4 +34,10 @@ public class ApplicationBackendServiceRole extends CreatedElement {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "ApplicationBackendServiceRole{"
+                + "id=" + id
+                + '}';
+    }
 }

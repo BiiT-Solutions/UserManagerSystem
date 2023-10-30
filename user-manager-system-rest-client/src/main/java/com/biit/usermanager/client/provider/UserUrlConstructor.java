@@ -65,19 +65,19 @@ public class UserUrlConstructor {
     }
 
     public String updatePassword() {
-        return getUsers() + "/password";
+        return getUsers() + "/passwords";
     }
 
     public String updateUserPassword(String username) {
-        return getUsers() + "/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/password";
+        return getUsers() + "/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/passwords";
     }
 
     public String getUserPassword(String username) {
-        return getUsers() + "/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/password";
+        return getUsers() + "/" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "/passwords";
     }
 
     public String getUserPasswordByUid(String uid) {
-        return getUsers() + "/uids/" + URLEncoder.encode(uid, StandardCharsets.UTF_8) + "/password";
+        return getUsers() + "/uids/" + URLEncoder.encode(uid, StandardCharsets.UTF_8) + "/passwords";
     }
 
     public String count() {

@@ -68,11 +68,11 @@ public class AuthenticationUrlConstructor {
     }
 
     public String updatePassword() {
-        return getUsers() + "/password";
+        return getUsers() + "/passwords";
     }
 
     public String updateUserPassword(String username) {
-        return getUsers() + "/" + username + "/password";
+        return getUsers() + "/" + username + "/passwords";
     }
 
     public String count() {

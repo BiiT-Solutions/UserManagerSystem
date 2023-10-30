@@ -56,7 +56,7 @@ public class AuthorizationUrlConstructor {
     }
 
     public String getRoleByName(String name) {
-        return getRoles() + "/names/" + name;
+        return getRoles() + "/" + name;
     }
 
 }

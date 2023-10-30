@@ -122,7 +122,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets a list of expired users", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/account-expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/accounts-expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getByAccountExpired(@Parameter(description = "Account is expired", required = true)
                                              @PathVariable("account_expired") boolean accountExpired,
                                              HttpServletRequest request) {
@@ -131,15 +131,15 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets all enable/disable users .", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/enable/{enable}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> getEnabled(@Parameter(description = "enable/disable", required = true)
-                                    @PathVariable("enable") boolean enable, HttpServletRequest request) {
+    @GetMapping(value = "/enabled/{enabled}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getEnabled(@Parameter(description = "enabled/disabled", required = true)
+                                    @PathVariable("enabled") boolean enable, HttpServletRequest request) {
         return getController().getByAccountBlocked(enable);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Updates the password of the current logged in user.", security = @SecurityRequirement(name = "bearerAuth"))
-    @PutMapping(path = "/password")
+    @PutMapping(path = "/passwords")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void updatePassword(@RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
@@ -152,7 +152,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Updates a password by an admin user. Does not require to know the old password.",
             security = @SecurityRequirement(name = "bearerAuth"))
-    @PutMapping(path = "/{username}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{username}/passwords", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public UserDTO updateUserPassword(@Parameter(description = "username", required = true)
                                       @PathVariable("username") String username,
@@ -178,7 +178,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
-    @GetMapping(path = "/{username}/password", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(path = "/{username}/passwords", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public String getsUserPassword(@Parameter(description = "username", required = true) @PathVariable("username") String username,
                                    Authentication authentication, HttpServletRequest httpRequest) {
@@ -193,7 +193,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
-    @GetMapping(path = "/uids/{uids}/password", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(path = "/uids/{uids}/passwords", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public String getsUserPasswordById(@Parameter(description = "The UID from the user", required = true) @PathVariable("uids") String uids,
                                        Authentication authentication, HttpServletRequest httpRequest) {
@@ -217,9 +217,10 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign roles to a user. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}/backend-service/{backendServiceName}/backend-service-role/{backendServiceRoleName}",
+    @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}"
+            + "/backend-services/{backendServiceName}/backend-service-roles/{backendServiceRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getRolesFromApplicationAndRoles(
+    public UserDTO getRolesFromApplicationAndBackendServices(
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
             @Parameter(description = "Application name", required = true)
@@ -232,5 +233,36 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @PathVariable("backendServiceRoleName") String backendServiceRoleName,
             HttpServletRequest request) {
         return getController().assign(username, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Assign application roles to a user. Assigns all related backend services that are defined.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO setRolesFromApplicationAndRoles(
+            @Parameter(description = "Username of an existing user", required = true)
+            @PathVariable("username") String username,
+            @Parameter(description = "Application name", required = true)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Application Role name", required = true)
+            @PathVariable("applicationRoleName") String applicationRoleName,
+            HttpServletRequest request) {
+        return getController().assign(username, applicationName, applicationRoleName);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Deletes application roles from a user.", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO deleteRolesFromApplicationAndRoles(
+            @Parameter(description = "Username of an existing user", required = true)
+            @PathVariable("username") String username,
+            @Parameter(description = "Application name", required = true)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Application Role name", required = true)
+            @PathVariable("applicationRoleName") String applicationRoleName,
+            HttpServletRequest request) {
+        return getController().unAssign(username, applicationName, applicationRoleName);
     }
 }

@@ -56,4 +56,11 @@ public class BackendServiceRole extends CreatedElement implements Serializable {
         }
         return id.getBackendService();
     }
+
+    @Override
+    public String toString() {
+        return "BackendServiceRole{"
+                + "id=" + id
+                + '}';
+    }
 }

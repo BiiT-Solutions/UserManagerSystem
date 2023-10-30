@@ -18,8 +18,12 @@ public interface ApplicationBackendServiceRoleRepository extends CreatedElementR
     Optional<ApplicationBackendServiceRole> findByIdApplicationRoleAndIdBackendServiceRole(
             ApplicationRole applicationRole, BackendServiceRole backendServiceRole);
 
-    Optional<ApplicationBackendServiceRole> findByIdApplicationRoleIdApplicationIdAndIdApplicationRoleIdRoleIdAndIdBackendServiceRoleIdBackendServiceIdAndIdBackendServiceRoleIdName(
+    Optional<ApplicationBackendServiceRole>
+    findByIdApplicationRoleIdApplicationIdAndIdApplicationRoleIdRoleIdAndIdBackendServiceRoleIdBackendServiceIdAndIdBackendServiceRoleIdName(
             String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName);
+
+    List<ApplicationBackendServiceRole> findByIdApplicationRoleIdApplicationIdAndIdApplicationRoleIdRoleId(
+            String applicationName, String applicationRoleName);
 
     List<ApplicationBackendServiceRole> findByIdApplicationRole(ApplicationRole applicationRole);
 
