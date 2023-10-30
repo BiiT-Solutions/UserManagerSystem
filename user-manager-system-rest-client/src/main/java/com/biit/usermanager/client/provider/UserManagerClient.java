@@ -16,7 +16,6 @@ import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.dto.utils.RoleNameGenerator;
 import com.biit.usermanager.logger.UserManagerClientLogger;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -309,8 +307,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     userUrlConstructor.getAll())) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getAll(), response.getStatus());
-                return new ArrayList<>(mapper.readValue(response.readEntity(String.class), new TypeReference<List<UserDTO>>() {
-                }));
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);

@@ -61,7 +61,7 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
     public List<BackendServiceRoleDTO> findBy(String username) {
         final User user = userProvider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No users found with username '" + username + "'."));
-        final List<BackendServiceRoleId> backendServiceRoleId = user.getApplicationBackendServiceRole().stream()
+        final List<BackendServiceRoleId> backendServiceRoleId = user.getApplicationBackendServiceRoles().stream()
                 .map(applicationBackendServiceRole -> applicationBackendServiceRole.getId().getBackendServiceRole().getId()).toList();
         return convertAll(getProvider().findByIdIn(backendServiceRoleId));
     }
@@ -72,7 +72,7 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
         }
         final User user = userProvider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No users found with username '" + username + "'."));
-        final List<BackendServiceRoleId> backendServiceRoleId = user.getApplicationBackendServiceRole().stream()
+        final List<BackendServiceRoleId> backendServiceRoleId = user.getApplicationBackendServiceRoles().stream()
                 .filter(applicationBackendServiceRole ->
                         Objects.equals(applicationBackendServiceRole.getId().getApplicationRole().getId().getApplication().getName(), applicationName))
                 .map(applicationBackendServiceRole -> applicationBackendServiceRole.getId().getBackendServiceRole().getId()).toList();

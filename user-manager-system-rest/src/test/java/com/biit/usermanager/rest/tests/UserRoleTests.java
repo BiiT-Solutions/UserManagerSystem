@@ -37,6 +37,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -439,5 +440,21 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
         final UserDTO userDTO = fromJson(applicationBackendServiceRoleResult.getResponse().getContentAsString(), UserDTO.class);
         Assert.assertTrue(userDTO.getGrantedAuthorities().contains(NEW_BACKEND_NAME.toUpperCase() + "_" + NEW_BACKEND_ROLE_NAME.toUpperCase()));
         Assert.assertTrue(userDTO.getApplicationRoles().contains(NEW_APPLICATION_NAME.toUpperCase() + "_" + NEW_ROLE_NAME.toUpperCase()));
+    }
+
+    @Test(dependsOnMethods = "deleteRolesFromUser")
+    public void getRolesFromUserByApplication() throws Exception {
+        //Get User
+        MvcResult userResult = this.mockMvc
+                .perform(get("/application-backend-service-roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        List<ApplicationBackendServiceRoleDTO> applicationBackendServiceRoleDTOS =
+                Arrays.asList(objectMapper.readValue(userResult.getResponse().getContentAsString(), ApplicationBackendServiceRoleDTO[].class));
+
+        Assert.assertEquals(applicationBackendServiceRoleDTOS.size(), 5);
     }
 }

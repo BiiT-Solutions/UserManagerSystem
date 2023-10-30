@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.converters;
 
 import com.biit.server.controller.converters.ElementConverter;
+import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.BackendServiceConverterRequest;
 import com.biit.usermanager.core.converters.models.BackendServiceRoleConverterRequest;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
@@ -22,7 +23,7 @@ public class BackendServiceRoleConverter extends ElementConverter<BackendService
     @Override
     protected BackendServiceRoleDTO convertElement(BackendServiceRoleConverterRequest from) {
         final BackendServiceRoleDTO backendServiceRoleDTO = new BackendServiceRoleDTO();
-        BeanUtils.copyProperties(from.getEntity(), backendServiceRoleDTO);
+        BeanUtils.copyProperties(from.getEntity(), backendServiceRoleDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
 
         backendServiceRoleDTO.setId(new BackendServiceRoleIdDTO(backendServiceConverter.convertElement(
                 new BackendServiceConverterRequest(from.getEntity().getId().getBackendService())), from.getEntity().getId().getName()));
@@ -36,7 +37,7 @@ public class BackendServiceRoleConverter extends ElementConverter<BackendService
             return null;
         }
         final BackendServiceRole backendServiceRole = new BackendServiceRole();
-        BeanUtils.copyProperties(to, backendServiceRole);
+        BeanUtils.copyProperties(to, backendServiceRole, ConverterUtils.getNullPropertyNames(to));
 
         backendServiceRole.setId(new BackendServiceRoleId(backendServiceConverter.reverse(to.getId().getBackendService()), to.getId().getName()));
 

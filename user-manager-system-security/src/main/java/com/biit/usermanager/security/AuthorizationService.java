@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,8 +63,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return new HashSet<>(mapper.readValue(response.readEntity(String.class), new TypeReference<Set<UserDTO>>() {
-                }));
+                return new HashSet<>(Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class)));
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
@@ -137,8 +137,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return new HashSet<>(mapper.readValue(response.readEntity(String.class), new TypeReference<Set<GroupDTO>>() {
-                }));
+                return new HashSet<>(Arrays.asList(mapper.readValue(response.readEntity(String.class), GroupDTO[].class)));
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);

@@ -2,6 +2,7 @@ package com.biit.usermanager.core.converters;
 
 
 import com.biit.server.controller.converters.ElementConverter;
+import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.converters.models.RoleConverterRequest;
@@ -28,7 +29,7 @@ public class ApplicationRoleConverter extends ElementConverter<ApplicationRole, 
     @Override
     protected ApplicationRoleDTO convertElement(ApplicationRoleConverterRequest from) {
         final ApplicationRoleDTO applicationRoleDTO = new ApplicationRoleDTO();
-        BeanUtils.copyProperties(from.getEntity(), applicationRoleDTO);
+        BeanUtils.copyProperties(from.getEntity(), applicationRoleDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
         applicationRoleDTO.setId(new ApplicationRoleIdDTO(
                         applicationConverter.convert(new ApplicationConverterRequest(from.getEntity().getId().getApplication())),
                         roleConverter.convert(new RoleConverterRequest(from.getEntity().getId().getRole()))
@@ -43,7 +44,7 @@ public class ApplicationRoleConverter extends ElementConverter<ApplicationRole, 
             return null;
         }
         final ApplicationRole applicationRole = new ApplicationRole();
-        BeanUtils.copyProperties(to, applicationRole);
+        BeanUtils.copyProperties(to, applicationRole, ConverterUtils.getNullPropertyNames(to));
         applicationRole.setId(new ApplicationRoleId(
                 applicationConverter.reverse(to.getId().getApplication()),
                 roleConverter.reverse(to.getId().getRole())

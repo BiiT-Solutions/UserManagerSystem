@@ -2,6 +2,7 @@ package com.biit.usermanager.core.converters;
 
 
 import com.biit.server.controller.converters.ElementConverter;
+import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
@@ -21,7 +22,7 @@ public class UserConverter extends ElementConverter<User, UserDTO, UserConverter
     @Override
     protected UserDTO convertElement(UserConverterRequest from) {
         final UserDTO userDTO = new UserDTO();
-        BeanUtils.copyProperties(from.getEntity(), userDTO);
+        BeanUtils.copyProperties(from.getEntity(), userDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
         if (from.getEntity().getLocale() != null) {
             userDTO.setLocale(Locale.forLanguageTag(from.getEntity().getLocale().replace("_", "-")));
         }
@@ -40,7 +41,7 @@ public class UserConverter extends ElementConverter<User, UserDTO, UserConverter
             return null;
         }
         final User user = new User();
-        BeanUtils.copyProperties(to, user);
+        BeanUtils.copyProperties(to, user, ConverterUtils.getNullPropertyNames(to));
         if (to.getLocale() != null) {
             user.setLocale(to.getLocale().toLanguageTag().replace("-", "_"));
         }

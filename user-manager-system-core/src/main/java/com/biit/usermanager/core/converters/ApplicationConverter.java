@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.converters;
 
 import com.biit.server.controller.converters.ElementConverter;
+import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.persistence.entities.Application;
@@ -14,7 +15,7 @@ public class ApplicationConverter extends ElementConverter<Application, Applicat
     @Override
     protected ApplicationDTO convertElement(ApplicationConverterRequest from) {
         final ApplicationDTO applicationDTO = new ApplicationDTO();
-        BeanUtils.copyProperties(from.getEntity(), applicationDTO);
+        BeanUtils.copyProperties(from.getEntity(), applicationDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
         return applicationDTO;
     }
 
@@ -24,7 +25,7 @@ public class ApplicationConverter extends ElementConverter<Application, Applicat
             return null;
         }
         final Application application = new Application();
-        BeanUtils.copyProperties(to, application);
+        BeanUtils.copyProperties(to, application, ConverterUtils.getNullPropertyNames(to));
         return application;
     }
 }

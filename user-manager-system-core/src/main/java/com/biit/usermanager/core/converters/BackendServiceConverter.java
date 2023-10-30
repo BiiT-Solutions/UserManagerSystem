@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.converters;
 
 import com.biit.server.controller.converters.ElementConverter;
+import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.BackendServiceConverterRequest;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.persistence.entities.BackendService;
@@ -14,7 +15,7 @@ public class BackendServiceConverter extends ElementConverter<BackendService, Ba
     @Override
     protected BackendServiceDTO convertElement(BackendServiceConverterRequest from) {
         final BackendServiceDTO backendServiceDTO = new BackendServiceDTO();
-        BeanUtils.copyProperties(from.getEntity(), backendServiceDTO);
+        BeanUtils.copyProperties(from.getEntity(), backendServiceDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
         return backendServiceDTO;
     }
 
@@ -24,7 +25,7 @@ public class BackendServiceConverter extends ElementConverter<BackendService, Ba
             return null;
         }
         final BackendService backendService = new BackendService();
-        BeanUtils.copyProperties(to, backendService);
+        BeanUtils.copyProperties(to, backendService, ConverterUtils.getNullPropertyNames(to));
         return backendService;
     }
 }

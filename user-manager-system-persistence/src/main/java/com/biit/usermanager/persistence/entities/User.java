@@ -304,7 +304,7 @@ public class User extends Element<Long> {
         this.country = country;
     }
 
-    public Set<ApplicationBackendServiceRole> getApplicationBackendServiceRole() {
+    public Set<ApplicationBackendServiceRole> getApplicationBackendServiceRoles() {
         return applicationBackendServiceRoles;
     }
 

@@ -129,6 +129,10 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
         return name;
     }
 
+    public String getFirstname() {
+        return name;
+    }
+
     public String getName() {
         return name;
     }

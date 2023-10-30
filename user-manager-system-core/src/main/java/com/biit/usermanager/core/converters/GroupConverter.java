@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.converters;
 
 import com.biit.server.controller.converters.ElementConverter;
+import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.providers.ApplicationProvider;
@@ -25,7 +26,7 @@ public class GroupConverter extends ElementConverter<Group, GroupDTO, GroupConve
     @Override
     protected GroupDTO convertElement(GroupConverterRequest from) {
         final GroupDTO groupDTO = new GroupDTO();
-        BeanUtils.copyProperties(from.getEntity(), groupDTO);
+        BeanUtils.copyProperties(from.getEntity(), groupDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
         if (from.getEntity().getParent() != null) {
             groupDTO.setParent(convertElement(new GroupConverterRequest(from.getEntity().getParent())));
         }
@@ -52,7 +53,7 @@ public class GroupConverter extends ElementConverter<Group, GroupDTO, GroupConve
             return null;
         }
         final Group group = new Group();
-        BeanUtils.copyProperties(to, group);
+        BeanUtils.copyProperties(to, group, ConverterUtils.getNullPropertyNames(to));
         if (to.getParent() != null) {
             group.setParent(reverse((to.getParent())));
         }
