@@ -13,11 +13,11 @@ public class ApplicationRoleId implements Serializable {
     @Serial
     private static final long serialVersionUID = -2291690526732281642L;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "application")
     private Application application;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "role")
     private Role role;
 
