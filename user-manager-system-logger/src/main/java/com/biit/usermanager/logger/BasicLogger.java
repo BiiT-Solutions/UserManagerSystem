@@ -109,7 +109,7 @@ public abstract class BasicLogger {
     }
 
     /**
-     * Logs an error and send an email to the email configured in settings.conf
+     * Logs an error and email the email configured in settings.conf
      * file.
      *
      * @param logger          the Logger.

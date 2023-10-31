@@ -5,6 +5,7 @@ import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.BackendServiceRoleId;
 import com.biit.usermanager.persistence.repositories.BackendServiceRoleRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class BackendServiceRoleProvider extends CreatedElementProvider<BackendSe
         return getRepository().findByIdBackendServiceAndIdName(backendService, name);
     }
 
+    @Cacheable(value = "backend_service_roles", key = "T(java.util.Objects).hash(#backendServiceName,#roleName)")
     public Optional<BackendServiceRole> findByBackendServiceAndName(String backendServiceName, String roleName) {
         return getRepository().findByIdBackendServiceIdAndIdName(backendServiceName, roleName);
     }

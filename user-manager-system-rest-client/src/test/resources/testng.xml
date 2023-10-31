@@ -1,5 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite thread-count="1" verbose="1" name="UserManager">
+
+    <listeners>
+        <listener class-name="com.biit.usermanager.logger.TestListener"/>
+    </listeners>
+
     <test name="UserManager" enabled="true" preserve-order="true">
         <groups>
             <run>

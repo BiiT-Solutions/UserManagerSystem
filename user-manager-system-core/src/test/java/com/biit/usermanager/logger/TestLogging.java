@@ -1,7 +1,6 @@
-package com.biit.usermanager.rest.logger;
+package com.biit.usermanager.logger;
 
 
-import com.biit.usermanager.logger.BasicLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 public class BackendServiceRoleId implements Serializable {
@@ -49,6 +50,23 @@ public class BackendServiceRoleId implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BackendServiceRoleId that = (BackendServiceRoleId) o;
+        return Objects.equals(backendService, that.backendService) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(backendService, name);
     }
 
     @Override

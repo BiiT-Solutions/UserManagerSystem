@@ -59,7 +59,7 @@ public class TelemetryLogger extends com.biit.usermanager.logger.BasicLogger {
 
     /**
      * To log java exceptions and log also the stack trace. If enabled, also can
-     * send an email to the administrator to alert of the error.
+     * email the administrator to alert of the error.
      *
      * @param className the name of the class to log.
      * @param throwable the exception
@@ -74,7 +74,7 @@ public class TelemetryLogger extends com.biit.usermanager.logger.BasicLogger {
 
     /**
      * To log java exceptions and log also the stack trace. If enabled, also can
-     * send an email to the administrator to alert of the error.
+     * email the administrator to alert of the error.
      *
      * @param className       the name of the class to log.
      * @param messageTemplate string with static text as template.

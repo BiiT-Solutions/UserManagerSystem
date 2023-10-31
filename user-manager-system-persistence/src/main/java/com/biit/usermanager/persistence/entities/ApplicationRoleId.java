@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 public class ApplicationRoleId implements Serializable {
@@ -44,5 +45,22 @@ public class ApplicationRoleId implements Serializable {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ApplicationRoleId that = (ApplicationRoleId) o;
+        return Objects.equals(application, that.application) && Objects.equals(role, that.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(application, role);
     }
 }
