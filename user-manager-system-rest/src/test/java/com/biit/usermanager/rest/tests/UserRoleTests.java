@@ -456,5 +456,17 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
                 Arrays.asList(objectMapper.readValue(userResult.getResponse().getContentAsString(), ApplicationBackendServiceRoleDTO[].class));
 
         Assert.assertEquals(applicationBackendServiceRoleDTOS.size(), 5);
+
+        userResult = this.mockMvc
+                .perform(get("/application-backend-service-roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+         applicationBackendServiceRoleDTOS =
+                Arrays.asList(objectMapper.readValue(userResult.getResponse().getContentAsString(), ApplicationBackendServiceRoleDTO[].class));
+
+        Assert.assertEquals(applicationBackendServiceRoleDTOS.size(), 5);
     }
 }
