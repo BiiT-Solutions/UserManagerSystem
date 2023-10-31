@@ -50,7 +50,7 @@ public class BackendServiceRole extends CreatedElement implements Serializable {
     }
 
     @JsonIgnore
-    public BackendService getService() {
+    public BackendService getBackendService() {
         if (id == null) {
             return null;
         }

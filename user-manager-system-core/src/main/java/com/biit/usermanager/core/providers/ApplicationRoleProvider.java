@@ -7,6 +7,7 @@ import com.biit.usermanager.persistence.entities.ApplicationRoleId;
 import com.biit.usermanager.persistence.entities.Role;
 import com.biit.usermanager.persistence.repositories.ApplicationRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class ApplicationRoleProvider extends CreatedElementProvider<ApplicationR
         return getRepository().findByIdApplicationId(applicationId);
     }
 
+    @Cacheable(value = "application_roles", key = "T(java.util.Objects).hash(#applicationId,#roleId)")
     public Optional<ApplicationRole> findByApplicationIdAndRoleId(String applicationId, String roleId) {
         return getRepository().findByIdApplicationIdAndIdRoleId(applicationId, roleId);
     }

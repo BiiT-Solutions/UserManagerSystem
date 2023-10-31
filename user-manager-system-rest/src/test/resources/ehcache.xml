@@ -46,4 +46,9 @@
         <key-type>java.lang.Long</key-type>
         <value-type>com.biit.usermanager.entity.IRole</value-type>
     </cache>
+
+    <cache alias="application_roles" uses-template="default-cache-template">
+        <key-type>java.lang.String</key-type>
+        <value-type>com.biit.usermanager.persistence.entities.ApplicationRole</value-type>
+    </cache>
 </config>
