@@ -448,9 +448,9 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
 
             userApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole -> {
                 if ((application == null
-                        || Objects.equals(userApplicationBackendServiceRole.getId().getApplicationName(), application.getName()))
+                        || application.getName().equalsIgnoreCase(userApplicationBackendServiceRole.getId().getApplicationName()))
                         && (backendService == null
-                        || Objects.equals(userApplicationBackendServiceRole.getId().getBackendServiceName(), backendService.getName()))) {
+                        || backendService.getName().equalsIgnoreCase(userApplicationBackendServiceRole.getId().getBackendServiceName()))) {
                     userDTO.addApplicationServiceRoles(RoleNameGenerator.createApplicationRoleName(userApplicationBackendServiceRole));
                     userDTO.addGrantedAuthorities(RoleNameGenerator.createBackendRoleName(userApplicationBackendServiceRole));
                 }
