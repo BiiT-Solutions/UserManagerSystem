@@ -1,7 +1,9 @@
 package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class BackendServiceDTO extends ElementDTO<String> {
 
@@ -18,12 +20,13 @@ public class BackendServiceDTO extends ElementDTO<String> {
         setId(name);
     }
 
-    @JsonIgnore
+    @JsonGetter("name")
     @Override
     public String getId() {
         return name;
     }
 
+    @JsonSetter("name")
     @Override
     public void setId(String id) {
         this.name = id;
@@ -45,7 +48,7 @@ public class BackendServiceDTO extends ElementDTO<String> {
     @Override
     public String toString() {
         return "ServiceDTO{"
-                + "name='" + getName() + '\''
+                + "name='" + getId() + '\''
                 + '}';
     }
 }

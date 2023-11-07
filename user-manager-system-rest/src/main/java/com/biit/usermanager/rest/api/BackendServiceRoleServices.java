@@ -40,7 +40,7 @@ public class BackendServiceRoleServices extends CreatedElementServices<
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get backend's roles by user name", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get backend's roles by service name and role name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/backend-services/{backendServiceName}/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public BackendServiceRoleDTO getRolesFromServiceWithName(
             @Parameter(description = "Name of an existing service", required = true)
@@ -52,7 +52,7 @@ public class BackendServiceRoleServices extends CreatedElementServices<
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get backend's roles by user name", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get backend's roles by service name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/backend-services/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BackendServiceRoleDTO> getRolesFromServiceWithName(
             @Parameter(description = "Name of an existing service", required = true)
@@ -73,7 +73,7 @@ public class BackendServiceRoleServices extends CreatedElementServices<
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get backend's roles by user name", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get backend's roles by user name, group and application", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/users/{userName}/groups/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BackendServiceRoleDTO> getRolesFromUserGroupAndApplication(
             @Parameter(description = "Name of an existing user", required = true)
