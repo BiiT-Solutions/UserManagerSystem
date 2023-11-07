@@ -18,6 +18,7 @@ public class BackendServiceDTO extends ElementDTO<String> {
         setId(name);
     }
 
+    @JsonIgnore
     @Override
     public String getId() {
         return name;
