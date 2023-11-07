@@ -53,6 +53,17 @@ public class BackendServiceRoleServices extends CreatedElementServices<
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get backend's roles by user name", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/backend-services/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BackendServiceRoleDTO> getRolesFromServiceWithName(
+            @Parameter(description = "Name of an existing service", required = true)
+            @PathVariable("backendServiceName") String backendServiceName,
+            HttpServletRequest request) {
+        return getController().findByService(backendServiceName);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get backend's roles by user name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/users/{userName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BackendServiceRoleDTO> getRolesFromUser(
             @Parameter(description = "Name of an existing user", required = true)
