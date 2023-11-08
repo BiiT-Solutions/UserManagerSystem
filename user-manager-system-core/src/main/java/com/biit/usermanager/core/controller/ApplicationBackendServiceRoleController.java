@@ -2,6 +2,7 @@ package com.biit.usermanager.core.controller;
 
 
 import com.biit.server.controller.CreatedElementController;
+import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
@@ -55,8 +56,8 @@ public class ApplicationBackendServiceRoleController extends CreatedElementContr
             String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
         return convert(getProvider().findByApplicationRoleAndServiceRole(applicationName, applicationRoleName, backendServiceName, backendServiceRoleName)
                 .orElseThrow(() ->
-                new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application '" + applicationName + "' with role '"
-                        + applicationRoleName + "' and backend service '" + backendServiceName + "' role '" + backendServiceRoleName + "'")));
+                        new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application '" + applicationName + "' with role '"
+                                + applicationRoleName + "' and backend service '" + backendServiceName + "' role '" + backendServiceRoleName + "'")));
     }
 
     public ApplicationBackendServiceRoleDTO findByApplicationRoleAndServiceRole(ApplicationRole applicationRole, BackendServiceRole backendServiceRole) {
@@ -71,5 +72,15 @@ public class ApplicationBackendServiceRoleController extends CreatedElementContr
 
     public List<ApplicationBackendServiceRoleDTO> findByServiceRole(BackendServiceRole backendServiceRole) {
         return convertAll(getProvider().findByServiceRole(backendServiceRole));
+    }
+
+    public void deleteByApplicationRoleAndServiceRole(
+            String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName, String deletedBy) {
+        final ApplicationBackendServiceRole applicationBackendServiceRole = getProvider().findByApplicationRoleAndServiceRole(
+                applicationName, applicationRoleName, backendServiceName, backendServiceRoleName).orElseThrow(() ->
+                new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application '" + applicationName + "' with role '"
+                        + applicationRoleName + "' and backend service '" + backendServiceName + "' role '" + backendServiceRoleName + "'"));
+        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationBackendServiceRole, deletedBy);
+        getProvider().delete(applicationBackendServiceRole);
     }
 }

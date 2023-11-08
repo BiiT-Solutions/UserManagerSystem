@@ -2,6 +2,7 @@ package com.biit.usermanager.core.controller;
 
 
 import com.biit.server.controller.CreatedElementController;
+import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
@@ -67,5 +68,13 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
         return convert(getProvider().findByApplicationIdAndRoleId(applicationName, roleName).orElseThrow(
                 () -> new ApplicationRoleNotFoundException(this.getClass(),
                         "No role exists for application '" + applicationName + "' with name '" + roleName + "'.")));
+    }
+
+    public void deleteByApplicationAndRole(String applicationName, String roleName, String deletedBy) {
+        final ApplicationRole applicationRole = getProvider().findByApplicationIdAndRoleId(applicationName, roleName).orElseThrow(
+                () -> new ApplicationRoleNotFoundException(this.getClass(),
+                        "No role exists for application '" + applicationName + "' with name '" + roleName + "'."));
+        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationRole, deletedBy);
+        getProvider().delete(applicationRole);
     }
 }
