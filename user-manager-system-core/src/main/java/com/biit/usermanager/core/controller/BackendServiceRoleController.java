@@ -1,9 +1,11 @@
 package com.biit.usermanager.core.controller;
 
 import com.biit.server.controller.CreatedElementController;
+import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.BackendServiceRoleConverter;
 import com.biit.usermanager.core.converters.models.BackendServiceRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
+import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
@@ -77,5 +79,19 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
                         Objects.equals(applicationBackendServiceRole.getId().getApplicationRole().getId().getApplication().getName(), applicationName))
                 .map(applicationBackendServiceRole -> applicationBackendServiceRole.getId().getBackendServiceRole().getId()).toList();
         return convertAll(getProvider().findByIdIn(backendServiceRoleId));
+    }
+
+    public BackendServiceRoleDTO get(String backendServiceName, String roleName) {
+        return convert(getProvider().findByBackendServiceAndName(backendServiceName, roleName).orElseThrow(() ->
+                new BackendServiceRoleNotFoundException(this.getClass(),
+                        "No backend service role defined for service '" + backendServiceName + "' and role '" + roleName + "'.")));
+    }
+
+    public void delete(String backendServiceName, String roleName, String deletedBy) {
+        final BackendServiceRole backendServiceRole = getProvider().findByBackendServiceAndName(backendServiceName, roleName).orElseThrow(() ->
+                new BackendServiceRoleNotFoundException(this.getClass(),
+                        "No backend service role defined for service '" + backendServiceName + "' and role '" + roleName + "'."));
+        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", backendServiceRole, deletedBy);
+        getProvider().delete(backendServiceRole);
     }
 }
