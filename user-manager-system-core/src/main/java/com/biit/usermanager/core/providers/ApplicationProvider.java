@@ -7,6 +7,7 @@ import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.ApplicationRepository;
 import com.biit.usermanager.persistence.repositories.ApplicationRoleRepository;
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,11 @@ public class ApplicationProvider extends ElementProvider<Application, String, Ap
     }
 
     @Override
+    @Transactional
     public void delete(Application entity) {
+        if (entity == null) {
+            return;
+        }
         userApplicationBackendServiceRoleRepository.deleteByIdApplicationName(entity.getName());
         final List<ApplicationRole> applicationRoles = applicationRoleRepository.findByIdApplication(entity);
         applicationBackendServiceRoleRepository.deleteByIdApplicationRoleIn(applicationRoles);
@@ -48,11 +53,21 @@ public class ApplicationProvider extends ElementProvider<Application, String, Ap
     }
 
     @Override
+    @Transactional
     public void deleteAll(Collection<Application> entities) {
+        if (entities == null) {
+            return;
+        }
         userApplicationBackendServiceRoleRepository.deleteByIdApplicationNameIn(entities.stream().map(Application::getName).toList());
         final List<ApplicationRole> applicationRoles = applicationRoleRepository.findByIdApplicationIn(entities);
         applicationBackendServiceRoleRepository.deleteByIdApplicationRoleIn(applicationRoles);
         applicationRoleRepository.deleteAll(applicationRoles);
         super.deleteAll(entities);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(String id) {
+        delete(getRepository().findById(id).orElse(null));
     }
 }

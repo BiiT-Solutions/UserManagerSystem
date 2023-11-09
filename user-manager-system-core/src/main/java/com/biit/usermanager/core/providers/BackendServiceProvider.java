@@ -7,6 +7,7 @@ import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.BackendServiceRepository;
 import com.biit.usermanager.persistence.repositories.BackendServiceRoleRepository;
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -37,6 +38,7 @@ public class BackendServiceProvider extends ElementProvider<BackendService, Stri
     }
 
     @Override
+    @Transactional
     public void delete(BackendService entity) {
         if (entity == null) {
             return;
@@ -49,11 +51,21 @@ public class BackendServiceProvider extends ElementProvider<BackendService, Stri
     }
 
     @Override
+    @Transactional
     public void deleteAll(Collection<BackendService> entities) {
+        if (entities == null) {
+            return;
+        }
         final List<BackendServiceRole> backendServiceRoles = backendServiceRoleRepository.findByIdBackendServiceIn(entities);
         userApplicationBackendServiceRoleRepository.deleteByIdBackendServiceNameIn(entities.stream().map(BackendService::getName).toList());
         applicationBackendServiceRoleRepository.deleteByIdBackendServiceRoleIn(backendServiceRoles);
         backendServiceRoleRepository.deleteAll(backendServiceRoles);
         super.deleteAll(entities);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(String id) {
+        delete(getRepository().findById(id).orElse(null));
     }
 }

@@ -475,6 +475,21 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
         getProvider().save(user);
     }
 
+    public void assign(UserDTO userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
+        applicationBackendServiceRoles.forEach(applicationBackendServiceRole -> {
+            try {
+                assign(userDTO.getUsername(),
+                        applicationBackendServiceRole.getId().getApplicationRole().getId().getApplication().getName(),
+                        applicationBackendServiceRole.getId().getApplicationRole().getId().getRole().getName(),
+                        applicationBackendServiceRole.getId().getBackendServiceRole().getId().getBackendService().getName(),
+                        applicationBackendServiceRole.getId().getBackendServiceRole().getId().getName());
+            } catch (InvalidParameterException e) {
+                UserManagerLogger.warning(this.getClass(), "Trying to assign an existing role '"
+                        + applicationBackendServiceRole + "' to user '" + userDTO + "'.");
+            }
+        });
+    }
+
     public UserDTO assign(
             String username, String applicationName, String applicationRoleName) {
 

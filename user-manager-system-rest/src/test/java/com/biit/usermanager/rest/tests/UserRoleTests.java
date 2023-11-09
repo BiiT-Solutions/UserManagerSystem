@@ -82,9 +82,6 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
     private ApplicationController applicationController;
 
     @Autowired
-    private GroupController groupController;
-
-    @Autowired
     private ApplicationRoleController applicationRoleController;
 
     @Autowired

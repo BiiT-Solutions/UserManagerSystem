@@ -239,4 +239,11 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     public void setAccountExpired(boolean accountExpired) {
         this.accountExpired = accountExpired;
     }
+
+    @Override
+    public String toString() {
+        return "User{"
+                + "username='" + getUsername() + '\''
+                + "}";
+    }
 }

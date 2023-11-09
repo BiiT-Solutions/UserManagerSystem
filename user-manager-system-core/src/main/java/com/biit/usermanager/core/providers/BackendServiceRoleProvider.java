@@ -7,6 +7,7 @@ import com.biit.usermanager.persistence.entities.BackendServiceRoleId;
 import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepository;
 import com.biit.usermanager.persistence.repositories.BackendServiceRoleRepository;
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -47,18 +48,32 @@ public class BackendServiceRoleProvider extends CreatedElementProvider<BackendSe
     }
 
     @Override
+    @Transactional
     public void delete(BackendServiceRole entity) {
+        if (entity == null) {
+            return;
+        }
         userApplicationBackendServiceRoleRepository.deleteByIdBackendServiceNameAndIdBackendServiceRole(entity.getBackendService().getName(), entity.getName());
         applicationBackendServiceRoleRepository.deleteByIdBackendServiceRole(entity);
         super.delete(entity);
     }
 
     @Override
+    @Transactional
     public void deleteAll(Collection<BackendServiceRole> entities) {
+        if (entities == null) {
+            return;
+        }
         entities.forEach(entity -> userApplicationBackendServiceRoleRepository
                 .deleteByIdBackendServiceNameAndIdBackendServiceRole(entity.getBackendService().getName(), entity.getName()));
         applicationBackendServiceRoleRepository.deleteByIdBackendServiceRoleIn(entities);
         super.deleteAll(entities);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(BackendServiceRoleId id) {
+        delete(getRepository().findById(id).orElse(null));
     }
 
 }

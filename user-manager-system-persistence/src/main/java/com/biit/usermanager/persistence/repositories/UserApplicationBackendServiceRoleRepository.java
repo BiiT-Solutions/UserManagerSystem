@@ -22,9 +22,9 @@ public interface UserApplicationBackendServiceRoleRepository extends StorableObj
 
     Set<UserApplicationBackendServiceRole> findByIdRoleName(String applicationRoleName);
 
-    Set<UserApplicationBackendServiceRole> deleteByIdRoleName(String applicationRoleName);
+    void deleteByIdRoleName(String applicationRoleName);
 
-    Set<UserApplicationBackendServiceRole> deleteByIdRoleNameIn(Collection<String> applicationRoleName);
+    void deleteByIdRoleNameIn(Collection<String> applicationRoleName);
 
     Set<UserApplicationBackendServiceRole> findByIdBackendServiceName(String backendServiceName);
 
@@ -42,6 +42,10 @@ public interface UserApplicationBackendServiceRoleRepository extends StorableObj
 
     Optional<UserApplicationBackendServiceRole> findByIdUserIdAndIdApplicationNameAndIdRoleNameAndIdBackendServiceNameAndIdBackendServiceRole(
             Long userId, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName);
+
+    void deleteByIdApplicationNameAndIdRoleNameAndIdBackendServiceNameAndIdBackendServiceRole(
+            String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName);
+
 
     List<UserApplicationBackendServiceRole> findByIdUserIdAndIdApplicationNameAndIdRoleName(Long userId, String applicationName, String applicationRoleName);
 }

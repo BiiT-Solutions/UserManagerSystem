@@ -8,10 +8,12 @@
         <groups>
             <run>
                 <include name="passwordTests"/>
+                <include name="roleTests"/>
             </run>
         </groups>
         <classes>
             <class name="com.biit.usermanager.core.PasswordTests"/>
+            <class name="com.biit.usermanager.core.RoleTests"/>
         </classes>
     </test>
 </suite>
