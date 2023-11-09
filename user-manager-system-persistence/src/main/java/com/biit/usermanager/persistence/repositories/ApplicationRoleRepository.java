@@ -8,6 +8,7 @@ import com.biit.usermanager.persistence.entities.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +18,13 @@ public interface ApplicationRoleRepository extends CreatedElementRepository<Appl
 
     List<ApplicationRole> findByIdApplication(Application application);
 
+    List<ApplicationRole> findByIdApplicationIn(Collection<Application> application);
+
     List<ApplicationRole> findByIdApplicationId(String applicationId);
 
     List<ApplicationRole> findByIdRole(Role role);
+
+    List<ApplicationRole> findByIdRoleIn(Collection<Role> role);
 
     List<ApplicationRole> findByIdRoleId(String roleId);
 

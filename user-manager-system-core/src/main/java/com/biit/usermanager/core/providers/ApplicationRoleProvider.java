@@ -5,20 +5,30 @@ import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.ApplicationRoleId;
 import com.biit.usermanager.persistence.entities.Role;
+import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepository;
 import com.biit.usermanager.persistence.repositories.ApplicationRoleRepository;
+import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ApplicationRoleProvider extends CreatedElementProvider<ApplicationRole, ApplicationRoleId, ApplicationRoleRepository> {
 
+    private final ApplicationBackendServiceRoleRepository applicationBackendServiceRoleRepository;
+
+    private final UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository;
+
     @Autowired
-    public ApplicationRoleProvider(ApplicationRoleRepository repository) {
+    public ApplicationRoleProvider(ApplicationRoleRepository repository, ApplicationBackendServiceRoleRepository applicationBackendServiceRoleRepository,
+                                   UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository) {
         super(repository);
+        this.applicationBackendServiceRoleRepository = applicationBackendServiceRoleRepository;
+        this.userApplicationBackendServiceRoleRepository = userApplicationBackendServiceRoleRepository;
     }
 
     public List<ApplicationRole> findByApplication(Application application) {
@@ -40,5 +50,21 @@ public class ApplicationRoleProvider extends CreatedElementProvider<ApplicationR
 
     public List<ApplicationRole> findByRoleId(String roleId) {
         return getRepository().findByIdRoleId(roleId);
+    }
+
+    @Override
+    public void delete(ApplicationRole entity) {
+        userApplicationBackendServiceRoleRepository.deleteByIdApplicationNameAndIdRoleName(
+                entity.getId().getApplication().getName(), entity.getId().getRole().getName());
+        applicationBackendServiceRoleRepository.deleteByIdApplicationRole(entity);
+        super.delete(entity);
+    }
+
+    @Override
+    public void deleteAll(Collection<ApplicationRole> entities) {
+        entities.forEach(entity -> userApplicationBackendServiceRoleRepository.deleteByIdApplicationNameAndIdRoleName(
+                entity.getId().getApplication().getName(), entity.getId().getRole().getName()));
+        applicationBackendServiceRoleRepository.deleteByIdApplicationRoleIn(entities);
+        super.deleteAll(entities);
     }
 }

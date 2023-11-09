@@ -9,6 +9,7 @@ import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
+import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
@@ -32,14 +33,17 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
 
     private final RoleConverter roleConverter;
 
+    private final ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider;
+
     @Autowired
     protected ApplicationRoleController(ApplicationRoleProvider provider, ApplicationRoleConverter converter,
                                         ApplicationProvider applicationProvider, ApplicationConverter applicationConverter,
-                                        RoleConverter roleConverter) {
+                                        RoleConverter roleConverter, ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider) {
         super(provider, converter);
         this.roleConverter = roleConverter;
         this.applicationProvider = applicationProvider;
         this.applicationConverter = applicationConverter;
+        this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
     }
 
     @Override
@@ -74,7 +78,7 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
         final ApplicationRole applicationRole = getProvider().findByApplicationIdAndRoleId(applicationName, roleName).orElseThrow(
                 () -> new ApplicationRoleNotFoundException(this.getClass(),
                         "No role exists for application '" + applicationName + "' with name '" + roleName + "'."));
-        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationRole, deletedBy);
         getProvider().delete(applicationRole);
+        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationRole, deletedBy);
     }
 }

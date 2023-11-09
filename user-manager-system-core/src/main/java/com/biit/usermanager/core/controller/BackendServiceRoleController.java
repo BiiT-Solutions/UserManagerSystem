@@ -32,7 +32,8 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
     private final UserProvider userProvider;
 
     protected BackendServiceRoleController(BackendServiceRoleProvider provider, BackendServiceRoleConverter converter,
-                                           BackendServiceProvider backendServiceProvider, UserProvider userProvider) {
+                                           BackendServiceProvider backendServiceProvider,
+                                           UserProvider userProvider) {
         super(provider, converter);
         this.backendServiceProvider = backendServiceProvider;
         this.userProvider = userProvider;
@@ -91,7 +92,7 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
         final BackendServiceRole backendServiceRole = getProvider().findByBackendServiceAndName(backendServiceName, roleName).orElseThrow(() ->
                 new BackendServiceRoleNotFoundException(this.getClass(),
                         "No backend service role defined for service '" + backendServiceName + "' and role '" + roleName + "'."));
-        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", backendServiceRole, deletedBy);
         getProvider().delete(backendServiceRole);
+        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", backendServiceRole, deletedBy);
     }
 }

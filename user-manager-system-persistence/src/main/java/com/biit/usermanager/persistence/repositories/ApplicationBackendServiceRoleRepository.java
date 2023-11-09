@@ -8,6 +8,7 @@ import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,5 +29,13 @@ public interface ApplicationBackendServiceRoleRepository extends CreatedElementR
     List<ApplicationBackendServiceRole> findByIdApplicationRole(ApplicationRole applicationRole);
 
     List<ApplicationBackendServiceRole> findByIdBackendServiceRole(BackendServiceRole backendServiceRole);
+
+    void deleteByIdBackendServiceRole(BackendServiceRole backendServiceRole);
+
+    void deleteByIdBackendServiceRoleIn(Collection<BackendServiceRole> backendServiceRole);
+
+    void deleteByIdApplicationRole(ApplicationRole applicationRole);
+
+    void deleteByIdApplicationRoleIn(Collection<ApplicationRole> applicationRole);
 
 }
