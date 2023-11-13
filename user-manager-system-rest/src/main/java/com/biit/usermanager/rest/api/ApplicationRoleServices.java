@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -81,7 +82,7 @@ public class ApplicationRoleServices extends CreatedElementServices<
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get application's roles by role name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ApplicationRoleDTO> getRolesFromUser(@Parameter(description = "Role name", required = true)
+    public List<ApplicationRoleDTO> getRolesFromRole(@Parameter(description = "Role name", required = true)
                                                      @PathVariable("roleName") String roleName,
                                                      HttpServletRequest request) {
         return getController().getByRole(roleName);
@@ -109,5 +110,15 @@ public class ApplicationRoleServices extends CreatedElementServices<
                        @PathVariable("roleName") String roleName,
                        Authentication authentication, HttpServletRequest request) {
         getController().deleteByApplicationAndRole(applicationName, roleName, authentication.getName());
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get all application's roles by user", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/users/{userName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ApplicationRoleDTO> getRolesFromUser(
+            @Parameter(description = "User name", required = true)
+            @PathVariable("userName") String userName,
+            HttpServletRequest request) {
+        return getController().getByUser(userName);
     }
 }

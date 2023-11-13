@@ -68,7 +68,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get user by username and application", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get user by username and application. The granted authorities are filtered by the application name.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndApplication(@Parameter(description = "Username of an existing user", required = true)
                                                @PathVariable("username") String username,
@@ -80,7 +80,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get user by username and backend service", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get user by username and backend service. The granted authorities are filtered by the selected service name.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/service/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndBackendService(@Parameter(description = "Username of an existing user", required = true)
                                                   @PathVariable("username") String username,
