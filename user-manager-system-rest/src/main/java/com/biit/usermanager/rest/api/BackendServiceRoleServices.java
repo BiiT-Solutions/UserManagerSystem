@@ -124,4 +124,16 @@ public class BackendServiceRoleServices extends CreatedElementServices<
         getController().delete(backendServiceName, roleName, authentication.getName());
     }
 
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get backend's roles by application and application's role.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/applications/{applicationName}/role/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BackendServiceRoleDTO> getRolesFromApplicationAndRole(
+            @Parameter(description = "Name of an existing application", required = false)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Name of the application's role", required = false)
+            @PathVariable("roleName") String roleName,
+            HttpServletRequest request) {
+        return getController().findByApplicationAndRole(applicationName, roleName);
+    }
+
 }

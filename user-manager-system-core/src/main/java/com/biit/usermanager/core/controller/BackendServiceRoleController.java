@@ -8,6 +8,8 @@ import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
+import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
@@ -31,12 +33,19 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
 
     private final UserProvider userProvider;
 
+    private final ApplicationRoleProvider applicationRoleProvider;
+
+    private final ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider;
+
     protected BackendServiceRoleController(BackendServiceRoleProvider provider, BackendServiceRoleConverter converter,
                                            BackendServiceProvider backendServiceProvider,
-                                           UserProvider userProvider) {
+                                           UserProvider userProvider, ApplicationRoleProvider applicationRoleProvider,
+                                           ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider) {
         super(provider, converter);
         this.backendServiceProvider = backendServiceProvider;
         this.userProvider = userProvider;
+        this.applicationRoleProvider = applicationRoleProvider;
+        this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
     }
 
     @Override
@@ -94,5 +103,9 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
                         "No backend service role defined for service '" + backendServiceName + "' and role '" + roleName + "'."));
         getProvider().delete(backendServiceRole);
         DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", backendServiceRole, deletedBy);
+    }
+
+    public List<BackendServiceRoleDTO> findByApplicationAndRole(String applicationName, String applicationRoleName) {
+        return convertAll(getProvider().findByApplicationAndRole(applicationName, applicationRoleName));
     }
 }

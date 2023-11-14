@@ -1,10 +1,11 @@
 package com.biit.usermanager.persistence.entities;
 
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,7 +13,8 @@ import java.util.Objects;
 @Embeddable
 public class ApplicationBackendServiceRoleId implements Serializable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @Fetch(value = FetchMode.JOIN)
     @JoinColumns({
             @JoinColumn(name = "application_role_application", referencedColumnName = "application"),
             @JoinColumn(name = "application_role_role", referencedColumnName = "role")
@@ -20,7 +22,8 @@ public class ApplicationBackendServiceRoleId implements Serializable {
     private ApplicationRole applicationRole;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @Fetch(value = FetchMode.JOIN)
     @JoinColumns({
             @JoinColumn(name = "backend_service_role_service", referencedColumnName = "backend_service"),
             @JoinColumn(name = "backend_service_role_name", referencedColumnName = "name")

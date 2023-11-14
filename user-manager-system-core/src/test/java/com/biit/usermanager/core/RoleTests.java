@@ -8,6 +8,7 @@ import com.biit.usermanager.core.controller.BackendServiceRoleController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
+import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.dto.ApplicationDTO;
@@ -16,6 +17,7 @@ import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,6 +66,9 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private BackendServiceRoleController backendServiceRoleController;
+
+    @Autowired
+    private BackendServiceRoleProvider backendServiceRoleProvider;
 
     @Autowired
     private BackendServiceController backendServiceController;
@@ -166,6 +171,12 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
     }
 
     @Test(dependsOnMethods = "generateNewApplicationWithRoles")
+    public void searchBackendServiceRolesByApplicationAndApplicationRole() {
+        List<BackendServiceRole> backendServiceRoles = backendServiceRoleProvider.findByApplicationAndRole(NEW_APPLICATION_NAME, APPLICATION_ROLES[0]);
+        Assert.assertEquals(backendServiceRoles.size(), 2);
+    }
+
+    @Test(dependsOnMethods = {"generateNewApplicationWithRoles", "searchBackendServiceRolesByApplicationAndApplicationRole"})
     public void deleteNewApplication() {
         long existingApplicationBackendServiceRoles = applicationBackendServiceRoleController.count();
         long existingUserRoles = userApplicationBackendServiceRoleProvider.count();

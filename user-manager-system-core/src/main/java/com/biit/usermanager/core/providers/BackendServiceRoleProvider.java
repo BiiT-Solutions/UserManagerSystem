@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.CreatedElementProvider;
+import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.BackendServiceRoleId;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +76,23 @@ public class BackendServiceRoleProvider extends CreatedElementProvider<BackendSe
     @Transactional
     public void deleteById(BackendServiceRoleId id) {
         delete(getRepository().findById(id).orElse(null));
+    }
+
+    public List<BackendServiceRole> findByApplicationAndRole(String applicationName, String applicationRoleName) {
+        final List<ApplicationBackendServiceRole> applicationBackendServiceRoles = applicationBackendServiceRoleRepository
+                .findByIdApplicationRoleIdApplicationIdAndIdApplicationRoleIdRoleId(applicationName, applicationRoleName);
+
+        final List<BackendServiceRole> backendServiceRoles = new ArrayList<>();
+
+        for (ApplicationBackendServiceRole applicationBackendServiceRole : applicationBackendServiceRoles) {
+            final Optional<BackendServiceRole> backendServiceRole = findByBackendServiceAndName(
+                    applicationBackendServiceRole.getId().getBackendServiceRole().getBackendService().getName(),
+                    applicationBackendServiceRole.getId().getBackendServiceRole().getName()
+            );
+            backendServiceRole.ifPresent(backendServiceRoles::add);
+        }
+
+        return backendServiceRoles;
     }
 
 }
