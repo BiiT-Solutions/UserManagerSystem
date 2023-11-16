@@ -108,7 +108,7 @@ public class BackendServiceRoleServices extends CreatedElementServices<
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void delete(@Parameter(description = "Id of an existing application", required = true) @PathVariable("id") BackendServiceRoleId id,
-                       HttpServletRequest request) {
+                       Authentication authentication, HttpServletRequest request) {
         throw new UnsupportedOperationException("Endpoint not allowed!");
     }
 

@@ -77,7 +77,7 @@ public class BasicUserServices extends ElementServices<User, Long, BasicUserDTO,
 
     @Operation(hidden = true)
     @Override
-    public void delete(Long id, HttpServletRequest request) {
+    public void delete(Long id, Authentication authentication, HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not valid!");
     }
 }

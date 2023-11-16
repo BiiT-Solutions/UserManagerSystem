@@ -63,6 +63,7 @@ public class ApplicationRoleServices extends CreatedElementServices<
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void delete(@Parameter(description = "Id of an existing application", required = true)
                        @PathVariable("id") ApplicationRoleId id,
+                       Authentication authentication,
                        HttpServletRequest request) {
         throw new UnsupportedOperationException("Endpoint not allowed!");
     }

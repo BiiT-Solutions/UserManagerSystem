@@ -180,7 +180,7 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
     public void deleteNewApplication() {
         long existingApplicationBackendServiceRoles = applicationBackendServiceRoleController.count();
         long existingUserRoles = userApplicationBackendServiceRoleProvider.count();
-        applicationController.deleteById(NEW_APPLICATION_NAME);
+        applicationController.deleteById(NEW_APPLICATION_NAME, null);
         //Must delete the Application Roles, the ApplicationBackendServiceRoles and the user assigned roles.
         Assert.assertEquals(applicationBackendServiceRoleController.count(), existingApplicationBackendServiceRoles - 4);
         Assert.assertEquals(userApplicationBackendServiceRoleProvider.count(), existingUserRoles - 4);
@@ -242,7 +242,7 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
     public void deleteNewBackendService() {
         long existingApplicationBackendServiceRoles = applicationBackendServiceRoleController.count();
         long existingUserRoles = userApplicationBackendServiceRoleProvider.count();
-        backendServiceController.deleteById(NEW_BACKEND_NAME);
+        backendServiceController.deleteById(NEW_BACKEND_NAME, null);
         //Must delete the Application Roles, the ApplicationBackendServiceRoles and the user assigned roles.
         Assert.assertEquals(applicationBackendServiceRoleController.count(), existingApplicationBackendServiceRoles - 4);
         Assert.assertEquals(userApplicationBackendServiceRoleProvider.count(), existingUserRoles - 4);
