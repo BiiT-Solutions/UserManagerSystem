@@ -1,16 +1,12 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.server.controller.ElementController;
+import com.biit.kafka.controller.KafkaElementController;
 import com.biit.server.security.IAuthenticatedUser;
-import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.BasicUserConverter;
-import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.models.BasicUserConverterRequest;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
-import com.biit.usermanager.core.providers.ApplicationProvider;
-import com.biit.usermanager.core.providers.GroupProvider;
+import com.biit.usermanager.core.kafka.BasicUserEventSender;
 import com.biit.usermanager.core.providers.UserProvider;
-import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.dto.BasicUserDTO;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
@@ -27,25 +23,13 @@ import java.util.stream.Collectors;
 
 @Primary
 @Controller
-public class BasicUserController extends ElementController<User, Long, BasicUserDTO, UserRepository,
+public class BasicUserController extends KafkaElementController<User, Long, BasicUserDTO, UserRepository,
         UserProvider, BasicUserConverterRequest, BasicUserConverter> {
-    private final ApplicationRoleProvider applicationRoleProvider;
-
-    private final ApplicationProvider applicationProvider;
-    private final ApplicationConverter applicationConverter;
-    private final GroupProvider groupProvider;
-    private final GroupConverter groupConverter;
 
     @Autowired
     protected BasicUserController(UserProvider provider, BasicUserConverter converter,
-                                  ApplicationRoleProvider applicationRoleProvider, ApplicationConverter applicationConverter,
-                                  ApplicationProvider applicationProvider, GroupProvider groupProvider, GroupConverter groupConverter) {
-        super(provider, converter);
-        this.applicationRoleProvider = applicationRoleProvider;
-        this.applicationProvider = applicationProvider;
-        this.groupProvider = groupProvider;
-        this.applicationConverter = applicationConverter;
-        this.groupConverter = groupConverter;
+                                  BasicUserEventSender eventSender) {
+        super(provider, converter, eventSender);
     }
 
     @Override

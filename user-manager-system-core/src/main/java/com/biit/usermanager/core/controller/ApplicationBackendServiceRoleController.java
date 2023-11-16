@@ -1,16 +1,13 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.CreatedElementController;
+import com.biit.kafka.controller.KafkaCreatedElementController;
 import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
-import com.biit.usermanager.core.converters.ApplicationConverter;
-import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationBackendServiceRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationBackendServiceNotFoundException;
+import com.biit.usermanager.core.kafka.ApplicationBackendServiceRoleEventSender;
 import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
-import com.biit.usermanager.core.providers.ApplicationProvider;
-import com.biit.usermanager.core.providers.RoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRoleId;
@@ -23,28 +20,16 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller
-public class ApplicationBackendServiceRoleController extends CreatedElementController<ApplicationBackendServiceRole,
+public class ApplicationBackendServiceRoleController extends KafkaCreatedElementController<ApplicationBackendServiceRole,
         ApplicationBackendServiceRoleId, ApplicationBackendServiceRoleDTO, ApplicationBackendServiceRoleRepository,
         ApplicationBackendServiceRoleProvider, ApplicationBackendServiceRoleConverterRequest, ApplicationBackendServiceRoleConverter> {
 
-    private final ApplicationProvider applicationProvider;
-
-    private final ApplicationConverter applicationConverter;
-
-    private final RoleProvider roleProvider;
-
-    private final RoleConverter roleConverter;
 
     @Autowired
     protected ApplicationBackendServiceRoleController(ApplicationBackendServiceRoleProvider provider,
-                                                      ApplicationBackendServiceRoleConverter converter, RoleProvider roleProvider,
-                                                      ApplicationProvider applicationProvider, ApplicationConverter applicationConverter,
-                                                      RoleConverter roleConverter) {
-        super(provider, converter);
-        this.roleConverter = roleConverter;
-        this.roleProvider = roleProvider;
-        this.applicationProvider = applicationProvider;
-        this.applicationConverter = applicationConverter;
+                                                      ApplicationBackendServiceRoleConverter converter,
+                                                      ApplicationBackendServiceRoleEventSender eventSender) {
+        super(provider, converter, eventSender);
     }
 
     @Override

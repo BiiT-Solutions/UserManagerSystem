@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.server.controller.ElementController;
+import com.biit.kafka.controller.KafkaElementController;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
@@ -14,6 +14,7 @@ import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.kafka.UserEventSender;
 import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
 @Controller
 @Order(1)
 @Qualifier("userController")
-public class UserController extends ElementController<User, Long, UserDTO, UserRepository,
+public class UserController extends KafkaElementController<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
 
     @Value("${bcrypt.salt:}")
@@ -74,8 +75,9 @@ public class UserController extends ElementController<User, Long, UserDTO, UserR
                              ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
                              UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
-                             ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider) {
-        super(provider, converter);
+                             ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
+                             UserEventSender eventSender) {
+        super(provider, converter, eventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;

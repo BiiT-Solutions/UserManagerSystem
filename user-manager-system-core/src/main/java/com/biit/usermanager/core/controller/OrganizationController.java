@@ -1,10 +1,11 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.ElementController;
+import com.biit.kafka.controller.KafkaElementController;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
+import com.biit.usermanager.core.kafka.OrganizationEventSender;
 import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.persistence.entities.Organization;
@@ -14,15 +15,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class OrganizationController extends ElementController<Organization, String, OrganizationDTO, OrganizationRepository,
+public class OrganizationController extends KafkaElementController<Organization, String, OrganizationDTO, OrganizationRepository,
         OrganizationProvider, OrganizationConverterRequest, OrganizationConverter> {
 
     @Value("${spring.application.name}")
     private String applicationName;
 
     @Autowired
-    protected OrganizationController(OrganizationProvider provider, OrganizationConverter converter) {
-        super(provider, converter);
+    protected OrganizationController(OrganizationProvider provider, OrganizationConverter converter, OrganizationEventSender eventSender) {
+        super(provider, converter, eventSender);
     }
 
     @Override

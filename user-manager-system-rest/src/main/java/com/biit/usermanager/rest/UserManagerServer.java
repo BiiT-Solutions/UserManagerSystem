@@ -14,7 +14,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.servlet.DispatcherServlet;
 
 @SpringBootApplication
-@ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client"})
+@ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client", "com.biit.kafka"})
 @ConfigurationPropertiesScan({"com.biit.usermanager.rest"})
 //@EnableJpaRepositories({"com.biit.usermanager.persistence.repositories"})
 @EntityScan({"com.biit.usermanager.persistence.entities", "com.biit.server.security.userguard"})

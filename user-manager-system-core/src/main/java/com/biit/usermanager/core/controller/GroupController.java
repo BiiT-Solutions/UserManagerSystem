@@ -1,12 +1,13 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.ElementController;
+import com.biit.kafka.controller.KafkaElementController;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.GroupConverter;
 import com.biit.usermanager.core.converters.models.GroupConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.GroupNotFoundException;
+import com.biit.usermanager.core.kafka.GroupEventSender;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.GroupProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class GroupController extends ElementController<Group, Long, GroupDTO, GroupRepository,
+public class GroupController extends KafkaElementController<Group, Long, GroupDTO, GroupRepository,
         GroupProvider, GroupConverterRequest, GroupConverter> {
 
     private final ApplicationConverter applicationConverter;
@@ -29,8 +30,8 @@ public class GroupController extends ElementController<Group, Long, GroupDTO, Gr
 
     @Autowired
     protected GroupController(GroupProvider provider, GroupConverter converter, ApplicationConverter applicationConverter,
-                              ApplicationProvider applicationProvider) {
-        super(provider, converter);
+                              ApplicationProvider applicationProvider, GroupEventSender eventSender) {
+        super(provider, converter, eventSender);
         this.applicationConverter = applicationConverter;
         this.applicationProvider = applicationProvider;
     }

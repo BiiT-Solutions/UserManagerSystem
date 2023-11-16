@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.server.controller.CreatedElementController;
+import com.biit.kafka.controller.KafkaCreatedElementController;
 import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.BackendServiceRoleConverter;
 import com.biit.usermanager.core.converters.models.BackendServiceRoleConverterRequest;
@@ -8,8 +8,7 @@ import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
-import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
-import com.biit.usermanager.core.providers.ApplicationRoleProvider;
+import com.biit.usermanager.core.kafka.BackendServiceRoleEventSender;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Controller
-public class BackendServiceRoleController extends CreatedElementController<BackendServiceRole, BackendServiceRoleId,
+public class BackendServiceRoleController extends KafkaCreatedElementController<BackendServiceRole, BackendServiceRoleId,
         BackendServiceRoleDTO, BackendServiceRoleRepository,
         BackendServiceRoleProvider, BackendServiceRoleConverterRequest, BackendServiceRoleConverter> {
 
@@ -33,19 +32,13 @@ public class BackendServiceRoleController extends CreatedElementController<Backe
 
     private final UserProvider userProvider;
 
-    private final ApplicationRoleProvider applicationRoleProvider;
-
-    private final ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider;
-
     protected BackendServiceRoleController(BackendServiceRoleProvider provider, BackendServiceRoleConverter converter,
                                            BackendServiceProvider backendServiceProvider,
-                                           UserProvider userProvider, ApplicationRoleProvider applicationRoleProvider,
-                                           ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider) {
-        super(provider, converter);
+                                           UserProvider userProvider,
+                                           BackendServiceRoleEventSender eventSender) {
+        super(provider, converter, eventSender);
         this.backendServiceProvider = backendServiceProvider;
         this.userProvider = userProvider;
-        this.applicationRoleProvider = applicationRoleProvider;
-        this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
     }
 
     @Override

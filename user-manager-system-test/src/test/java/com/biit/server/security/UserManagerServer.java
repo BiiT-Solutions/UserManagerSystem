@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.biit.usermanager", "com.biit.server", "com.biit.messagebird.client"})
+@ComponentScan(basePackages = {"com.biit.usermanager", "com.biit.server", "com.biit.messagebird.client", "com.biit.kafka"})
 @ConfigurationPropertiesScan({"com.biit.server.security.userguard"})
 public class UserManagerServer {
 

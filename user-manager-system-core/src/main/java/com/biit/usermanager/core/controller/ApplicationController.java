@@ -1,9 +1,10 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.ElementController;
+import com.biit.kafka.controller.KafkaElementController;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
+import com.biit.usermanager.core.kafka.ApplicationEventSender;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.persistence.entities.Application;
@@ -12,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ApplicationController extends ElementController<Application, String, ApplicationDTO, ApplicationRepository,
+public class ApplicationController extends KafkaElementController<Application, String, ApplicationDTO, ApplicationRepository,
         ApplicationProvider, ApplicationConverterRequest, ApplicationConverter> {
 
     @Autowired
-    protected ApplicationController(ApplicationProvider provider, ApplicationConverter converter) {
-        super(provider, converter);
+    protected ApplicationController(ApplicationProvider provider, ApplicationConverter converter, ApplicationEventSender eventSender) {
+        super(provider, converter, eventSender);
     }
 
     @Override

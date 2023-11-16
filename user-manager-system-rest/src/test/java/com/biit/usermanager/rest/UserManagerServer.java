@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 @SpringBootApplication
-@ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client"})
+@ComponentScan({"com.biit.usermanager", "com.biit.server", "com.biit.server.security", "com.biit.messagebird.client", "com.biit.kafka"})
 @ConfigurationPropertiesScan({"com.biit.usermanager.rest", "com.biit.server.security.userguard"})
 @EntityScan({"com.biit.usermanager.persistence.entities", "com.biit.server.security.userguard"})
 public class UserManagerServer {

@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.server.controller.CreatedElementController;
+import com.biit.kafka.controller.KafkaCreatedElementController;
 import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.ApplicationRoleConverter;
@@ -10,9 +10,9 @@ import com.biit.usermanager.core.converters.models.ApplicationRoleConverterReque
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.core.kafka.ApplicationRolesEventSender;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
-import com.biit.usermanager.core.providers.RoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
@@ -31,13 +31,12 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-public class ApplicationRoleController extends CreatedElementController<ApplicationRole, ApplicationRoleId, ApplicationRoleDTO, ApplicationRoleRepository,
+public class ApplicationRoleController extends KafkaCreatedElementController<ApplicationRole, ApplicationRoleId, ApplicationRoleDTO, ApplicationRoleRepository,
         ApplicationRoleProvider, ApplicationRoleConverterRequest, ApplicationRoleConverter> {
 
     private final ApplicationProvider applicationProvider;
 
     private final ApplicationConverter applicationConverter;
-    private final RoleProvider roleProvider;
 
     private final RoleConverter roleConverter;
 
@@ -49,11 +48,11 @@ public class ApplicationRoleController extends CreatedElementController<Applicat
     @Autowired
     protected ApplicationRoleController(ApplicationRoleProvider provider, ApplicationRoleConverter converter,
                                         ApplicationProvider applicationProvider, ApplicationConverter applicationConverter,
-                                        RoleProvider roleProvider, RoleConverter roleConverter,
+                                        RoleConverter roleConverter,
                                         UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
-                                        ApplicationRoleProvider applicationRoleProvider, UserProvider userProvider) {
-        super(provider, converter);
-        this.roleProvider = roleProvider;
+                                        ApplicationRoleProvider applicationRoleProvider, UserProvider userProvider,
+                                        ApplicationRolesEventSender eventSender) {
+        super(provider, converter, eventSender);
         this.roleConverter = roleConverter;
         this.applicationProvider = applicationProvider;
         this.applicationConverter = applicationConverter;
