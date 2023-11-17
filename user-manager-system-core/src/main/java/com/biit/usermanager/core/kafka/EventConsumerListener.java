@@ -2,6 +2,7 @@ package com.biit.usermanager.core.kafka;
 
 import com.biit.kafka.consumers.EventListener;
 import com.biit.kafka.events.Event;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -9,12 +10,13 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 
+@ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${spring.kafka.topic:}')")
 @EnableKafka
 @Configuration
 public class EventConsumerListener extends EventListener {
 
     @Override
-    @KafkaListener(topics = "${spring.kafka.topic:null}", groupId = "${spring.kafka.group.id:null}", clientIdPrefix = "firstListener",
+    @KafkaListener(topics = "${spring.kafka.topic:#{null}}", groupId = "${spring.kafka.group.id:null}", clientIdPrefix = "firstListener",
             containerFactory = "templateEventListenerContainerFactory")
     public void eventsListener(@Payload(required = false) Event event,
                                final @Header(KafkaHeaders.OFFSET) Integer offset,
