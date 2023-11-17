@@ -1,6 +1,5 @@
 package com.biit.usermanager.core.kafka;
 
-import com.biit.kafka.consumers.EventListener;
 import com.biit.kafka.events.Event;
 import com.biit.kafka.logger.EventsLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +9,16 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 
-
+/**
+ * Subscribes to the EventListener to obtain any event, and handles it.
+ */
 @Controller
 public class EventController {
     private static final String ORGANIZATION = "organization";
     private static final String PROCESS = "process";
 
 
-    public EventController(@Autowired(required = false) EventListener eventListener) {
+    public EventController(@Autowired(required = false) EventConsumerListener eventListener) {
 
         //Listen to topic
         if (eventListener != null) {

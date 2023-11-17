@@ -10,6 +10,9 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 
+/***
+ * Reads any event on a specific topic. Later will call the Controller to handle the event.
+ */
 @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${spring.kafka.topic:}')")
 @EnableKafka
 @Configuration
