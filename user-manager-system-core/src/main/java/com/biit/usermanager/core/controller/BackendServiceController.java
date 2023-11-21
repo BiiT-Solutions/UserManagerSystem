@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.kafka.controller.KafkaElementController;
+import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.usermanager.core.converters.BackendServiceConverter;
 import com.biit.usermanager.core.converters.models.BackendServiceConverterRequest;
 import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;

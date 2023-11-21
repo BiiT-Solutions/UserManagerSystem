@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.kafka.controller.KafkaElementController;
+import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;

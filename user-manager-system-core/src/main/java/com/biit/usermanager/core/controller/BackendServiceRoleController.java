@@ -1,6 +1,6 @@
 package com.biit.usermanager.core.controller;
 
-import com.biit.kafka.controller.KafkaCreatedElementController;
+import com.biit.kafka.controllers.KafkaCreatedElementController;
 import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.BackendServiceRoleConverter;
 import com.biit.usermanager.core.converters.models.BackendServiceRoleConverterRequest;

@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 
-import com.biit.kafka.controller.KafkaElementController;
+import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
