@@ -22,6 +22,8 @@ public interface UserApplicationBackendServiceRoleRepository extends StorableObj
 
     Set<UserApplicationBackendServiceRole> findByIdRoleName(String applicationRoleName);
 
+    Set<UserApplicationBackendServiceRole> findByIdApplicationNameAndIdRoleName(String applicationName, String applicationRoleName);
+
     void deleteByIdRoleName(String applicationRoleName);
 
     void deleteByIdRoleNameIn(Collection<String> applicationRoleName);

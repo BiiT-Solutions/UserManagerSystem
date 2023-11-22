@@ -27,6 +27,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Test(groups = "roleTests")
@@ -168,6 +169,26 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(applicationBackendServiceRoleController.count(), existingApplicationBackendServiceRoles + 4);
         userController.assign(admin, applicationBackendServiceRoleConverter.reverseAll(applicationBackendServiceRoleDTOs));
         Assert.assertEquals(userApplicationBackendServiceRoleProvider.count(), existingUserRoles + 4);
+    }
+
+    @Test(dependsOnMethods = "generateNewApplicationWithRoles")
+    public void updateApplicationRolesBackendServicesAndEnsureOldUsersGetThem() {
+        long existingUserRoles = userApplicationBackendServiceRoleProvider.count();
+
+        //New BackendService role.
+        final BackendServiceRoleDTO newBackendServiceRoleDTO = backendServiceRoleController.create(new BackendServiceRoleDTO(backendServiceDTO, "Wizard"), null);
+
+        //Assign the backend to an application.
+        final ApplicationRoleDTO applicationRole = applicationRoleController.getByApplicationAndRole(APPLICATION_NAME, APPLICATION_ROLES[0]);
+        final ApplicationBackendServiceRoleDTO applicationBackendServiceRole = applicationBackendServiceRoleController.create(new ApplicationBackendServiceRoleDTO(applicationRole, newBackendServiceRoleDTO), null);
+
+        userController.assign(admin, Collections.singletonList(applicationBackendServiceRoleConverter.reverse(applicationBackendServiceRole)));
+
+        Assert.assertEquals(userApplicationBackendServiceRoleProvider.count(), existingUserRoles + 1);
+
+        //Delete the new role.
+        applicationBackendServiceRoleController.delete(applicationBackendServiceRole, null);
+        Assert.assertEquals(userApplicationBackendServiceRoleProvider.count(), existingUserRoles);
     }
 
     @Test(dependsOnMethods = "generateNewApplicationWithRoles")
