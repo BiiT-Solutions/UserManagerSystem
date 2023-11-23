@@ -6,11 +6,13 @@ import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
+import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.ApplicationRolesEventSender;
+import com.biit.usermanager.core.kafka.UserEventSender;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
@@ -23,6 +25,7 @@ import com.biit.usermanager.persistence.entities.ApplicationRoleId;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.ApplicationRoleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -45,13 +48,17 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
 
     private final UserProvider userProvider;
 
+
+    private final UserEventSender userEventSender;
+
+
     @Autowired
     protected ApplicationRoleController(ApplicationRoleProvider provider, ApplicationRoleConverter converter,
                                         ApplicationProvider applicationProvider, ApplicationConverter applicationConverter,
                                         RoleConverter roleConverter,
                                         UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
                                         ApplicationRoleProvider applicationRoleProvider, UserProvider userProvider,
-                                        ApplicationRolesEventSender eventSender) {
+                                        ApplicationRolesEventSender eventSender, UserEventSender userEventSender) {
         super(provider, converter, eventSender);
         this.roleConverter = roleConverter;
         this.applicationProvider = applicationProvider;
@@ -59,6 +66,7 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
         this.applicationRoleProvider = applicationRoleProvider;
         this.userProvider = userProvider;
+        this.userEventSender = userEventSender;
     }
 
     @Override
@@ -116,5 +124,38 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
 
 
         return convertAll(applicationRoles);
+    }
+
+    @Override
+    @Transactional
+    public void delete(ApplicationRoleDTO entity, String deletedBy) {
+        //Send events.
+        final Set<UserApplicationBackendServiceRole> usersToInform = userApplicationBackendServiceRoleProvider
+                .findBy(entity.getId().getApplication().getName(), entity.getId().getRole().getName());
+
+        super.delete(entity, deletedBy);
+
+        userEventSender.sendEvents(usersToInform, UserEventSender.REVOCATION_EVENT_TAG, deletedBy);
+    }
+
+    @Override
+    public void deleteById(ApplicationRoleId id, String deletedBy) {
+        //Send events.
+        final Set<UserApplicationBackendServiceRole> usersToInform = userApplicationBackendServiceRoleProvider
+                .findBy(id.getApplication().getName(), id.getRole().getName());
+
+        super.deleteById(id, deletedBy);
+
+        userEventSender.sendEvents(usersToInform, UserEventSender.REVOCATION_EVENT_TAG, deletedBy);
+    }
+
+    @Override
+    public void deleteAll(String deletedBy) {
+        //Send events.
+        final List<UserApplicationBackendServiceRole> usersToInform = userApplicationBackendServiceRoleProvider.getAll();
+
+        super.deleteAll(deletedBy);
+
+        userEventSender.sendEvents(usersToInform, UserEventSender.REVOCATION_EVENT_TAG, deletedBy);
     }
 }

@@ -3,7 +3,7 @@ package com.biit.usermanager.core.kafka;
 
 import com.biit.kafka.events.EventSender;
 import com.biit.kafka.events.KafkaEventTemplate;
-import com.biit.usermanager.core.utils.EventUtils;
+import com.biit.usermanager.core.utils.EventTags;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +14,6 @@ public class ApplicationBackendServiceRoleEventSender extends EventSender<Applic
 
 
     public ApplicationBackendServiceRoleEventSender(KafkaEventTemplate kafkaTemplate) {
-        super(kafkaTemplate, EventUtils.TAG, EVENT_TYPE);
+        super(kafkaTemplate, EventTags.APPLICATION_BACKEND_SERVICE_ROLE, EVENT_TYPE);
     }
 }

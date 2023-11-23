@@ -2,6 +2,7 @@ package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.StorableObjectProvider;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRoleId;
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
@@ -35,6 +36,11 @@ public class UserApplicationBackendServiceRoleProvider extends StorableObjectPro
         return getRepository().findByIdBackendServiceName(backendServiceName);
     }
 
+    public Set<UserApplicationBackendServiceRole> findByBackendServiceNameAndBackendServiceRole(String backendServiceName, String backendServiceRoleName) {
+        return getRepository().findByIdBackendServiceNameAndIdBackendServiceRole(backendServiceName, backendServiceRoleName);
+    }
+
+
     public Set<UserApplicationBackendServiceRole> findByBackendServiceRole(String roleName) {
         return getRepository().findByIdBackendServiceRole(roleName);
     }
@@ -45,9 +51,23 @@ public class UserApplicationBackendServiceRoleProvider extends StorableObjectPro
                 userId, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 
+    public Set<UserApplicationBackendServiceRole> findBy(
+            String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
+        return getRepository().findByIdApplicationNameAndIdRoleNameAndIdBackendServiceNameAndIdBackendServiceRole(
+                applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
+    }
+
     public List<UserApplicationBackendServiceRole> findBy(
             Long userId, String applicationName, String applicationRoleName) {
         return getRepository().findByIdUserIdAndIdApplicationNameAndIdRoleName(userId, applicationName, applicationRoleName);
+    }
+
+    public Set<UserApplicationBackendServiceRole> findBy(ApplicationRole applicationRole) {
+        return findBy(applicationRole.getId().getApplication().getName(), applicationRole.getId().getRole().getName());
+    }
+
+    public Set<UserApplicationBackendServiceRole> findBy(String applicationName, String applicationRoleName) {
+        return getRepository().findByIdApplicationNameAndIdRoleName(applicationName, applicationRoleName);
     }
 
     public Optional<UserApplicationBackendServiceRole> findBy(
