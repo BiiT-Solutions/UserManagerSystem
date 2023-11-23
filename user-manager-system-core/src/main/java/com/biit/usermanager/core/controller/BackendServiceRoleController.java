@@ -44,7 +44,9 @@ public class BackendServiceRoleController extends KafkaCreatedElementController<
     protected BackendServiceRoleController(BackendServiceRoleProvider provider, BackendServiceRoleConverter converter,
                                            BackendServiceProvider backendServiceProvider,
                                            UserProvider userProvider,
-                                           BackendServiceRoleEventSender eventSender, UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider, UserEventSender userEventSender) {
+                                           BackendServiceRoleEventSender eventSender,
+                                           UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
+                                           UserEventSender userEventSender) {
         super(provider, converter, eventSender);
         this.backendServiceProvider = backendServiceProvider;
         this.userProvider = userProvider;

@@ -6,7 +6,6 @@ import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
-import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
