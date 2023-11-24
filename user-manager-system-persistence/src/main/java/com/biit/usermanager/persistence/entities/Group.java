@@ -21,7 +21,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "groups", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
+@Table(name = "user_groups", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
         indexes = {
                 @Index(name = "ind_group_name", columnList = "name"),
                 @Index(name = "ind_parent", columnList = "parent_id"),

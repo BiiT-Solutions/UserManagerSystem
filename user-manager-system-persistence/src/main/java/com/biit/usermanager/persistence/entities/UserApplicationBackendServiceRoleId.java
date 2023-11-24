@@ -9,19 +9,21 @@ import java.util.Objects;
 @Embeddable
 public class UserApplicationBackendServiceRoleId implements Serializable {
 
+    protected static final int MAX_UNIQUE_COLUMN_LENGTH = 190;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "application_role_application", nullable = false)
+    @Column(name = "application_role_application", nullable = false, length = MAX_UNIQUE_COLUMN_LENGTH)
     private String applicationName;
 
-    @Column(name = "application_role_role", nullable = false)
+    @Column(name = "application_role_role", nullable = false, length = MAX_UNIQUE_COLUMN_LENGTH)
     private String roleName;
 
-    @Column(name = "backend_service_role_service", nullable = false)
+    @Column(name = "backend_service_role_service", nullable = false, length = MAX_UNIQUE_COLUMN_LENGTH)
     private String backendServiceName;
 
-    @Column(name = "backend_service_role_name", nullable = false)
+    @Column(name = "backend_service_role_name", nullable = false, length = MAX_UNIQUE_COLUMN_LENGTH)
     private String backendServiceRole;
 
     public UserApplicationBackendServiceRoleId() {

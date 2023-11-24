@@ -18,11 +18,13 @@ public class BackendServiceRoleId implements Serializable {
     @Serial
     private static final long serialVersionUID = 7130482204365537896L;
 
+    protected static final int MAX_UNIQUE_COLUMN_LENGTH = 190;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "backend_service")
     private BackendService backendService;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = MAX_UNIQUE_COLUMN_LENGTH)
     @Convert(converter = StringCryptoConverter.class)
     private String name;
 

@@ -25,7 +25,7 @@ public class Application extends Element<String> implements Serializable {
     private static final long serialVersionUID = 1082379190202846511L;
 
     @Id
-    @Column(name = "name")
+    @Column(name = "name", length = MAX_UNIQUE_COLUMN_LENGTH)
     private String name;
 
     @Column(name = "description")

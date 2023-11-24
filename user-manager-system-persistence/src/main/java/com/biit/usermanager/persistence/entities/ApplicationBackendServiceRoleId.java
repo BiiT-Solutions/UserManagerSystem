@@ -16,8 +16,8 @@ public class ApplicationBackendServiceRoleId implements Serializable {
     @ManyToOne
     @Fetch(value = FetchMode.JOIN)
     @JoinColumns({
-            @JoinColumn(name = "application_role_application", referencedColumnName = "application"),
-            @JoinColumn(name = "application_role_role", referencedColumnName = "role")
+            @JoinColumn(name = "application_role_application", referencedColumnName = "application_name"),
+            @JoinColumn(name = "application_role_role", referencedColumnName = "application_role")
     })
     private ApplicationRole applicationRole;
 

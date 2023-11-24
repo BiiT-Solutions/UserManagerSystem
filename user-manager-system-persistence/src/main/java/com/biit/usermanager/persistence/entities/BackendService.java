@@ -27,7 +27,7 @@ public class BackendService extends Element<String> implements Serializable {
     private static final long serialVersionUID = 6148111365121732288L;
 
     @Id
-    @Column(name = "name")
+    @Column(name = "name", length = MAX_UNIQUE_COLUMN_LENGTH)
     private String name;
 
     @Column(name = "description")
