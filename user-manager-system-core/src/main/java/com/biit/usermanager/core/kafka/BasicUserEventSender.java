@@ -5,6 +5,7 @@ import com.biit.kafka.events.EventSender;
 import com.biit.kafka.events.KafkaEventTemplate;
 import com.biit.usermanager.core.utils.EventTags;
 import com.biit.usermanager.dto.BasicUserDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +14,7 @@ public class BasicUserEventSender extends EventSender<BasicUserDTO> {
     private static final String EVENT_TYPE = "users";
 
 
-    public BasicUserEventSender(KafkaEventTemplate kafkaTemplate) {
+    public BasicUserEventSender(@Autowired(required = false) KafkaEventTemplate kafkaTemplate) {
         super(kafkaTemplate, EventTags.USER, EVENT_TYPE);
     }
 }

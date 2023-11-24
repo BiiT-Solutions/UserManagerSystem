@@ -11,6 +11,7 @@ import com.biit.usermanager.core.utils.EventTags;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -23,17 +24,14 @@ public class UserEventSender extends EventSender<UserDTO> {
     private static final String EVENT_TYPE = "users";
     public static final String REVOCATION_EVENT_TAG = "Revoked Token";
 
-    private final UserEventSender userEventSender;
-
     private final UserConverter userConverter;
 
     private final UserProvider userProvider;
 
 
-    public UserEventSender(KafkaEventTemplate kafkaTemplate, UserEventSender userEventSender,
+    public UserEventSender(@Autowired(required = false) KafkaEventTemplate kafkaTemplate,
                            UserConverter userConverter, UserProvider userProvider) {
         super(kafkaTemplate, EventTags.USER, EVENT_TYPE);
-        this.userEventSender = userEventSender;
         this.userConverter = userConverter;
         this.userProvider = userProvider;
     }
@@ -46,6 +44,6 @@ public class UserEventSender extends EventSender<UserDTO> {
     public void sendEventsByUserId(Collection<Long> userIds, String tag, String launchedBy) {
         final List<User> users = userProvider.findByIdIn(userIds);
         userConverter.convertAll(users.stream().map(UserConverterRequest::new).toList()).forEach(userDTO ->
-                userEventSender.sendEvents(userDTO, EventSubject.UPDATED, tag, launchedBy));
+                sendEvents(userDTO, EventSubject.UPDATED, tag, launchedBy));
     }
 }

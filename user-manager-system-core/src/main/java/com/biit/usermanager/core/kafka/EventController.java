@@ -14,8 +14,6 @@ import java.util.TimeZone;
  */
 @Controller
 public class EventController {
-    private static final String ORGANIZATION = "organization";
-    private static final String PROCESS = "process";
 
 
     public EventController(@Autowired(required = false) EventConsumerListener eventListener) {

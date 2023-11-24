@@ -5,6 +5,7 @@ import com.biit.kafka.events.EventSender;
 import com.biit.kafka.events.KafkaEventTemplate;
 import com.biit.usermanager.core.utils.EventTags;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +14,7 @@ public class ApplicationRolesEventSender extends EventSender<ApplicationRoleDTO>
     private static final String EVENT_TYPE = "applicationRoles";
 
 
-    public ApplicationRolesEventSender(KafkaEventTemplate kafkaTemplate) {
+    public ApplicationRolesEventSender(@Autowired(required = false) KafkaEventTemplate kafkaTemplate) {
         super(kafkaTemplate, EventTags.ROLE, EVENT_TYPE);
     }
 }
