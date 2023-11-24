@@ -3,6 +3,7 @@ package com.biit.usermanager.dto;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -34,7 +35,7 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     @JsonIgnore
     private Locale locale;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password = "";
 
     private LocalDateTime passwordModifiedDate;
@@ -156,13 +157,11 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
         return grantedAuthorities;
     }
 
-    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
 
-    @JsonIgnore
     @Override
     public void setPassword(String password) {
         this.password = password;
