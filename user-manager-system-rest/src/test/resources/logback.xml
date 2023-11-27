@@ -75,9 +75,10 @@
     <logger name="com.biit.usermanager.rest.logger.TestLogging" additivity="false" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </logger>
-    <logger name="com.biit.usermanager.persistence.logger.CacheEventLogger" additivity="false" level="DEBUG">
+    <logger name="com.biit.kafka.logger.EventsLogger" additivity="false" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </logger>
+
 
     <!-- Default ones -->
     <logger name="org.springframework" additivity="false" level="INFO">
