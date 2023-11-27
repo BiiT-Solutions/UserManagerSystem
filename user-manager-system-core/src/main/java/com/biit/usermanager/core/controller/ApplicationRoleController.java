@@ -28,7 +28,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -73,17 +73,17 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
         return new ApplicationRoleConverterRequest(entity);
     }
 
-    public List<ApplicationRoleDTO> getByApplication(String applicationName) {
-        return convertAll(getProvider().findByApplication(applicationProvider.findByName(applicationName).orElseThrow(() ->
-                new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."))));
+    public Set<ApplicationRoleDTO> getByApplication(String applicationName) {
+        return new HashSet<>(convertAll(getProvider().findByApplication(applicationProvider.findByName(applicationName).orElseThrow(() ->
+                new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found.")))));
     }
 
     public List<ApplicationRoleDTO> getByApplication(ApplicationDTO application) {
         return convertAll(getProvider().findByApplication(applicationConverter.reverse(application)));
     }
 
-    public List<ApplicationRoleDTO> getByRole(String roleName) {
-        return convertAll(getProvider().findByRoleId(roleName));
+    public Set<ApplicationRoleDTO> getByRole(String roleName) {
+        return new HashSet<>(convertAll(getProvider().findByRoleId(roleName)));
     }
 
     public List<ApplicationRoleDTO> getByRole(RoleDTO role) {
@@ -104,13 +104,13 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
         DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationRole, deletedBy);
     }
 
-    public List<ApplicationRoleDTO> getByUser(String username) {
+    public Set<ApplicationRoleDTO> getByUser(String username) {
         final User user = userProvider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
 
         final Set<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles = userApplicationBackendServiceRoleProvider.findByUserId(user.getId());
 
-        final List<ApplicationRole> applicationRoles = new ArrayList<>();
+        final Set<ApplicationRole> applicationRoles = new HashSet<>();
         userApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole ->
                 applicationRoles.add(applicationRoleProvider.findByApplicationIdAndRoleId(
                         userApplicationBackendServiceRole.getId().getApplicationName(),
@@ -122,7 +122,7 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
         );
 
 
-        return convertAll(applicationRoles);
+        return new HashSet<>(convertAll(applicationRoles));
     }
 
     @Override

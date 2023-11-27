@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/application-roles")
@@ -72,7 +72,7 @@ public class ApplicationRoleServices extends CreatedElementServices<
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get application's roles by application name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ApplicationRoleDTO> getRolesFromApplication(
+    public Set<ApplicationRoleDTO> getRolesFromApplication(
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
             HttpServletRequest request) {
@@ -82,9 +82,9 @@ public class ApplicationRoleServices extends CreatedElementServices<
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get application's roles by role name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/roles/{roleName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ApplicationRoleDTO> getRolesFromRole(@Parameter(description = "Role name", required = true)
-                                                     @PathVariable("roleName") String roleName,
-                                                     HttpServletRequest request) {
+    public Set<ApplicationRoleDTO> getRolesFromRole(@Parameter(description = "Role name", required = true)
+                                                    @PathVariable("roleName") String roleName,
+                                                    HttpServletRequest request) {
         return getController().getByRole(roleName);
     }
 
@@ -115,7 +115,7 @@ public class ApplicationRoleServices extends CreatedElementServices<
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get all application's roles by user", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/users/{userName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ApplicationRoleDTO> getRolesFromUser(
+    public Set<ApplicationRoleDTO> getRolesFromUser(
             @Parameter(description = "User name", required = true)
             @PathVariable("userName") String userName,
             HttpServletRequest request) {
