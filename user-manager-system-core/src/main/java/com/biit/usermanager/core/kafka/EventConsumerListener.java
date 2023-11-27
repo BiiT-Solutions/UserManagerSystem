@@ -19,7 +19,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 public class EventConsumerListener extends EventListener {
 
     @Override
-    @KafkaListener(topics = "${spring.kafka.topic:#{null}}", groupId = "${spring.kafka.group.id:null}", clientIdPrefix = "firstListener",
+    @KafkaListener(topics = "${spring.kafka.topic:#{null}}", clientIdPrefix = "firstListener",
             containerFactory = "templateEventListenerContainerFactory", autoStartup = "${spring.kafka.enabled:true}")
     public void eventsListener(@Payload(required = false) Event event,
                                final @Header(KafkaHeaders.OFFSET) Integer offset,
