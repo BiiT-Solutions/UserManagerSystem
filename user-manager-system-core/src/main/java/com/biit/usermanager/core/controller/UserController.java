@@ -33,6 +33,7 @@ import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -373,16 +374,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return usersdtList;
     }
 
-    public void delete(User user) {
-        UserManagerLogger.warning(this.getClass(), "Deleting user '" + user + "'!.");
-        getProvider().delete(user);
-    }
-
     @Override
     public Collection<IAuthenticatedUser> findAll() {
         return getProvider().findAll().parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public boolean deleteUser(String deletedBy, String username) {
         try {
@@ -421,20 +418,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         if (Objects.equals(entity.getUsername(), deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
         }
-        getProvider().delete(getConverter().reverse(entity));
+        super.delete(entity, deletedBy);
     }
 
 
+    @Transactional
     public void delete(String username, String deletedBy) {
-        if (Objects.equals(username, deletedBy)) {
-            throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
-        }
-        final long count = getProvider().deleteByUsername(username);
-        if (count == 0) {
-            throw new UserNotFoundException(this.getClass(), "Cannot delete user.");
-        } else {
-            UserManagerLogger.warning(this.getClass(), "Deleting user '" + username + "'!.");
-        }
+        delete(getByUsername(username), deletedBy);
     }
 
     /**
