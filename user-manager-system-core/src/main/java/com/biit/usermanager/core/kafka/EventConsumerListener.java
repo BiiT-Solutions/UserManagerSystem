@@ -2,6 +2,7 @@ package com.biit.usermanager.core.kafka;
 
 import com.biit.kafka.consumers.EventListener;
 import com.biit.kafka.events.Event;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,7 +13,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 /***
  * Reads any event on a specific topic. Later will call the Controller to handle the event.
  */
-/*@ConditionalOnExpression("${spring.kafka.enabled:false}")*/
+@ConditionalOnExpression("${spring.kafka.enabled:false}")
 @EnableKafka
 @Configuration
 public class EventConsumerListener extends EventListener {
