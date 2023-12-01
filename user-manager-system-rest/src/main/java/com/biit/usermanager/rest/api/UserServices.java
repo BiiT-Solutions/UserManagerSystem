@@ -264,7 +264,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @PathVariable("applicationName") String applicationName,
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
+            Authentication authentication,
             HttpServletRequest request) {
-        return getController().unAssign(username, applicationName, applicationRoleName);
+        return getController().unAssign(username, applicationName, applicationRoleName, authentication.getName());
     }
 }

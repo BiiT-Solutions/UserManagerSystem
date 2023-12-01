@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaElementController;
+import com.biit.kafka.events.EventSubject;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
@@ -77,8 +78,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                              ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
-                             UserEventSender eventSender) {
-        super(provider, converter, eventSender);
+                             UserEventSender userEventSender) {
+        super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
@@ -524,7 +525,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
     public UserDTO unAssign(
-            String username, String applicationName, String applicationRoleName) {
+            String username, String applicationName, String applicationRoleName, String unassignedBy) {
 
         final User user = getProvider().findByUsername(username).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
@@ -535,6 +536,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         //Add any missing permission.
         final List<UserApplicationBackendServiceRole> assignedPermissions = userApplicationBackendServiceRoleProvider
                 .findBy(user.getId(), applicationName, applicationRoleName);
+
+        //Send events.
+        getEventSender().sendEvents(convert(user), EventSubject.UPDATED, UserEventSender.REVOCATION_EVENT_TAG, unassignedBy);
 
 
         userApplicationBackendServiceRoleProvider.deleteAll(assignedPermissions);
