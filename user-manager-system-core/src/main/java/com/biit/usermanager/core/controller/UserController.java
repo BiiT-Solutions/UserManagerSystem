@@ -14,6 +14,7 @@ import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.UserEventSender;
 import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
@@ -22,6 +23,7 @@ import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
+import com.biit.usermanager.core.providers.UserGroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.utils.RoleNameGenerator;
 import com.biit.usermanager.dto.UserDTO;
@@ -33,6 +35,7 @@ import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.UserGroup;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +75,15 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     private final ApplicationRoleProvider applicationRoleProvider;
     private final BackendServiceRoleProvider backendServiceRoleProvider;
 
+    private final UserGroupProvider userGroupProvider;
+
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
                              UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                              ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
-                             UserEventSender userEventSender) {
+                             UserEventSender userEventSender, UserGroupProvider userGroupProvider) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
@@ -86,6 +91,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.applicationRoleProvider = applicationRoleProvider;
         this.backendServiceRoleProvider = backendServiceRoleProvider;
+        this.userGroupProvider = userGroupProvider;
     }
 
     @Override
@@ -581,5 +587,14 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
         //Load again all roles.
         return setGrantedAuthorities(convert(user), null, null);
+    }
+
+    public List<UserDTO> getByUserGroup(Long userGroupId) {
+        final UserGroup userGroup = userGroupProvider.findById(userGroupId).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No UserGroup exists with id '" + userGroupId + "'."));
+
+        final List<Long> userIds = new ArrayList<>();
+        userGroup.getUsers().forEach(user -> userIds.add(user.getId()));
+        return convertAll(getProvider().findByIdIn(userIds));
     }
 }

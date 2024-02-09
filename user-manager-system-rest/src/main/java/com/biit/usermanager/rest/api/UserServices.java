@@ -268,4 +268,12 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             HttpServletRequest request) {
         return getController().unAssign(username, applicationName, applicationRoleName, authentication.getName());
     }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/user-group/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getUsers(@Parameter(description = "Id of an existing user group", required = true) @PathVariable("id") Long id,
+                                  HttpServletRequest request) {
+        return getController().getByUserGroup(id);
+    }
 }

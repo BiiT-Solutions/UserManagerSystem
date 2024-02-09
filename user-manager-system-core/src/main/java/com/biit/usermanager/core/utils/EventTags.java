@@ -4,6 +4,7 @@ public final class EventTags {
 
     public static final String RECURRENCE = "Recurrence";
     public static final String USER = "User";
+    public static final String USER_GROUP = "UserGroup";
     public static final String GROUP = "Group";
     public static final String APPLICATION = "Application";
     public static final String ROLE = "ApplicationRole";

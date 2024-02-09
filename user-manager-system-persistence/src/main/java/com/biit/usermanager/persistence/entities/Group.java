@@ -18,10 +18,13 @@ import jakarta.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+/**
+ * A group is an organization element to group workers and people. For role groups use the class 'UserGroup'.
+ */
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "user_groups", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
+@Table(name = "organization_groups", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
         indexes = {
                 @Index(name = "ind_group_name", columnList = "name"),
                 @Index(name = "ind_parent", columnList = "parent_id"),

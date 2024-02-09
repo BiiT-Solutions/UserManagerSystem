@@ -4,6 +4,7 @@ import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
 
 public final class RoleNameGenerator {
 
@@ -46,5 +47,21 @@ public final class RoleNameGenerator {
         }
         return userApplicationBackendServiceRole.getId().getBackendServiceName().toUpperCase() + "_"
                 + userApplicationBackendServiceRole.getId().getBackendServiceRole().toUpperCase();
+    }
+
+    public static String createApplicationRoleName(UserGroupApplicationBackendServiceRole userGroupApplicationBackendServiceRole) {
+        if (userGroupApplicationBackendServiceRole == null) {
+            return null;
+        }
+        return userGroupApplicationBackendServiceRole.getId().getApplicationName().toUpperCase() + "_"
+                + userGroupApplicationBackendServiceRole.getId().getRoleName().toUpperCase();
+    }
+
+    public static String createBackendRoleName(UserGroupApplicationBackendServiceRole userGroupApplicationBackendServiceRole) {
+        if (userGroupApplicationBackendServiceRole == null) {
+            return null;
+        }
+        return userGroupApplicationBackendServiceRole.getId().getBackendServiceName().toUpperCase() + "_"
+                + userGroupApplicationBackendServiceRole.getId().getBackendServiceRole().toUpperCase();
     }
 }
