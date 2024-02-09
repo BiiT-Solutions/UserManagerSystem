@@ -9,11 +9,13 @@
             <run>
                 <include name="passwordTests"/>
                 <include name="roleTests"/>
+                <include name="userGroupTests"/>
             </run>
         </groups>
         <classes>
             <class name="com.biit.usermanager.core.PasswordTests"/>
             <class name="com.biit.usermanager.core.RoleTests"/>
+            <class name="com.biit.usermanager.core.UserGroupTests"/>
         </classes>
     </test>
 </suite>

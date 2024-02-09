@@ -18,6 +18,16 @@ public class UserGroupDTO extends ElementDTO<Long> {
 
     private Collection<String> applicationRoles;
 
+    public UserGroupDTO() {
+        super();
+    }
+
+    public UserGroupDTO(String name, String description) {
+        this();
+        this.name = name;
+        this.description = description;
+    }
+
     @Override
     public Long getId() {
         return id;

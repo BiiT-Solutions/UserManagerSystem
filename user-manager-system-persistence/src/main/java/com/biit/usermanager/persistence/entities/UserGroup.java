@@ -91,51 +91,7 @@ public class UserGroup extends Element<Long> {
         this.description = description;
     }
 
-    public Set<ApplicationBackendServiceRole> getApplicationBackendServiceRoles() {
-        return applicationBackendServiceRoles;
-    }
-
-    public void setApplicationBackendServiceRoles(Set<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
-        this.applicationBackendServiceRoles = applicationBackendServiceRoles;
-    }
-
-    public void addApplicationBackendServiceRoles(ApplicationBackendServiceRole applicationBackendServiceRole) {
-        if (this.applicationBackendServiceRoles == null) {
-            this.applicationBackendServiceRoles = new HashSet<>();
-        }
-        if (applicationBackendServiceRole != null) {
-            this.applicationBackendServiceRoles.add(applicationBackendServiceRole);
-        }
-    }
-
     public Set<User> getUsers() {
         return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        if (this.users != null) {
-            this.users.clear();
-        } else {
-            this.users = new HashSet<>();
-        }
-        this.users.addAll(users);
-    }
-
-    public void addUser(User user) {
-        if (this.users == null) {
-            this.users = new HashSet<>();
-        }
-        if (user != null) {
-            this.users.add(user);
-        }
-    }
-
-    public void addUsers(Collection<User> users) {
-        if (this.users == null) {
-            this.users = new HashSet<>();
-        }
-        if (users != null) {
-            this.users.addAll(users);
-        }
     }
 }
