@@ -107,7 +107,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
     private UserGroupDTO setGrantedAuthorities(UserGroupDTO userGroupDTO, Application application, BackendService backendService) {
         if (userGroupDTO != null) {
             final Set<UserGroupApplicationBackendServiceRole> userGroupApplicationBackendServiceRoleProviderByUserId =
-                    userGroupApplicationBackendServiceRoleProvider.findByUserId(userGroupDTO.getId());
+                    userGroupApplicationBackendServiceRoleProvider.findByUserGroupId(userGroupDTO.getId());
 
             userGroupApplicationBackendServiceRoleProviderByUserId.forEach(userGroupApplicationBackendServiceRole -> {
                 if ((application == null

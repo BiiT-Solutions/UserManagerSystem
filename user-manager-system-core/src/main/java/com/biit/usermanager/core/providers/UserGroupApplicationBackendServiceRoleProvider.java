@@ -8,6 +8,7 @@ import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServ
 import com.biit.usermanager.persistence.repositories.UserGroupApplicationBackendServiceRoleRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,8 +21,12 @@ public class UserGroupApplicationBackendServiceRoleProvider extends StorableObje
         super(repository);
     }
 
-    public Set<UserGroupApplicationBackendServiceRole> findByUserId(Long userId) {
-        return getRepository().findByIdUserGroupId(userId);
+    public Set<UserGroupApplicationBackendServiceRole> findByUserGroupId(Long userGroupId) {
+        return getRepository().findByIdUserGroupId(userGroupId);
+    }
+
+    public Set<UserGroupApplicationBackendServiceRole> findByUserGroupIdIn(Collection<Long> userGroupIds) {
+        return getRepository().findByIdUserGroupIdIn(userGroupIds);
     }
 
     public Set<UserGroupApplicationBackendServiceRole> findByApplicationName(String applicationName) {

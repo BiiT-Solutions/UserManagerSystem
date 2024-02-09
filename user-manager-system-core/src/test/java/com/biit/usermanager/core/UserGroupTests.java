@@ -9,6 +9,7 @@ import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserGroupController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
+import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
@@ -80,6 +81,9 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
     @Autowired
     private ApplicationBackendServiceRoleConverter applicationBackendServiceRoleConverter;
 
+    @Autowired
+    private UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider;
+
     @Value("${spring.application.name}")
     private String backendService;
 
@@ -143,27 +147,34 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
 
     @BeforeClass(dependsOnMethods = {"createApplicationRoles", "createBackendServiceRoles"})
     public void assignApplicationBackendServiceRoles() {
+        Assert.assertTrue(userGroupApplicationBackendServiceRoleProvider.findAll().isEmpty());
         //Assign the backend to an application.
         for (ApplicationRoleDTO applicationRole : applicationRoles) {
             for (BackendServiceRoleDTO backendRole : backendRoles) {
                 applicationBackendServiceRoleDTOs.add(applicationBackendServiceRoleController.create(new ApplicationBackendServiceRoleDTO(applicationRole, backendRole), null));
             }
         }
+        Assert.assertTrue(userGroupApplicationBackendServiceRoleProvider.findAll().isEmpty());
     }
 
     @Test
     public void assignUser() {
         userGroupController.assign(userGroup.getId(), Collections.singleton(user1), null);
+        Assert.assertNull(userController.getByUsername(user1.getUsername()).getGrantedAuthorities());
     }
 
 
-    @Test
+    @Test(dependsOnMethods = "assignUser")
     public void assignRoles() {
         userGroupController.assign(userGroup, applicationBackendServiceRoleConverter.reverseAll(applicationBackendServiceRoleDTOs));
     }
 
     @Test(dependsOnMethods = {"assignUser", "assignRoles"})
     public void getUserRoles() {
-        Assert.fail();
+        Assert.assertNotNull(userController.getByUsername(user1.getUsername()).getGrantedAuthorities());
+        Assert.assertNotNull(userController.getByUsername(user1.getUsername()).getApplicationRoles());
+
+        Assert.assertNull(userController.getByUsername(user2.getUsername()).getGrantedAuthorities());
+        Assert.assertNull(userController.getByUsername(user2.getUsername()).getApplicationRoles());
     }
 }

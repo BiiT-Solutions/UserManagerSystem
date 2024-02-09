@@ -23,6 +23,7 @@ import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
+import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserGroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.utils.RoleNameGenerator;
@@ -36,6 +37,7 @@ import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserGroup;
+import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     private final BackendServiceProvider backendServiceProvider;
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
+    private final UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider;
 
     private final ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider;
 
@@ -81,6 +84,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
                              UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
+                             UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                              ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider) {
@@ -88,6 +92,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
+        this.userGroupApplicationBackendServiceRoleProvider = userGroupApplicationBackendServiceRoleProvider;
         this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.applicationRoleProvider = applicationRoleProvider;
         this.backendServiceRoleProvider = backendServiceRoleProvider;
@@ -460,15 +465,41 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             UserManagerLogger.debug(this.getClass(), "Assigning backend roles '" + userDTO.getGrantedAuthorities()
                     + "' to '" + userDTO.getUsername() + "'.");
         }
+        return setGrantedAuthoritiesByGroups(userDTO, application, backendService);
+    }
+
+    private UserDTO setGrantedAuthoritiesByGroups(UserDTO userDTO, Application application, BackendService backendService) {
+        final List<UserGroup> userGroups = userGroupProvider.getByUserGroup(userDTO.getId());
+        return setGrantedAuthorities(userDTO, userGroups, application, backendService);
+    }
+
+    private UserDTO setGrantedAuthorities(UserDTO userDTO, Collection<UserGroup> userGroups, Application application, BackendService backendService) {
+        if (userDTO != null && userGroups != null) {
+
+            final Set<UserGroupApplicationBackendServiceRole> userGroupApplicationBackendServiceRoles =
+                    userGroupApplicationBackendServiceRoleProvider.findByUserGroupIdIn(userGroups.stream().map(UserGroup::getId).toList());
+
+            userGroupApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole -> {
+                if ((application == null
+                        || application.getName().equalsIgnoreCase(userApplicationBackendServiceRole.getId().getApplicationName()))
+                        && (backendService == null
+                        || backendService.getName().equalsIgnoreCase(userApplicationBackendServiceRole.getId().getBackendServiceName()))) {
+                    userDTO.addApplicationServiceRoles(RoleNameGenerator.createApplicationRoleName(userApplicationBackendServiceRole));
+                    userDTO.addGrantedAuthorities(RoleNameGenerator.createBackendRoleName(userApplicationBackendServiceRole));
+                }
+            });
+        }
         return userDTO;
     }
+
 
     public void checkUsernameExists(String username) {
         getProvider().findByUsername(username).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No uses exists with the username '" + username + "'."));
     }
 
-    public void setApplicationBackendServiceRole(UserDTO userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
+    public void setApplicationBackendServiceRole(UserDTO
+                                                         userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
         final User user = reverse(userDTO);
         user.setApplicationBackendServiceRoles(new HashSet<>(applicationBackendServiceRoles));
         getProvider().save(user);
@@ -583,7 +614,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
         //Add directly to the join column.
         userApplicationBackendServiceRoleProvider.save(
-                new UserApplicationBackendServiceRole(user.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName));
+                new UserApplicationBackendServiceRole(user.getId(), applicationName, applicationRoleName,
+                        backendServiceName, backendServiceRoleName));
 
         //Load again all roles.
         return setGrantedAuthorities(convert(user), null, null);

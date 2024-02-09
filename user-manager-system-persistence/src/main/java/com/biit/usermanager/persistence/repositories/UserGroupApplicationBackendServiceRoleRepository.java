@@ -14,6 +14,8 @@ public interface UserGroupApplicationBackendServiceRoleRepository extends Storab
 
     Set<UserGroupApplicationBackendServiceRole> findByIdUserGroupId(Long userGroupId);
 
+    Set<UserGroupApplicationBackendServiceRole> findByIdUserGroupIdIn(Collection<Long> userGroupId);
+
     Set<UserGroupApplicationBackendServiceRole> findByIdApplicationName(String applicationName);
 
     void deleteByIdApplicationName(String applicationName);
