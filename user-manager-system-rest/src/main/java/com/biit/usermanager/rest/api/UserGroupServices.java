@@ -66,6 +66,15 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Deletes a UserGroup by id.", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping(path = "/{id}")
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public void deleteUser(@Parameter(description = "id", required = true)
+                           @PathVariable("id") Long id, Authentication authentication, HttpServletRequest httpRequest) {
+        getController().delete(id, authentication.getName());
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign roles to a group. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/name/{name}/applications/{applicationName}/application-roles/{applicationRoleName}"
             + "/backend-services/{backendServiceName}/backend-service-roles/{backendServiceRoleName}",
@@ -86,6 +95,26 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Assign roles to a group. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/id/{id}/applications/{applicationName}/application-roles/{applicationRoleName}"
+            + "/backend-services/{backendServiceName}/backend-service-roles/{backendServiceRoleName}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO getRolesFromApplicationAndBackendServices(
+            @Parameter(description = "Id of an existing UserGroup", required = true)
+            @PathVariable("id") Long id,
+            @Parameter(description = "Application name", required = true)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Application Role name", required = true)
+            @PathVariable("applicationRoleName") String applicationRoleName,
+            @Parameter(description = "Backend Service name", required = true)
+            @PathVariable("backendServiceName") String backendServiceName,
+            @Parameter(description = "Backend Role name", required = true)
+            @PathVariable("backendServiceRoleName") String backendServiceRoleName,
+            HttpServletRequest request) {
+        return getController().assign(id, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign application roles to a UserGroup. Assigns all related backend services that are defined.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/name/{name}/applications/{applicationName}/application-roles/{applicationRoleName}",
@@ -102,6 +131,22 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Assign application roles to a UserGroup. Assigns all related backend services that are defined.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/id/{id}/applications/{applicationName}/application-roles/{applicationRoleName}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO setRolesFromApplicationAndRoles(
+            @Parameter(description = "Id of an existing User Group", required = true)
+            @PathVariable("id") Long id,
+            @Parameter(description = "Application name", required = true)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Application Role name", required = true)
+            @PathVariable("applicationRoleName") String applicationRoleName,
+            HttpServletRequest request) {
+        return getController().assign(id, applicationName, applicationRoleName);
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes application roles from a User Group.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(value = "/name/{name}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -115,6 +160,22 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             Authentication authentication,
             HttpServletRequest request) {
         return getController().unAssign(name, applicationName, applicationRoleName, authentication.getName());
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Deletes application roles from a User Group.", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping(value = "/id/{id}/applications/{applicationName}/application-roles/{applicationRoleName}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO deleteRolesFromApplicationAndRoles(
+            @Parameter(description = "Id of an existing User Group", required = true)
+            @PathVariable("id") Long id,
+            @Parameter(description = "Application name", required = true)
+            @PathVariable("applicationName") String applicationName,
+            @Parameter(description = "Application Role name", required = true)
+            @PathVariable("applicationRoleName") String applicationRoleName,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().unAssign(id, applicationName, applicationRoleName, authentication.getName());
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")

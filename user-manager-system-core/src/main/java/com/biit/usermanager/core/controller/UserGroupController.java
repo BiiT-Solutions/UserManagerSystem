@@ -98,6 +98,11 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         delete(getByName(name), deletedBy);
     }
 
+    @Transactional
+    public void delete(Long id, String deletedBy) {
+        delete(get(id), deletedBy);
+    }
+
     /**
      * Populate the authorities for a user. If a group is selected, only the one of the group. If not the roles that are not at group level.
      *
@@ -143,10 +148,25 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
     }
 
     public UserGroupDTO assign(
+            Long id, String applicationName, String applicationRoleName) {
+
+        final UserGroup userGroup = getProvider().findById(id).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No userGroup exists with id '" + id + "'."));
+
+        return assign(userGroup, applicationName, applicationRoleName);
+    }
+
+    public UserGroupDTO assign(
             String name, String applicationName, String applicationRoleName) {
 
         final UserGroup userGroup = getProvider().findByName(name).orElseThrow(()
                 -> new UserGroupNotFoundException(this.getClass(), "No userGroup exists with name '" + name + "'."));
+
+        return assign(userGroup, applicationName, applicationRoleName);
+    }
+
+    public UserGroupDTO assign(
+            UserGroup userGroup, String applicationName, String applicationRoleName) {
 
         final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
                 .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
@@ -184,10 +204,25 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
     }
 
     public UserGroupDTO unAssign(
+            Long id, String applicationName, String applicationRoleName, String unassignedBy) {
+
+        final UserGroup userGroup = getProvider().findById(id).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No UserGroup exists with id '" + id + "'."));
+
+        return unAssign(userGroup, applicationName, applicationRoleName, unassignedBy);
+    }
+
+    public UserGroupDTO unAssign(
             String name, String applicationName, String applicationRoleName, String unassignedBy) {
 
         final UserGroup userGroup = getProvider().findByName(name).orElseThrow(()
                 -> new UserGroupNotFoundException(this.getClass(), "No UserGroup exists with name '" + name + "'."));
+
+        return unAssign(userGroup, applicationName, applicationRoleName, unassignedBy);
+    }
+
+    public UserGroupDTO unAssign(
+            UserGroup userGroup, String applicationName, String applicationRoleName, String unassignedBy) {
 
         final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
                 .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
@@ -205,15 +240,30 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
     }
 
     public UserGroupDTO assign(
+            Long id, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
+        final UserGroup userGroup = getProvider().findById(id).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No UserGroup exists with id '" + id + "'."));
+
+        return assign(userGroup, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
+    }
+
+    public UserGroupDTO assign(
             String name, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
         final UserGroup userGroup = getProvider().findByName(name).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No UserGroup exists with name '" + name + "'."));
 
+        return assign(userGroup, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
+    }
+
+    public UserGroupDTO assign(
+            UserGroup userGroup, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
+
         //Ensure it does not exist yet.
         if (userGroupApplicationBackendServiceRoleProvider
                 .findBy(userGroup.getId(), applicationName, applicationRoleName, backendServiceName, backendServiceRoleName).isPresent()) {
-            throw new InvalidParameterException(this.getClass(), "User Group '" + name + "' already has role '" + applicationRoleName + "' for application '"
-                    + applicationName + "' and service '" + backendServiceName + "' with role '" + backendServiceRoleName + "'.");
+            throw new InvalidParameterException(this.getClass(), "User Group '" + userGroup + "' already has role '"
+                    + applicationRoleName + "' for application '" + applicationName + "' and service '" + backendServiceName
+                    + "' with role '" + backendServiceRoleName + "'.");
         }
 
         final Optional<ApplicationBackendServiceRole> optionalApplicationBackendServiceRole = applicationBackendServiceRoleProvider
