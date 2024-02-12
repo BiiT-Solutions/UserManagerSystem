@@ -18,8 +18,6 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

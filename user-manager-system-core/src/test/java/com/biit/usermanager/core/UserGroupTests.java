@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -176,5 +177,16 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
 
         Assert.assertNull(userController.getByUsername(user2.getUsername()).getGrantedAuthorities());
         Assert.assertNull(userController.getByUsername(user2.getUsername()).getApplicationRoles());
+    }
+
+    @AfterClass
+    public void cleanUp() {
+        userGroupApplicationBackendServiceRoleProvider.deleteAll();
+        applicationBackendServiceRoleController.deleteAll(null);
+        backendServiceRoleController.deleteAll(null);
+        applicationRoleController.deleteAll(null);
+        applicationController.deleteAll(null);
+        userGroupController.deleteAll(null);
+        userController.deleteAll(null);
     }
 }

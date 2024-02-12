@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -300,5 +301,15 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
         //Must delete the Application Roles, the ApplicationBackendServiceRoles and the user assigned roles.
         Assert.assertEquals(applicationBackendServiceRoleController.count(), existingApplicationBackendServiceRoles - 4);
         Assert.assertEquals(userApplicationBackendServiceRoleProvider.count(), existingUserRoles - 4);
+    }
+
+    @AfterClass
+    public void cleanUp() {
+        userApplicationBackendServiceRoleProvider.deleteAll();
+        applicationBackendServiceRoleController.deleteAll(null);
+        backendServiceRoleController.deleteAll(null);
+        applicationRoleController.deleteAll(null);
+        applicationController.deleteAll(null);
+        userController.deleteAll(null);
     }
 }

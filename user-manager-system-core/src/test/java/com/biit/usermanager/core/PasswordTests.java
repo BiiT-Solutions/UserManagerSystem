@@ -5,9 +5,9 @@ import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -21,7 +21,7 @@ public class PasswordTests extends AbstractTestNGSpringContextTests {
 
     private static final String USER_NEW_PASSWORD = "password2";
 
-    private static final String[] USER_ROLES = new String[] {"admin", "viewer"};
+    private static final String[] USER_ROLES = new String[]{"admin", "viewer"};
 
     @Autowired
     private UserController userController;
@@ -50,5 +50,10 @@ public class PasswordTests extends AbstractTestNGSpringContextTests {
     public void updatePasswordCorrectOld() {
         userController.updatePassword(USER_NAME, USER_PASSWORD, USER_NEW_PASSWORD, null);
         userController.updatePassword(USER_NAME, USER_NEW_PASSWORD, USER_PASSWORD, null);
+    }
+
+    @AfterClass
+    public void cleanUp() {
+        userController.deleteAll(null);
     }
 }
