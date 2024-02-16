@@ -4,6 +4,7 @@ import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.logger.RestServerExceptionLogger;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
+import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import org.modelmapper.spi.ErrorMessage;
 import org.springframework.http.HttpStatus;
@@ -30,5 +31,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> invalidPasswordException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorMessage("User not found for provided credentials"), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RoleWithoutBackendServiceRoleException.class)
+    public ResponseEntity<Object> roleWithoutBackendServiceRoleException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorMessage("Role has no linked backend services. Backend services are necessary on each role."),
+                HttpStatus.BAD_REQUEST);
     }
 }

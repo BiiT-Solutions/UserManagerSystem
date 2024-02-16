@@ -13,6 +13,7 @@ import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
+import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
@@ -557,6 +558,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 rolesToAdd.add(userApplicationBackendServiceRole);
             }
         });
+        if (rolesToAdd.isEmpty()) {
+            throw new RoleWithoutBackendServiceRoleException(this.getClass(), "Role '" + applicationRoleName + "' in application '" + applicationName
+                    + "' is not linked to any backend service. Please link it to one or more backend serviced.");
+        }
         userApplicationBackendServiceRoleProvider.saveAll(rolesToAdd);
         return setGrantedAuthorities(convert(user), null, null);
     }
@@ -597,7 +602,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final Optional<ApplicationBackendServiceRole> optionalApplicationBackendServiceRole = applicationBackendServiceRoleProvider
                 .findByApplicationRoleAndServiceRole(applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
 
-        //Create it if it does not exist.
+        //Create it, if it does not exist.
         if (optionalApplicationBackendServiceRole.isEmpty()) {
             final ApplicationRole applicationRole = applicationRoleProvider
                     .findByApplicationIdAndRoleId(applicationName, applicationRoleName).orElseThrow(() ->
