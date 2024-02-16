@@ -1,7 +1,6 @@
 package com.biit.usermanager.core.exceptions;
 
 import com.biit.logger.ExceptionType;
-import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.logger.LoggedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
