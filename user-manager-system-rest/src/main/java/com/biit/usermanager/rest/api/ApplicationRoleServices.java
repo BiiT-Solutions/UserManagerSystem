@@ -121,4 +121,14 @@ public class ApplicationRoleServices extends CreatedElementServices<
             HttpServletRequest request) {
         return getController().getByUser(userName);
     }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get all application's roles by user group", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/user-groups/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<ApplicationRoleDTO> getRolesFromUser(
+            @Parameter(description = "User name", required = true)
+            @PathVariable("id") Long id,
+            HttpServletRequest request) {
+        return getController().getByUserGroup(id);
+    }
 }

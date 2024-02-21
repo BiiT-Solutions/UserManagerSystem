@@ -9,12 +9,15 @@ import com.biit.usermanager.core.converters.RoleConverter;
 import com.biit.usermanager.core.converters.models.ApplicationRoleConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
+import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.ApplicationRolesEventSender;
 import com.biit.usermanager.core.kafka.UserEventSender;
 import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
+import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
+import com.biit.usermanager.core.providers.UserGroupProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
@@ -23,6 +26,7 @@ import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.ApplicationRoleId;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.ApplicationRoleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +47,12 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
     private final RoleConverter roleConverter;
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
+    private final UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider;
     private final ApplicationRoleProvider applicationRoleProvider;
 
     private final UserProvider userProvider;
+
+    private final UserGroupProvider userGroupProvider;
 
 
     private final UserEventSender userEventSender;
@@ -57,7 +64,10 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
                                         RoleConverter roleConverter,
                                         UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
                                         ApplicationRoleProvider applicationRoleProvider, UserProvider userProvider,
-                                        ApplicationRolesEventSender eventSender, UserEventSender userEventSender) {
+                                        ApplicationRolesEventSender eventSender,
+                                        UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
+                                        UserGroupProvider userGroupProvider,
+                                        UserEventSender userEventSender) {
         super(provider, converter, eventSender);
         this.roleConverter = roleConverter;
         this.applicationProvider = applicationProvider;
@@ -65,6 +75,8 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
         this.applicationRoleProvider = applicationRoleProvider;
         this.userProvider = userProvider;
+        this.userGroupApplicationBackendServiceRoleProvider = userGroupApplicationBackendServiceRoleProvider;
+        this.userGroupProvider = userGroupProvider;
         this.userEventSender = userEventSender;
     }
 
@@ -112,6 +124,27 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
 
         final Set<ApplicationRole> applicationRoles = new HashSet<>();
         userApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole ->
+                applicationRoles.add(applicationRoleProvider.findByApplicationIdAndRoleId(
+                        userApplicationBackendServiceRole.getId().getApplicationName(),
+                        userApplicationBackendServiceRole.getId().getRoleName()
+                ).orElseThrow(() ->
+                        new ApplicationRoleNotFoundException(this.getClass(), "No application role defined for application '"
+                                + userApplicationBackendServiceRole.getId().getApplicationName()
+                                + "' and role '" + userApplicationBackendServiceRole.getId().getRoleName() + "'")))
+        );
+
+
+        return new HashSet<>(convertAll(applicationRoles));
+    }
+
+    public Set<ApplicationRoleDTO> getByUserGroup(Long id) {
+        userGroupProvider.findById(id).orElseThrow(() ->
+                new UserGroupNotFoundException(this.getClass(), "No User Group with id '" + id + "' found on the system."));
+
+        final Set<UserGroupApplicationBackendServiceRole> userGroupApplicationBackendServiceRoles = userGroupApplicationBackendServiceRoleProvider.findByUserGroupId(id);
+
+        final Set<ApplicationRole> applicationRoles = new HashSet<>();
+        userGroupApplicationBackendServiceRoles.forEach(userApplicationBackendServiceRole ->
                 applicationRoles.add(applicationRoleProvider.findByApplicationIdAndRoleId(
                         userApplicationBackendServiceRole.getId().getApplicationName(),
                         userApplicationBackendServiceRole.getId().getRoleName()
