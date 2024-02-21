@@ -35,8 +35,7 @@ public class UserGroup extends Element<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    @Convert(converter = StringCryptoConverter.class)
+    @Column(name = "name", nullable = false, unique = true, length = MAX_UNIQUE_COLUMN_LENGTH)
     private String name = "";
 
     @Column(name = "description")
