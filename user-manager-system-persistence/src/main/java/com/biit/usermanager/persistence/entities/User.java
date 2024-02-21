@@ -51,7 +51,7 @@ public class User extends Element<Long> {
     @Convert(converter = UUIDCryptoConverter.class)
     private UUID uuid = UUID.randomUUID();
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true, length = MAX_UNIQUE_COLUMN_LENGTH)
     @Convert(converter = StringCryptoConverter.class)
     private String username = "";
 
