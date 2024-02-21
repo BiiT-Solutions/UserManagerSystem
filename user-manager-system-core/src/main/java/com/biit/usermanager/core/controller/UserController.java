@@ -39,6 +39,8 @@ import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserGroup;
 import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
+import com.biit.usermanager.persistence.entities.UserGroupUser;
+import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +83,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     private final UserGroupProvider userGroupProvider;
 
+    private final UserGroupUserRepository userGroupUserRepository;
+
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
@@ -88,7 +92,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                              ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
-                             UserEventSender userEventSender, UserGroupProvider userGroupProvider) {
+                             UserEventSender userEventSender, UserGroupProvider userGroupProvider,
+                             UserGroupUserRepository userGroupUserRepository) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
@@ -98,6 +103,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.applicationRoleProvider = applicationRoleProvider;
         this.backendServiceRoleProvider = backendServiceRoleProvider;
         this.userGroupProvider = userGroupProvider;
+        this.userGroupUserRepository = userGroupUserRepository;
     }
 
     @Override
@@ -631,7 +637,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 -> new UserGroupNotFoundException(this.getClass(), "No UserGroup exists with id '" + userGroupId + "'."));
 
         final List<Long> userIds = new ArrayList<>();
-        userGroup.getUsers().forEach(user -> userIds.add(user.getId()));
+        final Set<UserGroupUser> userGroupUsers = userGroupUserRepository.findByIdUserGroupId(userGroup.getId());
+        userGroupUsers.forEach(user -> userIds.add(user.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }
 }

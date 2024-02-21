@@ -31,9 +31,9 @@ import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserGroup;
 import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
-import com.biit.usermanager.persistence.entities.UserGroupUsers;
+import com.biit.usermanager.persistence.entities.UserGroupUser;
 import com.biit.usermanager.persistence.repositories.UserGroupRepository;
-import com.biit.usermanager.persistence.repositories.UserGroupUsersRepository;
+import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 
@@ -59,7 +59,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
     private final UserProvider userProvider;
 
-    private final UserGroupUsersRepository userGroupUsersRepository;
+    private final UserGroupUserRepository userGroupUserRepository;
 
     protected UserGroupController(UserGroupProvider provider, UserGroupConverter converter,
                                   IEventSender<UserGroupDTO> eventSender,
@@ -67,7 +67,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
                                   UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
                                   BackendServiceRoleProvider backendServiceRoleProvider,
                                   ApplicationRoleProvider applicationRoleProvider, UserConverter userConverter, UserProvider userProvider,
-                                  UserGroupUsersRepository userGroupUsersRepository) {
+                                  UserGroupUserRepository userGroupUserRepository) {
         super(provider, converter, eventSender);
         this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.userGroupApplicationBackendServiceRoleProvider = userGroupApplicationBackendServiceRoleProvider;
@@ -75,7 +75,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         this.applicationRoleProvider = applicationRoleProvider;
         this.userConverter = userConverter;
         this.userProvider = userProvider;
-        this.userGroupUsersRepository = userGroupUsersRepository;
+        this.userGroupUserRepository = userGroupUserRepository;
     }
 
     @Override
@@ -305,11 +305,11 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         users = users.stream().filter(userDTO -> !usersInGroup.contains(userDTO.getId())).toList();
 
         //Store into the group
-        final List<UserGroupUsers> userGroupUsers = new ArrayList<>();
+        final List<UserGroupUser> userGroupUsers = new ArrayList<>();
         users.forEach(userDTO -> {
-            userGroupUsers.add(new UserGroupUsers(userGroupId, userDTO.getId()));
+            userGroupUsers.add(new UserGroupUser(userGroupId, userDTO.getId()));
         });
-        userGroupUsersRepository.saveAll(userGroupUsers);
+        userGroupUserRepository.saveAll(userGroupUsers);
 
         userGroup.setUpdatedBy(assignedBy);
 
@@ -321,11 +321,11 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
                 -> new UserNotFoundException(this.getClass(), "No UserGroup exists with id '" + userGroupId + "'."));
 
 
-        final List<UserGroupUsers> userGroupUsersToDelete = new ArrayList<>();
+        final List<UserGroupUser> userGroupUserToDelete = new ArrayList<>();
         users.forEach(userDTO -> {
-            userGroupUsersToDelete.add(new UserGroupUsers(userGroupId, userDTO.getId()));
+            userGroupUserToDelete.add(new UserGroupUser(userGroupId, userDTO.getId()));
         });
-        userGroupUsersRepository.deleteAll(userGroupUsersToDelete);
+        userGroupUserRepository.deleteAll(userGroupUserToDelete);
 
         userGroup.setUpdatedBy(assignedBy);
 

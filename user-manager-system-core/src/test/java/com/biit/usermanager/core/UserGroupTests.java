@@ -179,6 +179,11 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
         Assert.assertNull(userController.getByUsername(user2.getUsername()).getApplicationRoles());
     }
 
+    @Test(dependsOnMethods = {"assignUser", "assignRoles"})
+    public void getByUserGroup() {
+        Assert.assertEquals(userController.getByUserGroup(userGroup.getId()).size(), 1);
+    }
+
     @AfterClass
     public void cleanUp() {
         userGroupApplicationBackendServiceRoleProvider.deleteAll();

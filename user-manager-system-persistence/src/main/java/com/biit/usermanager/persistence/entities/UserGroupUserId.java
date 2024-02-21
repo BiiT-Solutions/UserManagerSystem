@@ -6,7 +6,7 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class UserGroupUsersId implements Serializable {
+public class UserGroupUserId implements Serializable {
 
     @Column(name = "user_group_id", nullable = false)
     private Long userGroupId;
@@ -14,11 +14,11 @@ public class UserGroupUsersId implements Serializable {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    public UserGroupUsersId() {
+    public UserGroupUserId() {
         super();
     }
 
-    public UserGroupUsersId(Long userGroupId, Long userId) {
+    public UserGroupUserId(Long userGroupId, Long userId) {
         this();
         this.userGroupId = userGroupId;
         this.userId = userId;

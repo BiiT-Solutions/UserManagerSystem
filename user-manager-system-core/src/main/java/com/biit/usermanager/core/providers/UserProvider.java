@@ -3,7 +3,7 @@ package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.User;
-import com.biit.usermanager.persistence.repositories.UserGroupUsersRepository;
+import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ import java.util.UUID;
 @Service
 public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
-    private final UserGroupUsersRepository userGroupUsersRepository;
+    private final UserGroupUserRepository userGroupUserRepository;
 
     @Autowired
-    public UserProvider(UserRepository repository, UserGroupUsersRepository userGroupUsersRepository) {
+    public UserProvider(UserRepository repository, UserGroupUserRepository userGroupUserRepository) {
         super(repository);
-        this.userGroupUsersRepository = userGroupUsersRepository;
+        this.userGroupUserRepository = userGroupUserRepository;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -70,7 +70,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     }
 
     public List<User> getByUserGroup(Long userGroupId) {
-        return findByIdIn(userGroupUsersRepository.findByIdUserGroupId(userGroupId).stream()
+        return findByIdIn(userGroupUserRepository.findByIdUserGroupId(userGroupId).stream()
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
     }
 

@@ -15,25 +15,25 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "user_groups_users", indexes = {
         @Index(name = "ind_usergroup_users", columnList = "user_group_id"),
 })
-public class UserGroupUsers extends StorableObject {
+public class UserGroupUser extends StorableObject {
 
     @EmbeddedId
-    private UserGroupUsersId id;
+    private UserGroupUserId id;
 
-    public UserGroupUsers() {
+    public UserGroupUser() {
         super();
     }
 
-    public UserGroupUsers(Long userGroupId, Long userId) {
+    public UserGroupUser(Long userGroupId, Long userId) {
         this();
-        setId(new UserGroupUsersId(userGroupId, userId));
+        setId(new UserGroupUserId(userGroupId, userId));
     }
 
-    public UserGroupUsersId getId() {
+    public UserGroupUserId getId() {
         return id;
     }
 
-    public void setId(UserGroupUsersId id) {
+    public void setId(UserGroupUserId id) {
         this.id = id;
     }
 }
