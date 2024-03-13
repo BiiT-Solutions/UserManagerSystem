@@ -329,3 +329,30 @@ options that can interact in the frontend.
  |                          |
  +--------------------------+
 ```
+
+# User Password Recovery
+
+Exists two endpoints on the UserServices class for reseting the password. Calling:
+
+```
+GET /users/public/emails/{email}/reset-password
+```
+
+Will generate a token and sent to the user that matches the email provided. This token must be used later to the
+endpoint:
+
+```
+PUT /users/public/change-password?token=...
+```
+
+The system will retrieve the user from the token. For the email sender, you need to set the next properties:
+
+```
+mail.smtp.server.url=
+mail.smtp.server.port=
+mail.smtp.server.username=
+mail.smtp.server.password=
+mail.sender=
+mail.copy.address=
+mail.password.recovery.subject=
+```

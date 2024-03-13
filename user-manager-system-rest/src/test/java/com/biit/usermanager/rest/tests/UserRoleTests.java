@@ -6,7 +6,6 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.GroupController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
@@ -25,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -49,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Test(groups = "UserRoleTests")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class UserRoleTests extends AbstractTestNGSpringContextTests {
 
     private static final String USER_NAME = "admin";
@@ -461,7 +462,7 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
-         applicationBackendServiceRoleDTOS =
+        applicationBackendServiceRoleDTOS =
                 Arrays.asList(objectMapper.readValue(userResult.getResponse().getContentAsString(), ApplicationBackendServiceRoleDTO[].class));
 
         Assert.assertEquals(applicationBackendServiceRoleDTOS.size(), 5);

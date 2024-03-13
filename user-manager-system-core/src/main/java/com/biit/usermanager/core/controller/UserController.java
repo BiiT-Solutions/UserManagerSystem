@@ -2,6 +2,8 @@ package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.kafka.events.EventSubject;
+import com.biit.logger.mail.exceptions.EmailNotSentException;
+import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
@@ -14,6 +16,7 @@ import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
+import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
@@ -23,9 +26,12 @@ import com.biit.usermanager.core.providers.ApplicationProvider;
 import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
+import com.biit.usermanager.core.providers.EmailService;
+import com.biit.usermanager.core.providers.PasswordResetTokenProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserGroupProvider;
+import com.biit.usermanager.core.providers.UserGroupUserProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.core.utils.RoleNameGenerator;
 import com.biit.usermanager.dto.UserDTO;
@@ -35,14 +41,15 @@ import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
+import com.biit.usermanager.persistence.entities.PasswordResetToken;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserGroup;
 import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserGroupUser;
-import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import org.apache.kafka.common.errors.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +58,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 
+import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -83,7 +92,11 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     private final UserGroupProvider userGroupProvider;
 
-    private final UserGroupUserRepository userGroupUserRepository;
+    private final UserGroupUserProvider userGroupUserProvider;
+
+    private final PasswordResetTokenProvider passwordResetTokenProvider;
+
+    private final EmailService emailService;
 
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
@@ -93,7 +106,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                              ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider,
-                             UserGroupUserRepository userGroupUserRepository) {
+                             UserGroupUserProvider userGroupUserRepository, PasswordResetTokenProvider passwordResetTokenProvider, EmailService emailService) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
@@ -103,7 +116,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.applicationRoleProvider = applicationRoleProvider;
         this.backendServiceRoleProvider = backendServiceRoleProvider;
         this.userGroupProvider = userGroupProvider;
-        this.userGroupUserRepository = userGroupUserRepository;
+        this.userGroupUserProvider = userGroupUserRepository;
+        this.passwordResetTokenProvider = passwordResetTokenProvider;
+        this.emailService = emailService;
     }
 
     @Override
@@ -637,8 +652,39 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 -> new UserGroupNotFoundException(this.getClass(), "No UserGroup exists with id '" + userGroupId + "'."));
 
         final List<Long> userIds = new ArrayList<>();
-        final Set<UserGroupUser> userGroupUsers = userGroupUserRepository.findByIdUserGroupId(userGroup.getId());
+        final Set<UserGroupUser> userGroupUsers = userGroupUserProvider.findByIdUserGroupId(userGroup.getId());
         userGroupUsers.forEach(user -> userIds.add(user.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
+    }
+
+    public void resetPassword(String email) {
+        final User user = getProvider().findByEmail(email).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No user exists with the email '" + email + "'."));
+
+        final String token = UUID.randomUUID().toString();
+        final PasswordResetToken userToken = new PasswordResetToken(token, user);
+        passwordResetTokenProvider.save(userToken);
+
+        //Send an email with the token in a link!
+        try {
+            emailService.sendPasswordRecoveryEmail(token);
+        } catch (EmailNotSentException | FileNotFoundException e) {
+            throw new InvalidRequestException("Cannot sent confirmation email!", e);
+        } catch (InvalidEmailAddressException e) {
+            //Email must be already validated.
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void updatePassword(String token, String newPassword) {
+        final PasswordResetToken passwordResetToken = passwordResetTokenProvider.findByToken(token).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No user exists with the provided token."));
+
+        if (passwordResetToken.getExpirationDate().isAfter(LocalDateTime.now())) {
+            throw new TokenExpiredException(this.getClass(), "Token has expired!");
+        }
+
+        updatePassword(passwordResetToken.getUser().getUsername(), newPassword, passwordResetToken.getUser().getUsername());
     }
 }

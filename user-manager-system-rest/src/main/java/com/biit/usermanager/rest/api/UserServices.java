@@ -1,5 +1,6 @@
 package com.biit.usermanager.rest.api;
 
+import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.rest.ElementServices;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.core.controller.UserController;
@@ -12,6 +13,7 @@ import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import com.biit.usermanager.rest.api.models.CheckCredentialsRequest;
+import com.biit.usermanager.rest.api.models.PasswordChangeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -275,5 +278,24 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public List<UserDTO> getUsers(@Parameter(description = "Id of an existing user group", required = true) @PathVariable("id") Long id,
                                   HttpServletRequest request) {
         return getController().getByUserGroup(id);
+    }
+
+
+    @Operation(summary = "Generates a token for reseting the password", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/public/emails/{email}/reset-password")
+    public void createResetPasswordToken(@Parameter(description = "Email from an existing user", required = true) @PathVariable("email") String email,
+                                         HttpServletRequest request) {
+        getController().resetPassword(email);
+    }
+
+    @Operation(summary = "Changes the password from a user, using a token", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/public/change-password")
+    public void resetPasswordFromToken(@Parameter(description = "Token obtained by mail", required = true) @RequestParam("token") String token,
+                                       @RequestBody(required = true) PasswordChangeRequest passwordChangeRequest,
+                                       HttpServletRequest request) {
+        if (passwordChangeRequest == null || passwordChangeRequest.getNewPassword() == null) {
+            throw new BadRequestException(this.getClass(), "Password is not set correctly.");
+        }
+        getController().updatePassword(token, passwordChangeRequest.getNewPassword());
     }
 }
