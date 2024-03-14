@@ -35,25 +35,25 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets a team by name.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{teamName}/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public TeamDTO get(@Parameter(description = "Name of an existing team", required = true)
-                        @PathVariable("teamName") String teamName,
-                       @Parameter(description = "Application name")
-                        @PathVariable("applicationName") String applicationName,
+                       @PathVariable("teamName") String teamName,
+                       @Parameter(description = "Organization name")
+                       @PathVariable("organizationName") String organizationName,
                        HttpServletRequest request) {
-        return getController().getByName(teamName, applicationName);
+        return getController().getByName(teamName, organizationName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a team by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(value = "/{teamName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{teamName}/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void delete(@Parameter(description = "Name of an existing team", required = true)
                        @PathVariable("teamName") String teamName,
-                       @Parameter(description = "Application name")
-                       @PathVariable("applicationName") String applicationName,
+                       @Parameter(description = "Organization name")
+                       @PathVariable("organizationName") String organizationName,
                        HttpServletRequest request) {
-        getController().deleteByName(teamName, applicationName);
+        getController().deleteByName(teamName, organizationName);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
