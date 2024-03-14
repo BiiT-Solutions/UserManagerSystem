@@ -2,24 +2,24 @@ package com.biit.usermanager.core.converters.models;
 
 import com.biit.server.converters.models.ConverterRequest;
 import com.biit.usermanager.persistence.entities.Application;
-import com.biit.usermanager.persistence.entities.Group;
+import com.biit.usermanager.persistence.entities.Team;
 
 import java.util.Optional;
 
-public class GroupConverterRequest extends ConverterRequest<Group> {
+public class TeamConverterRequest extends ConverterRequest<Team> {
     private final Application application;
 
-    public GroupConverterRequest(Group entity) {
+    public TeamConverterRequest(Team entity) {
         super(entity);
         this.application = null;
     }
 
-    public GroupConverterRequest(Group entity, Application application) {
+    public TeamConverterRequest(Team entity, Application application) {
         super(entity);
         this.application = application;
     }
 
-    public GroupConverterRequest(Optional<Group> entity) {
+    public TeamConverterRequest(Optional<Team> entity) {
         super(entity);
         this.application = null;
     }

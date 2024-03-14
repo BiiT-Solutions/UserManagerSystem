@@ -2,8 +2,8 @@ package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.Application;
-import com.biit.usermanager.persistence.entities.Group;
-import com.biit.usermanager.persistence.repositories.GroupRepository;
+import com.biit.usermanager.persistence.entities.Team;
+import com.biit.usermanager.persistence.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,26 +11,26 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class GroupProvider extends ElementProvider<Group, Long, GroupRepository> {
+public class TeamProvider extends ElementProvider<Team, Long, TeamRepository> {
 
     @Autowired
-    public GroupProvider(GroupRepository repository) {
+    public TeamProvider(TeamRepository repository) {
         super(repository);
     }
 
-    public List<Group> findByParentIsNull() {
+    public List<Team> findByParentIsNull() {
         return getRepository().findByParentIsNull();
     }
 
-    public List<Group> findByParentIsNotNull() {
+    public List<Team> findByParentIsNotNull() {
         return getRepository().findByParentIsNotNull();
     }
 
-    public List<Group> findByApplication(Application application) {
+    public List<Team> findByApplication(Application application) {
         return getRepository().findByApplication(application);
     }
 
-    public Optional<Group> findByNameAndApplication(String name, Application application) {
+    public Optional<Team> findByNameAndApplication(String name, Application application) {
         return getRepository().findByNameAndApplication(name, application);
     }
 

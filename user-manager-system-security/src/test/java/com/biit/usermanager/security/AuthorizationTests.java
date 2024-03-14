@@ -5,7 +5,7 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.GroupController;
+import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
@@ -14,7 +14,7 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
-import com.biit.usermanager.dto.GroupDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.security.exceptions.InvalidCredentialsException;
@@ -94,7 +94,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     private ApplicationRoleController applicationRoleController;
 
     @Autowired
-    private GroupController groupController;
+    private TeamController teamController;
 
     @Autowired
     private ApplicationController applicationController;
@@ -123,8 +123,8 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     private Map<String, RoleDTO> roles;
 
-    private GroupDTO groupDTO;
-    private GroupDTO groupDTO2;
+    private TeamDTO teamDTO;
+    private TeamDTO teamDTO2;
 
     private List<ApplicationBackendServiceRoleDTO> applicationBackendServiceRoleDTOs;
     private List<ApplicationBackendServiceRoleDTO> adminRoles;
@@ -148,9 +148,9 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     @BeforeClass(dependsOnMethods = "createApplication")
     private void createGroups() {
-        groupDTO = groupController.create(new GroupDTO(GROUP_NAME, applicationDTO), null);
-        groupDTO2 = groupController.create(new GroupDTO(OTHER_GROUP_NAME, applicationDTO), null);
-        groupController.create(new GroupDTO(EMPTY_GROUP_NAME, applicationDTO), null);
+        teamDTO = teamController.create(new TeamDTO(GROUP_NAME, applicationDTO), null);
+        teamDTO2 = teamController.create(new TeamDTO(OTHER_GROUP_NAME, applicationDTO), null);
+        teamController.create(new TeamDTO(EMPTY_GROUP_NAME, applicationDTO), null);
     }
 
     @BeforeClass
@@ -255,24 +255,24 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     @Test(enabled = false)
     public void getAllUsersByGroup() throws UserManagementException, InvalidCredentialsException, OrganizationDoesNotExistException {
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
-        Assert.assertEquals(authorizationService.getAllUsers(groupDTO).size(), 2);
-        GroupDTO groupDTO2 = groupController.getByName(OTHER_GROUP_NAME, applicationDTO);
-        Assert.assertEquals(authorizationService.getAllUsers(groupDTO2).size(), 1);
-        GroupDTO groupDTO3 = groupController.getByName(EMPTY_GROUP_NAME, applicationDTO);
-        Assert.assertEquals(authorizationService.getAllUsers(groupDTO3).size(), 0);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        Assert.assertEquals(authorizationService.getAllUsers(teamDTO).size(), 2);
+        TeamDTO teamDTO2 = teamController.getByName(OTHER_GROUP_NAME, applicationDTO);
+        Assert.assertEquals(authorizationService.getAllUsers(teamDTO2).size(), 1);
+        TeamDTO teamDTO3 = teamController.getByName(EMPTY_GROUP_NAME, applicationDTO);
+        Assert.assertEquals(authorizationService.getAllUsers(teamDTO3).size(), 0);
     }
 
     @Test(enabled = false)
     public void getGroupById() throws UserManagementException, InvalidCredentialsException, OrganizationDoesNotExistException {
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
-        Assert.assertEquals(authorizationService.getOrganization(groupDTO.getUniqueId()).getUniqueName(), GROUP_NAME);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        Assert.assertEquals(authorizationService.getOrganization(teamDTO.getUniqueId()).getUniqueName(), GROUP_NAME);
     }
 
     @Test(enabled = false)
     public void getGroupByName() throws UserManagementException, InvalidCredentialsException, OrganizationDoesNotExistException {
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
-        Assert.assertEquals(authorizationService.getOrganization(groupDTO.getUniqueName()).getUniqueName(), GROUP_NAME);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        Assert.assertEquals(authorizationService.getOrganization(teamDTO.getUniqueName()).getUniqueName(), GROUP_NAME);
     }
 
     @Test(enabled = false)
@@ -300,18 +300,18 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     @Test(enabled = false)
     public void getUserRolesInGroupByUser() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException, OrganizationDoesNotExistException {
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
         UserDTO userDTO = userController.getByUsername(USER_NAME);
-        Assert.assertEquals(authorizationService.getUserRoles(userDTO, groupDTO).size(), USER_ROLES.size());
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO, teamDTO).size(), USER_ROLES.size());
 
 
         UserDTO adminDTO = userController.getByUsername(ADMIN_USER_NAME);
-        Assert.assertEquals(authorizationService.getUserRoles(adminDTO, groupDTO).size(), 0);
+        Assert.assertEquals(authorizationService.getUserRoles(adminDTO, teamDTO).size(), 0);
     }
 
     @Test(enabled = false)
     public void getUserRolesInGroup() throws UserManagementException, InvalidCredentialsException, OrganizationDoesNotExistException {
-        Assert.assertEquals(authorizationService.getAllRoles(groupDTO).size(), OTHER_USER_ROLES.size());
+        Assert.assertEquals(authorizationService.getAllRoles(teamDTO).size(), OTHER_USER_ROLES.size());
     }
 
     @Test(enabled = false)
@@ -326,13 +326,13 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     @Test(enabled = false)
     public void getUsersWithRoleOnGroup() throws UserManagementException, RoleDoesNotExistsException,
             InvalidCredentialsException, OrganizationDoesNotExistException {
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
         RoleDTO roleDTO = roleController.getByName(USER_ROLES.get(0));
 
-        Assert.assertEquals(authorizationService.getUsers(roleDTO, groupDTO).size(), 2);
+        Assert.assertEquals(authorizationService.getUsers(roleDTO, teamDTO).size(), 2);
 
         roleDTO = roleController.getByName(OTHER_USER_ROLES.get(1));
-        Assert.assertEquals(authorizationService.getUsers(roleDTO, groupDTO).size(), 1);
+        Assert.assertEquals(authorizationService.getUsers(roleDTO, teamDTO).size(), 1);
     }
 
     //@Test(priority = 2) //Execute after any other test
@@ -345,7 +345,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         authorizationService.addUserRole(userDTO, roleDTO);
 
         Assert.assertEquals(authorizationService.getUserRoles(userDTO).size(), USER_ROLES.size() + 1);
-        Assert.assertEquals(authorizationService.getUserRoles(userDTO, groupDTO).size(), USER_ROLES.size());
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO, teamDTO).size(), USER_ROLES.size());
     }
 
     @Test(enabled = false, dependsOnMethods = "addUserRole")
@@ -353,11 +353,11 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
             UserDoesNotExistException, OrganizationDoesNotExistException, RoleDoesNotExistsException {
         UserDTO userDTO = userController.getByUsername(USER_NAME);
         RoleDTO roleDTO = roleController.getByName(ADMIN_ROLES.get(0));
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
-        authorizationService.addUserOrganizationRole(userDTO, groupDTO, roleDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        authorizationService.addUserOrganizationRole(userDTO, teamDTO, roleDTO);
 
         Assert.assertEquals(authorizationService.getUserRoles(userDTO).size(), USER_ROLES.size() + 2);
-        Assert.assertEquals(authorizationService.getUserRoles(userDTO, groupDTO).size(), USER_ROLES.size() + 1);
+        Assert.assertEquals(authorizationService.getUserRoles(userDTO, teamDTO).size(), USER_ROLES.size() + 1);
     }
 
     @AfterClass(alwaysRun = true)
@@ -366,7 +366,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         applicationBackendServiceRoleController.deleteAll(null);
         backendServiceRoleController.deleteAll(null);
         applicationRoleController.deleteAll(null);
-        groupController.deleteAll(null);
+        teamController.deleteAll(null);
         applicationController.deleteAll(null);
         backendServiceController.deleteAll(null);
         roleController.deleteAll(null);

@@ -3,7 +3,7 @@ package com.biit.usermanager.dto;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IGroup;
 
-public class GroupDTO extends ElementDTO<Long> implements IGroup<Long> {
+public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
 
     private Long id;
 
@@ -11,15 +11,15 @@ public class GroupDTO extends ElementDTO<Long> implements IGroup<Long> {
 
     private String description = "";
 
-    private GroupDTO parent;
+    private TeamDTO parent;
 
     private ApplicationDTO application;
 
-    public GroupDTO() {
+    public TeamDTO() {
         super();
     }
 
-    public GroupDTO(String name, ApplicationDTO application) {
+    public TeamDTO(String name, ApplicationDTO application) {
         this();
         setName(name);
         setApplication(application);
@@ -61,11 +61,11 @@ public class GroupDTO extends ElementDTO<Long> implements IGroup<Long> {
         return getId();
     }
 
-    public GroupDTO getParent() {
+    public TeamDTO getParent() {
         return parent;
     }
 
-    public void setParent(GroupDTO parent) {
+    public void setParent(TeamDTO parent) {
         this.parent = parent;
     }
 

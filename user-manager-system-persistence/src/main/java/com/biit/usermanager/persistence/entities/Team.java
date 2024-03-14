@@ -24,13 +24,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "organization_groups", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
+@Table(name = "teams", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
         indexes = {
                 @Index(name = "ind_group_name", columnList = "name"),
                 @Index(name = "ind_parent", columnList = "parent_id"),
                 @Index(name = "ind_application", columnList = "application_id"),
         })
-public class Group extends Element<Long> {
+public class Team extends Element<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +46,7 @@ public class Group extends Element<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Group parent;
+    private Team parent;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "application_id")
@@ -78,12 +78,12 @@ public class Group extends Element<Long> {
         this.description = description;
     }
 
-    public Group getParent() {
+    public Team getParent() {
         return parent;
     }
 
-    public void setParent(Group parentGroup) {
-        this.parent = parentGroup;
+    public void setParent(Team parentTeam) {
+        this.parent = parentTeam;
     }
 
     public Application getApplication() {

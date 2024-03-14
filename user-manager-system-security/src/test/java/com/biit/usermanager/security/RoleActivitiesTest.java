@@ -5,7 +5,7 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.GroupController;
+import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
@@ -14,7 +14,7 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
-import com.biit.usermanager.dto.GroupDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.security.activities.ActivityManager;
@@ -79,7 +79,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private RoleController roleController;
 
     @Autowired
-    private GroupController groupController;
+    private TeamController teamController;
 
     @Autowired
     private ApplicationController applicationController;
@@ -117,7 +117,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
     private Map<String, RoleDTO> roles;
 
-    private GroupDTO groupDTO;
+    private TeamDTO teamDTO;
 
     private UserDTO user;
 
@@ -133,7 +133,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
     @BeforeClass(dependsOnMethods = "createApplication")
     private void createGroups() {
-        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME, applicationDTO), null);
+        this.teamDTO = teamController.create(new TeamDTO(GROUP_NAME, applicationDTO), null);
     }
 
     @BeforeClass
@@ -229,7 +229,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         applicationBackendServiceRoleController.deleteAll(null);
         backendServiceRoleController.deleteAll(null);
         applicationRoleController.deleteAll(null);
-        groupController.deleteAll(null);
+        teamController.deleteAll(null);
         applicationController.deleteAll(null);
         backendServiceController.deleteAll(null);
         roleController.deleteAll(null);

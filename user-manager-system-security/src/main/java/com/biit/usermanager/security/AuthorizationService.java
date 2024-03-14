@@ -4,7 +4,7 @@ import com.biit.rest.exceptions.EmptyResultException;
 import com.biit.rest.exceptions.NotAuthorizedException;
 import com.biit.rest.exceptions.UnprocessableEntityException;
 import com.biit.server.client.SecurityClient;
-import com.biit.usermanager.dto.GroupDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.entity.IGroup;
@@ -92,7 +92,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return mapper.readValue(response.readEntity(String.class), GroupDTO.class);
+                return mapper.readValue(response.readEntity(String.class), TeamDTO.class);
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
@@ -116,7 +116,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return mapper.readValue(response.readEntity(String.class), GroupDTO.class);
+                return mapper.readValue(response.readEntity(String.class), TeamDTO.class);
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
@@ -136,7 +136,7 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
                     throw new InvalidCredentialsException("Invalid JWT credentials!");
                 }
-                return new HashSet<>(Arrays.asList(mapper.readValue(response.readEntity(String.class), GroupDTO[].class)));
+                return new HashSet<>(Arrays.asList(mapper.readValue(response.readEntity(String.class), TeamDTO[].class)));
             }
         } catch (JsonProcessingException | EmptyResultException | UnprocessableEntityException e) {
             throw new UserManagementException("Error connection to the User Manager System", e);
@@ -244,13 +244,13 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
     @Override
     public Set<IGroup<Long>> getUserParentOrganizations(IUser<Long> user) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
-        return getUserGroups(user).stream().filter(group -> ((GroupDTO) group).getParent() == null).collect(Collectors.toSet());
+        return getUserGroups(user).stream().filter(group -> ((TeamDTO) group).getParent() == null).collect(Collectors.toSet());
     }
 
     @Override
     public Set<IGroup<Long>> getUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
-        return getUserGroups(user).stream().filter(group -> ((GroupDTO) group).getParent() != null).collect(Collectors.toSet());
+        return getUserGroups(user).stream().filter(group -> ((TeamDTO) group).getParent() != null).collect(Collectors.toSet());
     }
 
     @Override

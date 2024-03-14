@@ -2,7 +2,7 @@ package com.biit.usermanager.persistence.repositories;
 
 
 import com.biit.usermanager.persistence.entities.Application;
-import com.biit.usermanager.persistence.entities.Group;
+import com.biit.usermanager.persistence.entities.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @SpringBootTest
 @Test(groups = {"groupRepository"})
 
-public class GroupRepositoryTest extends AbstractTestNGSpringContextTests {
+public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
 
     private static String GROUP_NAME = "TestName";
     private static String APPLICATION_NAME = "ApplicationName";
@@ -25,7 +25,7 @@ public class GroupRepositoryTest extends AbstractTestNGSpringContextTests {
     private ApplicationRepository applicationRepository;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private TeamRepository teamRepository;
 
     private Application application;
 
@@ -38,26 +38,26 @@ public class GroupRepositoryTest extends AbstractTestNGSpringContextTests {
 
     @Test
     public void saveGroup() {
-        Group group = new Group();
-        group.setName(GROUP_NAME);
-        group.setApplication(application);
-        group = groupRepository.save(group);
-        Assert.assertNotNull(group.getId());
+        Team team = new Team();
+        team.setName(GROUP_NAME);
+        team.setApplication(application);
+        team = teamRepository.save(team);
+        Assert.assertNotNull(team.getId());
     }
 
     @Test(dependsOnMethods = "saveGroup")
     public void getGroupByName() {
-        Optional<Group> group = groupRepository.findByNameAndApplication(GROUP_NAME, application);
+        Optional<Team> group = teamRepository.findByNameAndApplication(GROUP_NAME, application);
         Assert.assertTrue(group.isPresent());
         Assert.assertEquals(group.get().getName(), GROUP_NAME);
     }
 
     @AfterClass(alwaysRun = true)
     public void wipeOut() {
-        groupRepository.deleteAll();
+        teamRepository.deleteAll();
         applicationRepository.deleteAll();
         Assert.assertEquals(applicationRepository.count(), 0);
-        Assert.assertEquals(groupRepository.count(), 0);
+        Assert.assertEquals(teamRepository.count(), 0);
     }
 
 }

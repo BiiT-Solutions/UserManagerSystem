@@ -17,7 +17,7 @@
             <class name="com.biit.usermanager.persistence.repositories.UserRepositoryTests"/>
             <class name="com.biit.usermanager.persistence.repositories.UserNotDisableTest"/>
             <class name="com.biit.usermanager.persistence.repositories.ApplicationRoleTest"/>
-            <class name="com.biit.usermanager.persistence.repositories.GroupRepositoryTest"/>
+            <class name="com.biit.usermanager.persistence.repositories.TeamRepositoryTest"/>
             <class name="com.biit.usermanager.persistence.repositories.BackendBackendBackendServiceRoleRepositoryTest"/>
             <class name="com.biit.usermanager.persistence.repositories.ApplicationRepositoryTest"/>
             <class name="com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepositoryTest"/>

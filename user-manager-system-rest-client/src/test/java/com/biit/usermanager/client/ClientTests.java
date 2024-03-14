@@ -7,7 +7,7 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.GroupController;
+import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
@@ -17,7 +17,7 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
-import com.biit.usermanager.dto.GroupDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.rest.UserManagerServer;
@@ -61,7 +61,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private ApplicationController applicationController;
 
     @Autowired
-    private GroupController groupController;
+    private TeamController teamController;
 
     @Autowired
     private ApplicationRoleController applicationRoleController;
@@ -93,7 +93,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
 
         //Create a group
-        final GroupDTO groupDTO = groupController.create(new GroupDTO(DEFAULT_GROUP, applicationDTO), null);
+        final TeamDTO teamDTO = teamController.create(new TeamDTO(DEFAULT_GROUP, applicationDTO), null);
 
         //Set the application roles
         final List<RoleDTO> roleDTOs = new ArrayList<>();

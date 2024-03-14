@@ -2,7 +2,7 @@ package com.biit.usermanager.persistence.repositories;
 
 import com.biit.server.persistence.repositories.ElementRepository;
 import com.biit.usermanager.persistence.entities.Application;
-import com.biit.usermanager.persistence.entities.Group;
+import com.biit.usermanager.persistence.entities.Team;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
@@ -12,17 +12,17 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface GroupRepository extends ElementRepository<Group, Long> {
+public interface TeamRepository extends ElementRepository<Team, Long> {
 
-    Optional<Group> findByNameAndApplication(String name, Application application);
+    Optional<Team> findByNameAndApplication(String name, Application application);
 
     int deleteByNameAndApplication(String name, Application application);
 
-    List<Group> findByParentIsNull();
+    List<Team> findByParentIsNull();
 
-    List<Group> findByParentIsNotNull();
+    List<Team> findByParentIsNotNull();
 
-    List<Group> findByApplication(Application application);
+    List<Team> findByApplication(Application application);
 
 
 }

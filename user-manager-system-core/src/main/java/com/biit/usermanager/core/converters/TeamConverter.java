@@ -3,63 +3,63 @@ package com.biit.usermanager.core.converters;
 import com.biit.server.controller.converters.ElementConverter;
 import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.ApplicationConverterRequest;
-import com.biit.usermanager.core.converters.models.GroupConverterRequest;
+import com.biit.usermanager.core.converters.models.TeamConverterRequest;
 import com.biit.usermanager.core.providers.ApplicationProvider;
-import com.biit.usermanager.dto.GroupDTO;
-import com.biit.usermanager.persistence.entities.Group;
+import com.biit.usermanager.dto.TeamDTO;
+import com.biit.usermanager.persistence.entities.Team;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GroupConverter extends ElementConverter<Group, GroupDTO, GroupConverterRequest> {
+public class TeamConverter extends ElementConverter<Team, TeamDTO, TeamConverterRequest> {
 
     private final ApplicationConverter applicationConverter;
     private final ApplicationProvider applicationProvider;
 
-    public GroupConverter(ApplicationConverter applicationConverter, ApplicationProvider applicationProvider) {
+    public TeamConverter(ApplicationConverter applicationConverter, ApplicationProvider applicationProvider) {
         this.applicationConverter = applicationConverter;
         this.applicationProvider = applicationProvider;
     }
 
     @Override
-    protected GroupDTO convertElement(GroupConverterRequest from) {
-        final GroupDTO groupDTO = new GroupDTO();
-        BeanUtils.copyProperties(from.getEntity(), groupDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
+    protected TeamDTO convertElement(TeamConverterRequest from) {
+        final TeamDTO teamDTO = new TeamDTO();
+        BeanUtils.copyProperties(from.getEntity(), teamDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
         if (from.getEntity().getParent() != null) {
-            groupDTO.setParent(convertElement(new GroupConverterRequest(from.getEntity().getParent())));
+            teamDTO.setParent(convertElement(new TeamConverterRequest(from.getEntity().getParent())));
         }
 
         try {
             //Converter can have the tournament defined already.
             if (from.getApplication() != null) {
-                groupDTO.setApplication(applicationConverter.convert(
+                teamDTO.setApplication(applicationConverter.convert(
                         new ApplicationConverterRequest(from.getApplication())));
             } else {
-                groupDTO.setApplication(applicationConverter.convert(
+                teamDTO.setApplication(applicationConverter.convert(
                         new ApplicationConverterRequest(from.getEntity().getApplication())));
             }
         } catch (LazyInitializationException | FatalBeanException e) {
-            groupDTO.setApplication(applicationConverter.convert(
+            teamDTO.setApplication(applicationConverter.convert(
                     new ApplicationConverterRequest(applicationProvider.get(from.getEntity().getApplication().getId()).orElse(null))));
         }
-        return groupDTO;
+        return teamDTO;
     }
 
     @Override
-    public Group reverse(GroupDTO to) {
+    public Team reverse(TeamDTO to) {
         if (to == null) {
             return null;
         }
-        final Group group = new Group();
-        BeanUtils.copyProperties(to, group, ConverterUtils.getNullPropertyNames(to));
+        final Team team = new Team();
+        BeanUtils.copyProperties(to, team, ConverterUtils.getNullPropertyNames(to));
         if (to.getParent() != null) {
-            group.setParent(reverse((to.getParent())));
+            team.setParent(reverse((to.getParent())));
         }
         if (to.getApplication() != null) {
-            group.setApplication(applicationConverter.reverse(to.getApplication()));
+            team.setApplication(applicationConverter.reverse(to.getApplication()));
         }
-        return group;
+        return team;
     }
 }

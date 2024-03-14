@@ -6,7 +6,7 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.GroupController;
+import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
@@ -16,7 +16,7 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
-import com.biit.usermanager.dto.GroupDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
@@ -108,7 +108,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private RoleController roleController;
 
     @Autowired
-    private GroupController groupController;
+    private TeamController teamController;
 
     @Autowired
     private ApplicationController applicationController;
@@ -153,7 +153,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     private ApplicationDTO applicationDTO;
 
-    private GroupDTO groupDTO;
+    private TeamDTO teamDTO;
 
     private Map<String, RoleDTO> roles;
 
@@ -216,7 +216,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @BeforeClass(dependsOnMethods = {"createApplication"})
     private void createGroups() {
-        this.groupDTO = groupController.create(new GroupDTO(GROUP_NAME, applicationDTO), null);
+        this.teamDTO = teamController.create(new TeamDTO(GROUP_NAME, applicationDTO), null);
     }
 
     @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createGroups"})
@@ -365,12 +365,12 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test(enabled = false)
     public void isInGroup() throws UserManagementException, InvalidCredentialsException {
-        GroupDTO groupDTO = groupController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
         UserDTO userDTO = userController.getByUsername(USER_NAME);
-        Assert.assertTrue(authenticationService.isInGroup(groupDTO, userDTO));
+        Assert.assertTrue(authenticationService.isInGroup(teamDTO, userDTO));
 
-        GroupDTO otherGroup = new GroupDTO("Other Name", applicationDTO);
-        otherGroup = groupController.create(otherGroup, null);
+        TeamDTO otherGroup = new TeamDTO("Other Name", applicationDTO);
+        otherGroup = teamController.create(otherGroup, null);
 
         Assert.assertFalse(authenticationService.isInGroup(otherGroup, userDTO));
     }
@@ -378,8 +378,8 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     @Test(enabled = false)
     public void getDefaultGroup() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
-        GroupDTO groupDTO = (GroupDTO) authenticationService.getDefaultGroup(userDTO);
-        Assert.assertNotNull(groupDTO);
+        TeamDTO teamDTO = (TeamDTO) authenticationService.getDefaultGroup(userDTO);
+        Assert.assertNotNull(teamDTO);
     }
 
     @AfterClass(alwaysRun = true)
@@ -388,7 +388,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         applicationBackendServiceRoleController.deleteAll(null);
         backendServiceRoleController.deleteAll(null);
         applicationRoleController.deleteAll(null);
-        groupController.deleteAll(null);
+        teamController.deleteAll(null);
         applicationController.deleteAll(null);
         backendServiceController.deleteAll(null);
         roleController.deleteAll(null);
