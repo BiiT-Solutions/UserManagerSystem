@@ -681,7 +681,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final PasswordResetToken passwordResetToken = passwordResetTokenProvider.findByToken(token).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with the provided token."));
 
-        if (passwordResetToken.getExpirationDate().isAfter(LocalDateTime.now())) {
+        if (passwordResetToken.getExpirationDate().isBefore(LocalDateTime.now())) {
             throw new TokenExpiredException(this.getClass(), "Token has expired!");
         }
 

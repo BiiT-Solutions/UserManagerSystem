@@ -113,7 +113,7 @@ public class ForgotPasswordTests extends AbstractTestNGSpringContextTests {
         Assert.assertNotNull(jwtToken);
     }
 
-    @Test
+    @Test(dependsOnMethods = "login")
     public void forgotPassword() throws Exception {
         this.mockMvc
                 .perform(get("/users/public/emails/" + USER_EMAIL + "/reset-password")
@@ -126,7 +126,7 @@ public class ForgotPasswordTests extends AbstractTestNGSpringContextTests {
                 .orElseThrow(() -> new UserNotFoundException(this.getClass(), "Not working!"));
 
         this.mockMvc
-                .perform(post("/public/change-password?token=" + passwordResetToken.getToken())
+                .perform(post("/users/public/change-password?token=" + passwordResetToken.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(new PasswordChangeRequest(USER_NEW_PASSWORD)))
                         .with(csrf()))
