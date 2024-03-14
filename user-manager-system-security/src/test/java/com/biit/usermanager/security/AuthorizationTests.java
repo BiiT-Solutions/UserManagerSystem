@@ -5,6 +5,7 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
+import com.biit.usermanager.core.controller.OrganizationController;
 import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
@@ -14,6 +15,7 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
+import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
@@ -114,12 +116,19 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     @Autowired
     private ApplicationBackendServiceRoleConverter applicationBackendServiceRoleConverter;
 
+    @Autowired
+    private OrganizationController organizationController;
+
     private static final String APPLICATION_NAME = "DASHBOARD";
+
+    private static final String ORGANIZATION_NAME = "NHM";
 
     @Value("${spring.application.name}")
     private String backendService;
 
     private ApplicationDTO applicationDTO;
+
+    private OrganizationDTO organizationDTO;
 
     private Map<String, RoleDTO> roles;
 
@@ -146,11 +155,17 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
         this.applicationDTO = applicationController.create(applicationDTO, null);
     }
 
-    @BeforeClass(dependsOnMethods = "createApplication")
+    @BeforeClass
+    private void createOrganization() {
+        OrganizationDTO organizationDTO = new OrganizationDTO(ORGANIZATION_NAME);
+        this.organizationDTO = organizationController.create(organizationDTO, null);
+    }
+
+    @BeforeClass(dependsOnMethods = "createOrganization")
     private void createGroups() {
-        teamDTO = teamController.create(new TeamDTO(GROUP_NAME, applicationDTO), null);
-        teamDTO2 = teamController.create(new TeamDTO(OTHER_GROUP_NAME, applicationDTO), null);
-        teamController.create(new TeamDTO(EMPTY_GROUP_NAME, applicationDTO), null);
+        teamDTO = teamController.create(new TeamDTO(GROUP_NAME, organizationDTO), null);
+        teamDTO2 = teamController.create(new TeamDTO(OTHER_GROUP_NAME, organizationDTO), null);
+        teamController.create(new TeamDTO(EMPTY_GROUP_NAME, organizationDTO), null);
     }
 
     @BeforeClass
@@ -255,23 +270,23 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     @Test(enabled = false)
     public void getAllUsersByGroup() throws UserManagementException, InvalidCredentialsException, OrganizationDoesNotExistException {
-        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, ORGANIZATION_NAME);
         Assert.assertEquals(authorizationService.getAllUsers(teamDTO).size(), 2);
-        TeamDTO teamDTO2 = teamController.getByName(OTHER_GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO2 = teamController.getByName(OTHER_GROUP_NAME, ORGANIZATION_NAME);
         Assert.assertEquals(authorizationService.getAllUsers(teamDTO2).size(), 1);
-        TeamDTO teamDTO3 = teamController.getByName(EMPTY_GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO3 = teamController.getByName(EMPTY_GROUP_NAME, ORGANIZATION_NAME);
         Assert.assertEquals(authorizationService.getAllUsers(teamDTO3).size(), 0);
     }
 
     @Test(enabled = false)
     public void getGroupById() throws UserManagementException, InvalidCredentialsException, OrganizationDoesNotExistException {
-        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, ORGANIZATION_NAME);
         Assert.assertEquals(authorizationService.getOrganization(teamDTO.getUniqueId()).getUniqueName(), GROUP_NAME);
     }
 
     @Test(enabled = false)
     public void getGroupByName() throws UserManagementException, InvalidCredentialsException, OrganizationDoesNotExistException {
-        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, ORGANIZATION_NAME);
         Assert.assertEquals(authorizationService.getOrganization(teamDTO.getUniqueName()).getUniqueName(), GROUP_NAME);
     }
 
@@ -300,7 +315,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     @Test(enabled = false)
     public void getUserRolesInGroupByUser() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException, OrganizationDoesNotExistException {
-        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, organizationDTO);
         UserDTO userDTO = userController.getByUsername(USER_NAME);
         Assert.assertEquals(authorizationService.getUserRoles(userDTO, teamDTO).size(), USER_ROLES.size());
 
@@ -326,7 +341,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     @Test(enabled = false)
     public void getUsersWithRoleOnGroup() throws UserManagementException, RoleDoesNotExistsException,
             InvalidCredentialsException, OrganizationDoesNotExistException {
-        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, organizationDTO);
         RoleDTO roleDTO = roleController.getByName(USER_ROLES.get(0));
 
         Assert.assertEquals(authorizationService.getUsers(roleDTO, teamDTO).size(), 2);
@@ -353,7 +368,7 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
             UserDoesNotExistException, OrganizationDoesNotExistException, RoleDoesNotExistsException {
         UserDTO userDTO = userController.getByUsername(USER_NAME);
         RoleDTO roleDTO = roleController.getByName(ADMIN_ROLES.get(0));
-        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, organizationDTO);
         authorizationService.addUserOrganizationRole(userDTO, teamDTO, roleDTO);
 
         Assert.assertEquals(authorizationService.getUserRoles(userDTO).size(), USER_ROLES.size() + 2);

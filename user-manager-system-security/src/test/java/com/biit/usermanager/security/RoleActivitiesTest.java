@@ -5,8 +5,9 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.TeamController;
+import com.biit.usermanager.core.controller.OrganizationController;
 import com.biit.usermanager.core.controller.RoleController;
+import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
@@ -14,8 +15,9 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
-import com.biit.usermanager.dto.TeamDTO;
+import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.RoleDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.security.activities.ActivityManager;
 import com.biit.usermanager.security.activities.RoleActivities;
@@ -85,7 +87,7 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private ApplicationController applicationController;
 
     @Autowired
-    private AuthorizationService authorizationService;
+    private OrganizationController organizationController;
 
     @Autowired
     private BackendServiceRoleController backendServiceRoleController;
@@ -109,11 +111,13 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
     private BackendServiceController backendServiceController;
 
     private static final String APPLICATION_NAME = "DASHBOARD";
+    private static final String ORGANIZATION_NAME = "NHM";
 
     @Value("${spring.application.name}")
     private String backendService;
 
     private ApplicationDTO applicationDTO;
+    private OrganizationDTO organizationDTO;
 
     private Map<String, RoleDTO> roles;
 
@@ -131,9 +135,15 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
         this.applicationDTO = applicationController.create(applicationDTO, null);
     }
 
+    @BeforeClass
+    private void createOrganization() {
+        OrganizationDTO organizationDTO = new OrganizationDTO(ORGANIZATION_NAME);
+        this.organizationDTO = organizationController.create(organizationDTO, null);
+    }
+
     @BeforeClass(dependsOnMethods = "createApplication")
     private void createGroups() {
-        this.teamDTO = teamController.create(new TeamDTO(GROUP_NAME, applicationDTO), null);
+        this.teamDTO = teamController.create(new TeamDTO(GROUP_NAME, organizationDTO), null);
     }
 
     @BeforeClass

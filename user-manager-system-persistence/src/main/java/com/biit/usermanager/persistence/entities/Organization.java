@@ -26,6 +26,15 @@ public class Organization extends Element<String> {
     @Convert(converter = StringCryptoConverter.class)
     private String description = "";
 
+    public Organization() {
+        super();
+    }
+
+    public Organization(String name) {
+        this();
+        this.name = name;
+    }
+
     @Override
     public String getId() {
         return name;

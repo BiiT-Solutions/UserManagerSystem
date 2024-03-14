@@ -8,6 +8,13 @@ public class OrganizationDTO extends ElementDTO<String> {
 
     private String description = "";
 
+    public OrganizationDTO() {
+    }
+
+    public OrganizationDTO(String name) {
+        this.name = name;
+    }
+
     @Override
     public String getId() {
         return name;

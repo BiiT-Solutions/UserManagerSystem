@@ -7,8 +7,9 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.TeamController;
+import com.biit.usermanager.core.controller.OrganizationController;
 import com.biit.usermanager.core.controller.RoleController;
+import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
@@ -17,8 +18,9 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
-import com.biit.usermanager.dto.TeamDTO;
+import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.RoleDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.rest.UserManagerServer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String[] APPLICATION_ROLES = new String[]{"WRITER", "READER"};
     private static final String[] BACKEND_ROLES = new String[]{"ADMIN", "VIEWER"};
     private static final String APPLICATION_NAME = "DASHBOARD";
+    private static final String ORGANIZATION_NAME = "NHM";
     private static final String DEFAULT_GROUP = "Standard_Users";
 
     @Value("${bcrypt.salt:}")
@@ -59,6 +62,9 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private ApplicationController applicationController;
+
+    @Autowired
+    private OrganizationController organizationController;
 
     @Autowired
     private TeamController teamController;
@@ -92,8 +98,11 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
 
+        //Create the organization
+        final OrganizationDTO organizationDTO = organizationController.create(new OrganizationDTO(ORGANIZATION_NAME), null);
+
         //Create a group
-        final TeamDTO teamDTO = teamController.create(new TeamDTO(DEFAULT_GROUP, applicationDTO), null);
+        final TeamDTO teamDTO = teamController.create(new TeamDTO(DEFAULT_GROUP, organizationDTO), null);
 
         //Set the application roles
         final List<RoleDTO> roleDTOs = new ArrayList<>();

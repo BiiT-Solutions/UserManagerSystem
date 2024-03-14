@@ -19,16 +19,15 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
- * A group is an organization element to group workers and people. For role groups use the class 'UserGroup'.
+ * A team is an organization element to group workers and people. For role groups use the class 'UserGroup'.
  */
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@Table(name = "teams", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "application_id"})},
+@Table(name = "teams", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "organization_id"})},
         indexes = {
-                @Index(name = "ind_group_name", columnList = "name"),
                 @Index(name = "ind_parent", columnList = "parent_id"),
-                @Index(name = "ind_application", columnList = "application_id"),
+                @Index(name = "ind_organization", columnList = "organization_id"),
         })
 public class Team extends Element<Long> {
 
@@ -49,8 +48,8 @@ public class Team extends Element<Long> {
     private Team parent;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "application_id")
-    private Application application;
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     @Override
     public Long getId() {
@@ -86,17 +85,17 @@ public class Team extends Element<Long> {
         this.parent = parentTeam;
     }
 
-    public Application getApplication() {
-        return application;
+    public Organization getOrganization() {
+        return organization;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     @Override
     public String toString() {
-        return "Group{"
+        return "Team{"
                 + "name='" + name + '\''
                 + ", parent=" + (parent != null ? parent.getId() : null)
                 + "}";

@@ -6,8 +6,9 @@ import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
 import com.biit.usermanager.core.controller.BackendServiceController;
 import com.biit.usermanager.core.controller.BackendServiceRoleController;
-import com.biit.usermanager.core.controller.TeamController;
+import com.biit.usermanager.core.controller.OrganizationController;
 import com.biit.usermanager.core.controller.RoleController;
+import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
 import com.biit.usermanager.core.providers.UserProvider;
@@ -16,8 +17,9 @@ import com.biit.usermanager.dto.ApplicationDTO;
 import com.biit.usermanager.dto.ApplicationRoleDTO;
 import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
-import com.biit.usermanager.dto.TeamDTO;
+import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.RoleDTO;
+import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.security.activities.ActivityManager;
@@ -111,7 +113,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private TeamController teamController;
 
     @Autowired
+    private OrganizationController organizationController;
+
+    @Autowired
     private ApplicationController applicationController;
+
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -140,6 +146,8 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     private static final String APPLICATION_NAME = "DASHBOARD";
 
+    private static final String ORGANIZATION_NAME = "NHM";
+
     @Value("${spring.application.name}")
     private String backendService;
 
@@ -152,6 +160,8 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private String jwtToken;
 
     private ApplicationDTO applicationDTO;
+
+    private OrganizationDTO organizationDTO;
 
     private TeamDTO teamDTO;
 
@@ -173,6 +183,13 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private void createApplication() {
         ApplicationDTO applicationDTO = new ApplicationDTO(APPLICATION_NAME);
         this.applicationDTO = applicationController.create(applicationDTO, null);
+    }
+
+
+    @BeforeClass
+    private void createOrganization() {
+        final OrganizationDTO organizationDTO = new OrganizationDTO(ORGANIZATION_NAME);
+        this.organizationDTO = organizationController.create(organizationDTO, null);
     }
 
     @BeforeClass
@@ -214,12 +231,12 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         }
     }
 
-    @BeforeClass(dependsOnMethods = {"createApplication"})
-    private void createGroups() {
-        this.teamDTO = teamController.create(new TeamDTO(GROUP_NAME, applicationDTO), null);
+    @BeforeClass(dependsOnMethods = {"createOrganization"})
+    private void createTeams() {
+        this.teamDTO = teamController.create(new TeamDTO(GROUP_NAME, organizationDTO), null);
     }
 
-    @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createGroups"})
+    @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createTeams"})
     private void createAdminAccount() {
         //Create the admin user
         UserDTO userDTO = new UserDTO();
@@ -365,11 +382,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test(enabled = false)
     public void isInGroup() throws UserManagementException, InvalidCredentialsException {
-        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, applicationDTO);
+        TeamDTO teamDTO = teamController.getByName(GROUP_NAME, organizationDTO);
         UserDTO userDTO = userController.getByUsername(USER_NAME);
         Assert.assertTrue(authenticationService.isInGroup(teamDTO, userDTO));
 
-        TeamDTO otherGroup = new TeamDTO("Other Name", applicationDTO);
+        TeamDTO otherGroup = new TeamDTO("Other Name", organizationDTO);
         otherGroup = teamController.create(otherGroup, null);
 
         Assert.assertFalse(authenticationService.isInGroup(otherGroup, userDTO));
@@ -389,7 +406,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         backendServiceRoleController.deleteAll(null);
         applicationRoleController.deleteAll(null);
         teamController.deleteAll(null);
-        applicationController.deleteAll(null);
+        organizationController.deleteAll(null);
         backendServiceController.deleteAll(null);
         roleController.deleteAll(null);
     }

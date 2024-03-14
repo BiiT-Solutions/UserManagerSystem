@@ -4,7 +4,6 @@ package com.biit.usermanager.core.controller;
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.kafka.events.EventSubject;
 import com.biit.kafka.events.IEventSender;
-import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.UserGroupConverter;
 import com.biit.usermanager.core.converters.models.UserGroupConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
@@ -55,8 +54,6 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
     private final ApplicationRoleProvider applicationRoleProvider;
 
-    private final UserConverter userConverter;
-
     private final UserProvider userProvider;
 
     private final UserGroupUserRepository userGroupUserRepository;
@@ -66,14 +63,13 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
                                   ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                                   UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
                                   BackendServiceRoleProvider backendServiceRoleProvider,
-                                  ApplicationRoleProvider applicationRoleProvider, UserConverter userConverter, UserProvider userProvider,
+                                  ApplicationRoleProvider applicationRoleProvider, UserProvider userProvider,
                                   UserGroupUserRepository userGroupUserRepository) {
         super(provider, converter, eventSender);
         this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.userGroupApplicationBackendServiceRoleProvider = userGroupApplicationBackendServiceRoleProvider;
         this.backendServiceRoleProvider = backendServiceRoleProvider;
         this.applicationRoleProvider = applicationRoleProvider;
-        this.userConverter = userConverter;
         this.userProvider = userProvider;
         this.userGroupUserRepository = userGroupUserRepository;
     }

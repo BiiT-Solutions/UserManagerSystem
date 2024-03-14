@@ -13,16 +13,16 @@ public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
 
     private TeamDTO parent;
 
-    private ApplicationDTO application;
+    private OrganizationDTO organization;
 
     public TeamDTO() {
         super();
     }
 
-    public TeamDTO(String name, ApplicationDTO application) {
+    public TeamDTO(String name, OrganizationDTO organization) {
         this();
         setName(name);
-        setApplication(application);
+        setOrganization(organization);
     }
 
     @Override
@@ -69,17 +69,17 @@ public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
         this.parent = parent;
     }
 
-    public ApplicationDTO getApplication() {
-        return application;
+    public OrganizationDTO getOrganization() {
+        return organization;
     }
 
-    public void setApplication(ApplicationDTO application) {
-        this.application = application;
+    public void setOrganization(OrganizationDTO organization) {
+        this.organization = organization;
     }
 
     @Override
     public String toString() {
-        return "GroupDTO{"
+        return "TeamDTO{"
                 + "name='" + name + '\''
                 + "}";
     }
