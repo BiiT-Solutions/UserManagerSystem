@@ -11,7 +11,7 @@ public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
 
     private String description = "";
 
-    private TeamDTO parent;
+    private Long parentId;
 
     private OrganizationDTO organization;
 
@@ -23,6 +23,13 @@ public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
         this();
         setName(name);
         setOrganization(organization);
+    }
+
+    public TeamDTO(String name, Long parentId, OrganizationDTO organization) {
+        this();
+        setName(name);
+        setOrganization(organization);
+        setParentId(parentId);
     }
 
     @Override
@@ -61,12 +68,12 @@ public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
         return getId();
     }
 
-    public TeamDTO getParent() {
-        return parent;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setParent(TeamDTO parent) {
-        this.parent = parent;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public OrganizationDTO getOrganization() {

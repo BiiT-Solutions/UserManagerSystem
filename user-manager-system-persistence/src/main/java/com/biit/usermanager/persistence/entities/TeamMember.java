@@ -20,6 +20,15 @@ public class TeamMember extends StorableObject {
     @EmbeddedId
     private TeamMemberId id;
 
+    public TeamMember() {
+        super();
+    }
+
+    public TeamMember(Long teamId, Long userId) {
+        this();
+        setId(new TeamMemberId(teamId, userId));
+    }
+
     public TeamMemberId getId() {
         return id;
     }

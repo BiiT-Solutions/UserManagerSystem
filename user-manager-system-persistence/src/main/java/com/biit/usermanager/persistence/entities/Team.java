@@ -26,6 +26,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "teams", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "organization_id"})},
         indexes = {
+                @Index(name = "ind_name", columnList = "name"),
                 @Index(name = "ind_parent", columnList = "parent_id"),
                 @Index(name = "ind_organization", columnList = "organization_id"),
         })

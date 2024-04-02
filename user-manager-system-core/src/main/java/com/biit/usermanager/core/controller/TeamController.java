@@ -7,17 +7,25 @@ import com.biit.usermanager.core.converters.TeamConverter;
 import com.biit.usermanager.core.converters.models.TeamConverterRequest;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
+import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.kafka.TeamEventSender;
 import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.core.providers.TeamProvider;
+import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.TeamDTO;
+import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.Team;
+import com.biit.usermanager.persistence.entities.TeamMember;
+import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.repositories.TeamMemberRepository;
 import com.biit.usermanager.persistence.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,13 +35,19 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
     private final OrganizationConverter organizationConverter;
     private final OrganizationProvider organizationProvider;
+    private final UserProvider userProvider;
+
+    private final TeamMemberRepository teamMemberRepository;
 
     @Autowired
     protected TeamController(TeamProvider provider, TeamConverter converter, OrganizationConverter organizationConverter,
-                             OrganizationProvider organizationProvider, TeamEventSender eventSender) {
+                             OrganizationProvider organizationProvider, TeamEventSender eventSender, UserProvider userProvider,
+                             TeamMemberRepository teamMemberRepository) {
         super(provider, converter, eventSender);
         this.organizationConverter = organizationConverter;
         this.organizationProvider = organizationProvider;
+        this.userProvider = userProvider;
+        this.teamMemberRepository = teamMemberRepository;
     }
 
     @Override
@@ -53,12 +67,29 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
                 .orElseThrow(() -> new TeamNotFoundException(this.getClass(), "No Team with name '" + name + "' found on the system."))));
     }
 
+    public void checkNameExists(String teamName, String organizationName) {
+        final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() ->
+                new OrganizationNotFoundException(this.getClass(), "Organization with name '" + organizationName + "' not found."));
+        getProvider().findByNameAndOrganization(teamName, organization).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No team exists with name '" + teamName + "'."));
+    }
+
     public List<TeamDTO> getTeamsWithoutParent() {
         return getConverter().convertAll(getProvider().findByParentIsNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
     public List<TeamDTO> getTeamsWithParent() {
         return getConverter().convertAll(getProvider().findByParentIsNotNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
+    }
+
+    public List<TeamDTO> getTeamsWithParent(Long parentId) {
+        final Team team = getProvider().findById(parentId).orElseThrow(()
+                -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + parentId + "'."));
+        return getConverter().convertAll(getProvider().findByParent(team).stream().map(this::createConverterRequest).collect(Collectors.toList()));
+    }
+
+    public List<TeamDTO> getTeamsWithParent(TeamDTO parent) {
+        return getConverter().convertAll(getProvider().findByParent(reverse(parent)).stream().map(this::createConverterRequest).collect(Collectors.toList()));
     }
 
 
@@ -68,4 +99,36 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
         return getProvider().deleteByName(name, organization);
     }
 
+
+    public TeamDTO assign(Long teamId, Collection<UserDTO> users, String assignedBy) {
+        final Team team = getProvider().findById(teamId).orElseThrow(()
+                -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
+
+        final List<Long> usersInTeam = userProvider.getByTeam(teamId).stream().map(User::getId).toList();
+
+        users = users.stream().filter(userDTO -> !usersInTeam.contains(userDTO.getId())).toList();
+
+        //Store into the team
+        final List<TeamMember> teamMembers = new ArrayList<>();
+        users.forEach(userDTO -> teamMembers.add(new TeamMember(teamId, userDTO.getId())));
+        teamMemberRepository.saveAll(teamMembers);
+
+        team.setUpdatedBy(assignedBy);
+
+        return convert(getProvider().save(team));
+    }
+
+    public TeamDTO unAssign(Long teamId, Collection<UserDTO> users, String assignedBy) {
+        final Team team = getProvider().findById(teamId).orElseThrow(()
+                -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
+
+
+        final List<TeamMember> userGroupUserToDelete = new ArrayList<>();
+        users.forEach(userDTO -> userGroupUserToDelete.add(new TeamMember(teamId, userDTO.getId())));
+        teamMemberRepository.deleteAll(userGroupUserToDelete);
+
+        team.setUpdatedBy(assignedBy);
+
+        return convert(getProvider().save(team));
+    }
 }

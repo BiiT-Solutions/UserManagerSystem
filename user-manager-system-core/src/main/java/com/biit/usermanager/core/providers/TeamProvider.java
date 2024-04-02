@@ -18,6 +18,10 @@ public class TeamProvider extends ElementProvider<Team, Long, TeamRepository> {
         super(repository);
     }
 
+    public List<Team> findByParent(Team parent) {
+        return getRepository().findByParent(parent);
+    }
+
     public List<Team> findByParentIsNull() {
         return getRepository().findByParentIsNull();
     }

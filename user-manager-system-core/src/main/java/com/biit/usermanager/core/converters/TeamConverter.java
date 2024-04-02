@@ -5,6 +5,7 @@ import com.biit.server.converters.ConverterUtils;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.converters.models.TeamConverterRequest;
 import com.biit.usermanager.core.providers.OrganizationProvider;
+import com.biit.usermanager.core.providers.TeamProvider;
 import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.persistence.entities.Team;
 import org.hibernate.LazyInitializationException;
@@ -17,10 +18,13 @@ public class TeamConverter extends ElementConverter<Team, TeamDTO, TeamConverter
 
     private final OrganizationConverter organizationConverter;
     private final OrganizationProvider organizationProvider;
+    private final TeamProvider teamProvider;
 
-    public TeamConverter(OrganizationConverter organizationConverter, OrganizationProvider organizationProvider) {
+    public TeamConverter(OrganizationConverter organizationConverter, OrganizationProvider organizationProvider,
+                         TeamProvider teamProvider) {
         this.organizationConverter = organizationConverter;
         this.organizationProvider = organizationProvider;
+        this.teamProvider = teamProvider;
     }
 
     @Override
@@ -28,7 +32,7 @@ public class TeamConverter extends ElementConverter<Team, TeamDTO, TeamConverter
         final TeamDTO teamDTO = new TeamDTO();
         BeanUtils.copyProperties(from.getEntity(), teamDTO, ConverterUtils.getNullPropertyNames(from.getEntity()));
         if (from.getEntity().getParent() != null) {
-            teamDTO.setParent(convertElement(new TeamConverterRequest(from.getEntity().getParent())));
+            teamDTO.setParentId(from.getEntity().getParent().getId());
         }
 
         try {
@@ -41,8 +45,14 @@ public class TeamConverter extends ElementConverter<Team, TeamDTO, TeamConverter
                         new OrganizationConverterRequest(from.getEntity().getOrganization())));
             }
         } catch (LazyInitializationException | FatalBeanException e) {
-            teamDTO.setOrganization(organizationConverter.convert(
-                    new OrganizationConverterRequest(organizationProvider.get(from.getEntity().getOrganization().getId()).orElse(null))));
+            try {
+                teamDTO.setOrganization(organizationConverter.convert(
+                        new OrganizationConverterRequest(organizationProvider.get(from.getEntity().getOrganization().getId()).orElse(null))));
+            } catch (LazyInitializationException e2) {
+                //Organization name is not correctly retrieved as is Lazy. Search for the organization using the team.
+                teamDTO.setOrganization(organizationConverter.convert(
+                        new OrganizationConverterRequest(organizationProvider.findByTeam(from.getEntity()).orElse(null))));
+            }
         }
         return teamDTO;
     }
@@ -54,8 +64,8 @@ public class TeamConverter extends ElementConverter<Team, TeamDTO, TeamConverter
         }
         final Team team = new Team();
         BeanUtils.copyProperties(to, team, ConverterUtils.getNullPropertyNames(to));
-        if (to.getParent() != null) {
-            team.setParent(reverse((to.getParent())));
+        if (to.getParentId() != null) {
+            team.setParent(teamProvider.findById(to.getParentId()).orElse(null));
         }
         if (to.getOrganization() != null) {
             team.setOrganization(organizationConverter.reverse(to.getOrganization()));

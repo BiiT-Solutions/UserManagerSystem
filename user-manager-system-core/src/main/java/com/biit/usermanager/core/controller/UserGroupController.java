@@ -302,9 +302,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
         //Store into the group
         final List<UserGroupUser> userGroupUsers = new ArrayList<>();
-        users.forEach(userDTO -> {
-            userGroupUsers.add(new UserGroupUser(userGroupId, userDTO.getId()));
-        });
+        users.forEach(userDTO -> userGroupUsers.add(new UserGroupUser(userGroupId, userDTO.getId())));
         userGroupUserRepository.saveAll(userGroupUsers);
 
         userGroup.setUpdatedBy(assignedBy);
@@ -318,9 +316,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
 
         final List<UserGroupUser> userGroupUserToDelete = new ArrayList<>();
-        users.forEach(userDTO -> {
-            userGroupUserToDelete.add(new UserGroupUser(userGroupId, userDTO.getId()));
-        });
+        users.forEach(userDTO -> userGroupUserToDelete.add(new UserGroupUser(userGroupId, userDTO.getId())));
         userGroupUserRepository.deleteAll(userGroupUserToDelete);
 
         userGroup.setUpdatedBy(assignedBy);

@@ -244,13 +244,13 @@ public class AuthorizationService implements IAuthorizationService<Long, Long, S
     @Override
     public Set<IGroup<Long>> getUserParentOrganizations(IUser<Long> user) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
-        return getUserGroups(user).stream().filter(group -> ((TeamDTO) group).getParent() == null).collect(Collectors.toSet());
+        return getUserGroups(user).stream().filter(group -> ((TeamDTO) group).getParentId() == null).collect(Collectors.toSet());
     }
 
     @Override
     public Set<IGroup<Long>> getUserChildrenOrganizations(IUser<Long> user, IGroup<Long> parentOrganization) throws UserManagementException,
             InvalidCredentialsException, UserDoesNotExistException {
-        return getUserGroups(user).stream().filter(group -> ((TeamDTO) group).getParent() != null).collect(Collectors.toSet());
+        return getUserGroups(user).stream().filter(group -> ((TeamDTO) group).getParentId() != null).collect(Collectors.toSet());
     }
 
     @Override

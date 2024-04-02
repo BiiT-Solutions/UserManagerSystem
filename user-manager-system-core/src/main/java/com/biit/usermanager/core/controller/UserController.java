@@ -16,6 +16,7 @@ import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
+import com.biit.usermanager.core.exceptions.TeamNotFoundException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
@@ -28,6 +29,8 @@ import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.EmailService;
 import com.biit.usermanager.core.providers.PasswordResetTokenProvider;
+import com.biit.usermanager.core.providers.TeamMemberProvider;
+import com.biit.usermanager.core.providers.TeamProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserGroupProvider;
@@ -42,6 +45,8 @@ import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.PasswordResetToken;
+import com.biit.usermanager.persistence.entities.Team;
+import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserGroup;
@@ -92,7 +97,11 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     private final UserGroupProvider userGroupProvider;
 
+    private final TeamProvider teamProvider;
+
     private final UserGroupUserProvider userGroupUserProvider;
+
+    private final TeamMemberProvider teamMemberProvider;
 
     private final PasswordResetTokenProvider passwordResetTokenProvider;
 
@@ -106,7 +115,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                              ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider,
-                             UserGroupUserProvider userGroupUserRepository, PasswordResetTokenProvider passwordResetTokenProvider, EmailService emailService) {
+                             TeamProvider teamProvider, UserGroupUserProvider userGroupUserRepository, TeamMemberProvider teamMemberProvider,
+                             PasswordResetTokenProvider passwordResetTokenProvider,
+                             EmailService emailService) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
@@ -116,7 +127,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.applicationRoleProvider = applicationRoleProvider;
         this.backendServiceRoleProvider = backendServiceRoleProvider;
         this.userGroupProvider = userGroupProvider;
+        this.teamProvider = teamProvider;
         this.userGroupUserProvider = userGroupUserRepository;
+        this.teamMemberProvider = teamMemberProvider;
         this.passwordResetTokenProvider = passwordResetTokenProvider;
         this.emailService = emailService;
     }
@@ -686,5 +699,15 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
 
         updatePassword(passwordResetToken.getUser().getUsername(), newPassword, passwordResetToken.getUser().getUsername());
+    }
+
+    public List<UserDTO> getByTeam(Long teamId) {
+        final Team team = teamProvider.findById(teamId).orElseThrow(()
+                -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
+
+        final List<Long> userIds = new ArrayList<>();
+        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId);
+        members.forEach(member -> userIds.add(member.getId().getUserId()));
+        return convertAll(getProvider().findByIdIn(userIds));
     }
 }

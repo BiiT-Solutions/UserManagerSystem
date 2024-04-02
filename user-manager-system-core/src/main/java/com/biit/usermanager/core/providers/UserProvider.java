@@ -3,6 +3,7 @@ package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.repositories.TeamMemberRepository;
 import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,14 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     private final UserGroupUserRepository userGroupUserRepository;
 
+    private final TeamMemberRepository teamMemberRepository;
+
     @Autowired
-    public UserProvider(UserRepository repository, UserGroupUserRepository userGroupUserRepository) {
+    public UserProvider(UserRepository repository, UserGroupUserRepository userGroupUserRepository,
+                        TeamMemberRepository teamMemberRepository) {
         super(repository);
         this.userGroupUserRepository = userGroupUserRepository;
+        this.teamMemberRepository = teamMemberRepository;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -74,5 +79,9 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
     }
 
+    public List<User> getByTeam(Long teamId) {
+        return findByIdIn(teamMemberRepository.findByIdTeamId(teamId).stream()
+                .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
+    }
 
 }

@@ -281,6 +281,15 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/teams/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getUsersByTeam(@Parameter(description = "Id of an existing team", required = true) @PathVariable("id") Long id,
+                                        HttpServletRequest request) {
+        return getController().getByTeam(id);
+    }
+
+
     @Operation(summary = "Generates a token for reseting the password", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/public/emails/{email}/reset-password")
     public void createResetPasswordToken(@Parameter(description = "Email from an existing user", required = true) @PathVariable("email") String email,

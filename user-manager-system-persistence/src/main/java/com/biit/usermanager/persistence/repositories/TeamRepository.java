@@ -16,7 +16,9 @@ public interface TeamRepository extends ElementRepository<Team, Long> {
 
     Optional<Team> findByNameAndOrganization(String name, Organization organization);
 
-    int deleteByNameAndOrganization(String name, Organization aorganizationlication);
+    int deleteByNameAndOrganization(String name, Organization organization);
+
+    List<Team> findByParent(Team parent);
 
     List<Team> findByParentIsNull();
 
