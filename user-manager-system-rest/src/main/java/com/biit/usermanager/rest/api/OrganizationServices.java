@@ -1,4 +1,4 @@
-package com.biit.usermanager.rest.api.models;
+package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.ElementServices;
 import com.biit.usermanager.core.controller.OrganizationController;
