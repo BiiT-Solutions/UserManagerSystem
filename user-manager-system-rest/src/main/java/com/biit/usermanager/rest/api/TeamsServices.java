@@ -50,6 +50,16 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Gets all teams from an organization.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<TeamDTO> get(@Parameter(description = "Organization name")
+                             @PathVariable("organizationName") String organizationName,
+                             HttpServletRequest request) {
+        return getController().getByOrganization(organizationName);
+    }
+
+
     @Operation(summary = "Checks if a teamName is already taken or not.")
     @GetMapping(path = "/{teamName}/organizations/{organizationName}/check")
     @ResponseStatus(value = HttpStatus.OK)

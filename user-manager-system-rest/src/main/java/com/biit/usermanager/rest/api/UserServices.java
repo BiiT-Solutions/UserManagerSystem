@@ -220,6 +220,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         getController().delete(username, authentication.getName());
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign roles to a user. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}"
@@ -240,6 +241,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         return getController().assign(username, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign application roles to a user. Assigns all related backend services that are defined.",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -255,6 +257,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             HttpServletRequest request) {
         return getController().assign(username, applicationName, applicationRoleName);
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes application roles from a user.", security = @SecurityRequirement(name = "bearerAuth"))
@@ -272,6 +275,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         return getController().unAssign(username, applicationName, applicationRoleName, authentication.getName());
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/user-group/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -282,7 +286,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get Team's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/teams/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsersByTeam(@Parameter(description = "Id of an existing team", required = true) @PathVariable("id") Long id,
                                         HttpServletRequest request) {
@@ -296,6 +300,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                          HttpServletRequest request) {
         getController().resetPassword(email);
     }
+
 
     @Operation(summary = "Changes the password from a user, using a token", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/public/change-password")

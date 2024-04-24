@@ -126,13 +126,14 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
     @JsonIgnore
     @Override
     public String getFirstName() {
-        return name;
+        return getName();
     }
 
     public String getFirstname() {
-        return name;
+        return getName();
     }
 
+    @Override
     public String getName() {
         return name;
     }

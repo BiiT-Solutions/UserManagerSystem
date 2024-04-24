@@ -67,6 +67,16 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
                 .orElseThrow(() -> new TeamNotFoundException(this.getClass(), "No Team with name '" + name + "' found on the system."))));
     }
 
+    public List<TeamDTO> getByOrganization(String organizationName) {
+        final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() ->
+                new OrganizationNotFoundException(this.getClass(), "Organization with name '" + organizationName + "' not found."));
+        return getByOrganization(organization);
+    }
+
+    public List<TeamDTO> getByOrganization(Organization organization) {
+        return convertAll(getProvider().findByOrganization(organization));
+    }
+
     public void checkNameExists(String teamName, String organizationName) {
         final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() ->
                 new OrganizationNotFoundException(this.getClass(), "Organization with name '" + organizationName + "' not found."));
