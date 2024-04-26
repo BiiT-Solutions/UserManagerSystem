@@ -293,6 +293,15 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         return getController().getByTeam(id);
     }
 
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get Organization's users", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/organanizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getUsersByOrganization(@Parameter(description = "Name of an existing organization", required = true) @PathVariable("organizationName")
+                                                String organizationName,
+                                                HttpServletRequest request) {
+        return getController().getByOrganization(organizationName);
+    }
+
 
     @Operation(summary = "Generates a token for reseting the password", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/public/emails/{email}/reset-password")

@@ -28,6 +28,7 @@ import com.biit.usermanager.core.providers.ApplicationRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.EmailService;
+import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.core.providers.PasswordResetTokenProvider;
 import com.biit.usermanager.core.providers.TeamMemberProvider;
 import com.biit.usermanager.core.providers.TeamProvider;
@@ -44,6 +45,7 @@ import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
+import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.PasswordResetToken;
 import com.biit.usermanager.persistence.entities.Team;
 import com.biit.usermanager.persistence.entities.TeamMember;
@@ -99,6 +101,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     private final TeamProvider teamProvider;
 
+    private final OrganizationProvider organizationProvider;
+
     private final UserGroupUserProvider userGroupUserProvider;
 
     private final TeamMemberProvider teamMemberProvider;
@@ -115,8 +119,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                              ApplicationRoleProvider applicationRoleProvider, BackendServiceRoleProvider backendServiceRoleProvider,
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider,
-                             TeamProvider teamProvider, UserGroupUserProvider userGroupUserRepository, TeamMemberProvider teamMemberProvider,
-                             PasswordResetTokenProvider passwordResetTokenProvider,
+                             TeamProvider teamProvider, OrganizationProvider organizationProvider, UserGroupUserProvider userGroupUserRepository,
+                             TeamMemberProvider teamMemberProvider, PasswordResetTokenProvider passwordResetTokenProvider,
                              EmailService emailService) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
@@ -128,6 +132,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.backendServiceRoleProvider = backendServiceRoleProvider;
         this.userGroupProvider = userGroupProvider;
         this.teamProvider = teamProvider;
+        this.organizationProvider = organizationProvider;
         this.userGroupUserProvider = userGroupUserRepository;
         this.teamMemberProvider = teamMemberProvider;
         this.passwordResetTokenProvider = passwordResetTokenProvider;
@@ -707,6 +712,16 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
         final List<Long> userIds = new ArrayList<>();
         final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId);
+        members.forEach(member -> userIds.add(member.getId().getUserId()));
+        return convertAll(getProvider().findByIdIn(userIds));
+    }
+
+    public List<UserDTO> getByOrganization(String organizationName) {
+        final Organization organization = organizationProvider.findById(organizationName).orElseThrow(()
+                -> new TeamNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'."));
+
+        final List<Long> userIds = new ArrayList<>();
+        final Set<TeamMember> members = teamMemberProvider.findByOrganizationName(organizationName);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }

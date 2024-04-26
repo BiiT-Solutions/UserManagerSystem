@@ -8,6 +8,8 @@ import java.io.Serializable;
 @Embeddable
 public class TeamMemberId implements Serializable {
 
+    private static final int HASH_CODE = 31;
+
     @Column(name = "team_id", nullable = false)
     private Long teamId;
 
@@ -38,5 +40,29 @@ public class TeamMemberId implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final TeamMemberId that = (TeamMemberId) o;
+
+        if (!teamId.equals(that.teamId)) {
+            return false;
+        }
+        return userId.equals(that.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = teamId.hashCode();
+        result = HASH_CODE * result + userId.hashCode();
+        return result;
     }
 }

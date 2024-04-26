@@ -5,7 +5,7 @@
             <run>
                 <include name="userRepository"/>
                 <include name="roleRepository"/>
-                <include name="groupRepository"/>
+                <include name="teamRepository"/>
                 <include name="applicationRepository"/>
                 <include name="backendServiceRoleRepository"/>
                 <include name="applicationServiceRoleRepository"/>

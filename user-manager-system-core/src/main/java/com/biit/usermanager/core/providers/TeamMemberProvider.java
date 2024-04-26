@@ -25,4 +25,12 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
     public Set<TeamMember> findByIdUserGroupId(Long teamId) {
         return getRepository().findByIdTeamId(teamId);
     }
+
+    public Set<TeamMember> findByOrganizationName(String organizationName) {
+        return getRepository().findByOrganizationName(organizationName);
+    }
+
+    public TeamMember assign(Long userId, Long teamId) {
+        return save(new TeamMember(teamId, userId));
+    }
 }
