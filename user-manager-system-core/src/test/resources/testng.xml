@@ -11,6 +11,7 @@
                 <include name="roleTests"/>
                 <include name="userGroupTests"/>
                 <include name="teamTests"/>
+                <include name="organizationTests"/>
             </run>
         </groups>
         <classes>
@@ -18,6 +19,7 @@
             <class name="com.biit.usermanager.core.RoleTests"/>
             <class name="com.biit.usermanager.core.UserGroupTests"/>
             <class name="com.biit.usermanager.core.TeamTests"/>
+            <class name="com.biit.usermanager.core.OrganizationTests"/>
         </classes>
     </test>
 </suite>

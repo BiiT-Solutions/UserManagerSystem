@@ -535,7 +535,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     public void checkUsernameExists(String username) {
         getProvider().findByUsername(username).orElseThrow(()
-                -> new UserNotFoundException(this.getClass(), "No uses exists with the username '" + username + "'."));
+                -> new UserNotFoundException(this.getClass(), "No uses exists with username '" + username + "'."));
     }
 
     public void setApplicationBackendServiceRole(UserDTO
@@ -564,7 +564,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             String username, String applicationName, String applicationRoleName) {
 
         final User user = getProvider().findByUsername(username).orElseThrow(()
-                -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
+                -> new UserNotFoundException(this.getClass(), "No user exists with username '" + username + "'."));
 
         final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
                 .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
@@ -609,7 +609,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             String username, String applicationName, String applicationRoleName, String unassignedBy) {
 
         final User user = getProvider().findByUsername(username).orElseThrow(()
-                -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
+                -> new UserNotFoundException(this.getClass(), "No user exists with username '" + username + "'."));
 
         final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
                 .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
@@ -629,7 +629,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     public UserDTO assign(
             String username, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
         final User user = getProvider().findByUsername(username).orElseThrow(()
-                -> new UserNotFoundException(this.getClass(), "No user exists with the username '" + username + "'."));
+                -> new UserNotFoundException(this.getClass(), "No user exists with username '" + username + "'."));
 
         //Ensure it does not exist yet.
         if (userApplicationBackendServiceRoleProvider

@@ -79,9 +79,6 @@ public class TeamTests extends AbstractTestNGSpringContextTests {
     private ApplicationBackendServiceRoleController applicationBackendServiceRoleController;
 
     @Autowired
-    private ApplicationBackendServiceRoleConverter applicationBackendServiceRoleConverter;
-
-    @Autowired
     private UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider;
 
     @Value("${spring.application.name}")

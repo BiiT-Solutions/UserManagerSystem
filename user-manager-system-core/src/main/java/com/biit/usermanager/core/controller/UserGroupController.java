@@ -81,12 +81,12 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
     public UserGroupDTO getByName(String name) {
         return convert(getProvider().findByName(name).orElseThrow(
-                () -> new UserGroupNotFoundException(this.getClass(), "No user group exists with the username '" + name + "'.")));
+                () -> new UserGroupNotFoundException(this.getClass(), "No user group exists with username '" + name + "'.")));
     }
 
     public void checkNameExists(String name) {
         getProvider().findByName(name).orElseThrow(()
-                -> new UserGroupNotFoundException(this.getClass(), "No user group exists with the username '" + name + "'."));
+                -> new UserGroupNotFoundException(this.getClass(), "No user group exists with username '" + name + "'."));
     }
 
     @Transactional

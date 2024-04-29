@@ -46,7 +46,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
 
     @Override
     public IUser<Long> authenticate(String email, String password) throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
-        // Login fails if either the username or password is null
+        // Login fails if either username or password is null
         if (email == null || password == null) {
             throw new InvalidCredentialsException("No fields filled up.");
         }
@@ -138,7 +138,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     @Override
     public IUser<Long> updatePassword(IUser<Long> user, String plainTextPassword) throws UserDoesNotExistException,
             InvalidCredentialsException, UserManagementException {
-        // Login fails if either the username or password is null
+        // Login fails if either username or password is null
         if (user == null || plainTextPassword == null) {
             throw new UserManagementException("Nothing to update.");
         }
@@ -170,7 +170,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     @CacheEvict(allEntries = true, value = {"users", "users-by-mail"})
     @Override
     public IUser<Long> updateUser(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
-        // Login fails if either the username or password is null
+        // Login fails if either username or password is null
         if (user == null) {
             throw new UserManagementException("No user to update.");
         }
