@@ -32,7 +32,8 @@ public class OrganizationServices extends ElementServices<Organization, String, 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get all user's organizations.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Collection<OrganizationDTO> getOrganizationsByUser(@Parameter(description = "User Id", required = true) @PathVariable("userId")                                                              Long userId,
+    public Collection<OrganizationDTO> getOrganizationsByUser(@Parameter(description = "User Id", required = true)
+                                                              @PathVariable("userId") Long userId,
                                                               HttpServletRequest request) {
         return getController().getByUser(userId);
     }
