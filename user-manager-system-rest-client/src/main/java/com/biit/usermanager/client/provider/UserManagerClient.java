@@ -359,14 +359,14 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Set<String> getRoles(String username, String groupName, String applicationName) {
+    public Set<String> getRoles(String username, String applicationName) {
         final Set<String> roles = new HashSet<>();
         try {
             try (Response result = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
-                    userUrlConstructor.getRolesByUserAndGroupAndApplication(username, groupName, applicationName))) {
+                    userUrlConstructor.getRolesByUserAndApplication(username, applicationName))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor
-                                .getRolesByUserAndGroupAndApplication(username, groupName, applicationName), result.getStatus());
+                                .getRolesByUserAndApplication(username, applicationName), result.getStatus());
 
                 final List<BackendServiceRoleDTO> backendServiceRoleDTOs = Arrays.asList(
                         mapper.readValue(result.readEntity(String.class), BackendServiceRoleDTO[].class));

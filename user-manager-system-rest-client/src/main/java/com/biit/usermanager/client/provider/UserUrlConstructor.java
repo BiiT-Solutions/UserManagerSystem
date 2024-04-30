@@ -101,4 +101,9 @@ public class UserUrlConstructor {
                 + "/applications/" + applicationName;
     }
 
+    public String getRolesByUserAndApplication(String username, String applicationName) {
+        return getBackendServiceRoles() + "/users/" + URLEncoder.encode(username, StandardCharsets.UTF_8)
+                + "/applications/" + applicationName;
+    }
+
 }

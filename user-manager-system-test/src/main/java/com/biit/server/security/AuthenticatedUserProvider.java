@@ -172,7 +172,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Set<String> getRoles(String username, String groupName, String application) {
+    public Set<String> getRoles(String username, String application) {
         final IAuthenticatedUser user = usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getUsername().equals(username))
                 .findAny().orElseThrow(() ->
                         new RuntimeException("User with username '" + username + "' does not exists"));

@@ -47,7 +47,6 @@ import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.PasswordResetToken;
-import com.biit.usermanager.persistence.entities.Team;
 import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
@@ -451,7 +450,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
     @Override
-    public Set<String> getRoles(String username, String groupName, String applicationName) {
+    public Set<String> getRoles(String username, String applicationName) {
         final UserDTO userDTO = getByUsername(username);
         final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                 new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
