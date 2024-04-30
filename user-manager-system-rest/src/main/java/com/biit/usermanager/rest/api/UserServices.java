@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -115,6 +117,14 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                              HttpServletRequest request) {
         return (UserDTO) getController().findByUID(uuid).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with uuid '" + uuid + "' found on the system."));
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.viewerPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @Operation(summary = "Gets all entities that have these uuids", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/uuids", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<UserDTO> getAllByUUIDs(@Parameter(description = "List of users' uuids.")
+                                @RequestParam Collection<UUID> uuids, HttpServletRequest request) {
+        return getController().findByUIDs(uuids);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")

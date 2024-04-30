@@ -5,6 +5,7 @@ import com.biit.usermanager.persistence.entities.User;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +21,8 @@ public interface UserRepository extends ElementRepository<User, Long> {
     Optional<User> findByIdCard(String idCard);
 
     Optional<User> findByUuid(UUID uuid);
+
+    List<User> findByUuidIn(Collection<UUID> uuid);
 
     Optional<User> findByNameAndLastname(String name, String lastname);
 

@@ -725,4 +725,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }
+
+
+    public List<UserDTO> findByUIDs(Collection<UUID> uuids) {
+        return convertAll(getProvider().findByUuids(uuids));
+    }
 }

@@ -10,6 +10,7 @@ import com.biit.usermanager.core.exceptions.TeamNotFoundException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.kafka.TeamEventSender;
 import com.biit.usermanager.core.providers.OrganizationProvider;
+import com.biit.usermanager.core.providers.TeamMemberProvider;
 import com.biit.usermanager.core.providers.TeamProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.OrganizationDTO;
@@ -19,7 +20,6 @@ import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.Team;
 import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
-import com.biit.usermanager.persistence.repositories.TeamMemberRepository;
 import com.biit.usermanager.persistence.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,17 +37,17 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     private final OrganizationProvider organizationProvider;
     private final UserProvider userProvider;
 
-    private final TeamMemberRepository teamMemberRepository;
+    private final TeamMemberProvider teamMemberProvider;
 
     @Autowired
     protected TeamController(TeamProvider provider, TeamConverter converter, OrganizationConverter organizationConverter,
                              OrganizationProvider organizationProvider, TeamEventSender eventSender, UserProvider userProvider,
-                             TeamMemberRepository teamMemberRepository) {
+                             TeamMemberProvider teamMemberProvider) {
         super(provider, converter, eventSender);
         this.organizationConverter = organizationConverter;
         this.organizationProvider = organizationProvider;
         this.userProvider = userProvider;
-        this.teamMemberRepository = teamMemberRepository;
+        this.teamMemberProvider = teamMemberProvider;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
         //Store into the team
         final List<TeamMember> teamMembers = new ArrayList<>();
         users.forEach(userDTO -> teamMembers.add(new TeamMember(teamId, userDTO.getId())));
-        teamMemberRepository.saveAll(teamMembers);
+        teamMemberProvider.saveAll(teamMembers);
 
         team.setUpdatedBy(assignedBy);
 
@@ -135,7 +135,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
         final List<TeamMember> userGroupUserToDelete = new ArrayList<>();
         users.forEach(userDTO -> userGroupUserToDelete.add(new TeamMember(teamId, userDTO.getId())));
-        teamMemberRepository.deleteAll(userGroupUserToDelete);
+        teamMemberProvider.deleteAll(userGroupUserToDelete);
 
         team.setUpdatedBy(assignedBy);
 

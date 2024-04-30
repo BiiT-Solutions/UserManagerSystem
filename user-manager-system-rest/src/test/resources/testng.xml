@@ -8,11 +8,13 @@
     <test name="UserManager" enabled="true" preserve-order="true">
         <groups>
             <run>
-                <include name="UserRoleTests"/>
-                <include name="ForgotPasswordTests"/>
+                <include name="userRoleTests"/>
+                <include name="userTests"/>
+                <include name="forgotPasswordTests"/>
             </run>
         </groups>
         <classes>
+            <class name="com.biit.usermanager.rest.tests.UserTests"/>
             <class name="com.biit.usermanager.rest.tests.UserRoleTests"/>
             <class name="com.biit.usermanager.rest.tests.ForgotPasswordTests"/>
         </classes>

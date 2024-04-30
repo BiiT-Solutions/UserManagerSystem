@@ -9,6 +9,7 @@ import com.biit.usermanager.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,6 +48,10 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     public Optional<User> findByUuid(UUID uuid) {
         return getRepository().findByUuid(uuid);
+    }
+
+    public List<User> findByUuids(Collection<UUID> uuids) {
+        return getRepository().findByUuidIn(uuids);
     }
 
     public Optional<User> getById(Long id) {
