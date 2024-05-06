@@ -27,6 +27,18 @@ public class SecurityController {
     }
 
     /**
+     * Checks if a user has at least one required role to perform an action. Used for backend service roles where
+     * applicationName and backend service name are equals.
+     *
+     * @param jwtUserName   user logged in.
+     * @param userToCheck   user to read data from.
+     * @param requiredRoles roles needed to perform the action.
+     */
+    public void checkIfCanSeeUserData(String jwtUserName, UUID userToCheck, String... requiredRoles) {
+        checkIfCanSeeUserData(backendServiceName, backendServiceName, jwtUserName, userToCheck, requiredRoles);
+    }
+
+    /**
      * Checks if a user has at least one required role to perform an action. Is using current application for roles.
      *
      * @param applicationName the application where the roles must be checked.
