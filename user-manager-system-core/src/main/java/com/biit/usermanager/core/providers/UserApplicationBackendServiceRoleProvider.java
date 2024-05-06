@@ -62,6 +62,11 @@ public class UserApplicationBackendServiceRoleProvider extends StorableObjectPro
         return getRepository().findByIdUserIdAndIdApplicationNameAndIdRoleName(userId, applicationName, applicationRoleName);
     }
 
+    public Set<UserApplicationBackendServiceRole> findBy(
+            Long userId, String applicationName) {
+        return getRepository().findByIdUserIdAndIdApplicationName(userId, applicationName);
+    }
+
     public Set<UserApplicationBackendServiceRole> findBy(ApplicationRole applicationRole) {
         return findBy(applicationRole.getId().getApplication().getName(), applicationRole.getId().getRole().getName());
     }

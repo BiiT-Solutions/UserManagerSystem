@@ -10,6 +10,7 @@ import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.BackendServiceRoleEventSender;
 import com.biit.usermanager.core.kafka.UserEventSender;
+import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
@@ -25,7 +26,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Controller
@@ -38,6 +38,7 @@ public class BackendServiceRoleController extends KafkaCreatedElementController<
     private final UserProvider userProvider;
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
+    private final ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider;
 
     private final UserEventSender userEventSender;
 
@@ -46,11 +47,12 @@ public class BackendServiceRoleController extends KafkaCreatedElementController<
                                            UserProvider userProvider,
                                            BackendServiceRoleEventSender eventSender,
                                            UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
-                                           UserEventSender userEventSender) {
+                                           ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider, UserEventSender userEventSender) {
         super(provider, converter, eventSender);
         this.backendServiceProvider = backendServiceProvider;
         this.userProvider = userProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
+        this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.userEventSender = userEventSender;
     }
 
@@ -84,24 +86,30 @@ public class BackendServiceRoleController extends KafkaCreatedElementController<
         return convertAll(getProvider().findByIdIn(backendServiceRoleId));
     }
 
-    public List<BackendServiceRoleDTO> findBy(String username, String groupName, String applicationName) {
+    public List<BackendServiceRoleDTO> findBy(String username, String applicationName) {
         if (applicationName == null) {
             return findBy(username);
         }
         final User user = userProvider.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No users found with username '" + username + "'."));
-        final List<BackendServiceRoleId> backendServiceRoleId = user.getApplicationBackendServiceRoles().stream()
-                .filter(applicationBackendServiceRole ->
-                        Objects.equals(applicationBackendServiceRole.getId().getApplicationRole().getId().getApplication().getName(), applicationName))
-                .map(applicationBackendServiceRole -> applicationBackendServiceRole.getId().getBackendServiceRole().getId()).toList();
+        final Set<UserApplicationBackendServiceRole> userApplicationBackendServiceRoles = userApplicationBackendServiceRoleProvider.findBy(user.getId(),
+                applicationName);
+
+        final List<BackendServiceRoleId> backendServiceRoleId = userApplicationBackendServiceRoles.stream().map(userApplicationBackendServiceRole ->
+                new BackendServiceRole(
+                        new BackendService(userApplicationBackendServiceRole.getId().getBackendServiceName()),
+                        userApplicationBackendServiceRole.getId().getBackendServiceRole()).getId()).toList();
+
         return convertAll(getProvider().findByIdIn(backendServiceRoleId));
     }
+
 
     public BackendServiceRoleDTO get(String backendServiceName, String roleName) {
         return convert(getProvider().findByBackendServiceAndName(backendServiceName, roleName).orElseThrow(() ->
                 new BackendServiceRoleNotFoundException(this.getClass(),
                         "No backend service role defined for service '" + backendServiceName + "' and role '" + roleName + "'.")));
     }
+
 
     public void delete(String backendServiceName, String roleName, String deletedBy) {
         final BackendServiceRole backendServiceRole = getProvider().findByBackendServiceAndName(backendServiceName, roleName).orElseThrow(() ->

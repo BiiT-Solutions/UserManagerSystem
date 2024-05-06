@@ -79,16 +79,14 @@ public class BackendServiceRoleServices extends CreatedElementServices<
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get backend's roles by user name, group and application", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/users/{userName}/groups/{groupName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/users/{userName}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BackendServiceRoleDTO> getRolesFromUserGroupAndApplication(
             @Parameter(description = "Name of an existing user", required = true)
             @PathVariable("userName") String userName,
-            @Parameter(description = "Name of an existing group", required = false)
-            @PathVariable("groupName") String groupName,
             @Parameter(description = "Name of an existing application", required = false)
             @PathVariable("applicationName") String applicationName,
             HttpServletRequest request) {
-        return getController().findBy(userName, groupName, applicationName);
+        return getController().findBy(userName, applicationName);
     }
 
     @Hidden
