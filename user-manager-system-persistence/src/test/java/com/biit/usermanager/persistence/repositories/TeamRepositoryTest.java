@@ -162,14 +162,14 @@ public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = "saveTeams")
     public void getTeamsByName() {
-        Optional<Team> team = teamRepository.findByNameAndOrganization(TEAM_NAME, organization);
+        Optional<Team> team = teamRepository.findByNameIgnoreCaseAndOrganization(TEAM_NAME, organization);
         Assert.assertTrue(team.isPresent());
         Assert.assertEquals(team.get().getName(), TEAM_NAME);
 
-        Optional<Team> team2 = teamRepository.findByNameAndOrganization(TEAM_2_NAME, organization);
+        Optional<Team> team2 = teamRepository.findByNameIgnoreCaseAndOrganization(TEAM_2_NAME, organization);
         Assert.assertFalse(team2.isPresent());
 
-        Optional<Team> team3 = teamRepository.findByNameAndOrganization(TEAM_3_NAME, organization2);
+        Optional<Team> team3 = teamRepository.findByNameIgnoreCaseAndOrganization(TEAM_3_NAME, organization2);
         Assert.assertTrue(team3.isPresent());
     }
 

@@ -16,7 +16,7 @@ public interface TeamMemberRepository extends StorableObjectRepository<TeamMembe
 
     @Query("""
             SELECT tm FROM TeamMember tm WHERE tm.id.teamId IN
-            (SELECT t.id FROM Team t WHERE t.organization.name=:organizationName)
+            (SELECT t.id FROM Team t WHERE lower(t.organization.name) = lower(:organizationName))
             """)
     Set<TeamMember> findByOrganizationName(String organizationName);
 }

@@ -13,6 +13,8 @@ import java.util.Set;
 @Transactional
 public interface OrganizationRepository extends ElementRepository<Organization, String> {
 
+    Optional<Organization> findByNameIgnoreCase(String name);
+
     @Query("""
             SELECT o FROM Organization o WHERE o.name=
             (SELECT t.organization.name FROM Team t WHERE t.id=:teamId)

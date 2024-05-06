@@ -213,5 +213,6 @@ public class TeamTests extends AbstractTestNGSpringContextTests {
         applicationController.deleteAll(null);
         teamController.deleteAll(null);
         userController.deleteAll(null);
+        organizationController.deleteAll(null);
     }
 }

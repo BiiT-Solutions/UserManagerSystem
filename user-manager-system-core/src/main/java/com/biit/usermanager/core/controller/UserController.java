@@ -716,7 +716,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
     public List<UserDTO> getByOrganization(String organizationName) {
-        final Organization organization = organizationProvider.findById(organizationName).orElseThrow(()
+        final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(()
                 -> new TeamNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'."));
 
         final List<Long> userIds = new ArrayList<>();

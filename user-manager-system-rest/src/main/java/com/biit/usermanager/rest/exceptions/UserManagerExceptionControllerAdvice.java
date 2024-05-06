@@ -4,7 +4,9 @@ import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.logger.RestServerExceptionLogger;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
+import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
+import com.biit.usermanager.core.exceptions.TeamAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import org.apache.kafka.common.errors.InvalidRequestException;
@@ -45,6 +47,20 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> roleWithoutBackendServiceRoleException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorMessage("Role has no linked backend services. Backend services are necessary on each role."),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OrganizationAlreadyExistsException.class)
+    public ResponseEntity<Object> organizationAlreadyExistsException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorMessage("Organization already exists. ", ex),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TeamAlreadyExistsException.class)
+    public ResponseEntity<Object> teamAlreadyExistsException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorMessage("Team already exists. ", ex),
                 HttpStatus.BAD_REQUEST);
     }
 

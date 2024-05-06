@@ -4,6 +4,7 @@ package com.biit.usermanager.core.controller;
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
+import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.OrganizationEventSender;
@@ -14,7 +15,6 @@ import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 @Controller
 public class OrganizationController extends KafkaElementController<Organization, String, OrganizationDTO, OrganizationRepository,
         OrganizationProvider, OrganizationConverterRequest, OrganizationConverter> {
-
-    @Value("${spring.application.name}")
-    private String applicationName;
 
     private final UserProvider userProvider;
 
@@ -39,6 +36,14 @@ public class OrganizationController extends KafkaElementController<Organization,
     @Override
     protected OrganizationConverterRequest createConverterRequest(Organization entity) {
         return new OrganizationConverterRequest(entity);
+    }
+
+    @Override
+    public OrganizationDTO create(OrganizationDTO dto, String creatorName) {
+        if (getProvider().findByName(dto.getName()).isPresent()) {
+            throw new OrganizationAlreadyExistsException(this.getClass(), "Already exists an organization with name '" + dto.getName() + "'.");
+        }
+        return super.create(dto, creatorName);
     }
 
     public OrganizationDTO getByName(String name) {

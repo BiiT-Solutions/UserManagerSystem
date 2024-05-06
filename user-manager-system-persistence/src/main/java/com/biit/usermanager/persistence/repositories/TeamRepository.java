@@ -14,9 +14,9 @@ import java.util.Optional;
 @Transactional
 public interface TeamRepository extends ElementRepository<Team, Long> {
 
-    Optional<Team> findByNameAndOrganization(String name, Organization organization);
+    Optional<Team> findByNameIgnoreCaseAndOrganization(String name, Organization organization);
 
-    int deleteByNameAndOrganization(String name, Organization organization);
+    int deleteByNameIgnoreCaseAndOrganization(String name, Organization organization);
 
     List<Team> findByParent(Team parent);
 

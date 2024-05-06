@@ -20,7 +20,7 @@ public class OrganizationProvider extends ElementProvider<Organization, String, 
     }
 
     public Optional<Organization> findByName(String name) {
-        return getRepository().findById(name);
+        return getRepository().findByNameIgnoreCase(name);
     }
 
     public Optional<Organization> findByTeam(Team team) {

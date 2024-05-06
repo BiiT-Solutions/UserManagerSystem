@@ -5,6 +5,7 @@ import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.TeamConverter;
 import com.biit.usermanager.core.converters.models.TeamConverterRequest;
+import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
@@ -53,6 +54,18 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     @Override
     protected TeamConverterRequest createConverterRequest(Team entity) {
         return new TeamConverterRequest(entity);
+    }
+
+    @Override
+    public TeamDTO create(TeamDTO dto, String creatorName) {
+        if (dto.getOrganization() == null) {
+            throw new OrganizationNotFoundException(this.getClass(), "Organization cannot be null.");
+        }
+        if (getProvider().findByNameAndOrganization(dto.getName(), organizationConverter.reverse(dto.getOrganization())).isPresent()) {
+            throw new OrganizationAlreadyExistsException(this.getClass(), "Already exists a team with name '" + dto.getName()
+                    + "' on organization '" + dto.getOrganization().getName() + "'.");
+        }
+        return super.create(dto, creatorName);
     }
 
     public TeamDTO getByName(String name, String organizationName) {

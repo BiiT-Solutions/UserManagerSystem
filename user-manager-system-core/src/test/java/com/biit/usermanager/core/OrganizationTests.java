@@ -129,6 +129,19 @@ public class OrganizationTests extends AbstractTestNGSpringContextTests {
         teamController.assign(teamDTO3.getId(), List.of(user2), null);
     }
 
+    @Test
+    public void getOrganizationByNameIgnoreCase() {
+        Assert.assertNotNull(organizationController.getByName(ORGANIZATION_1_NAME.toLowerCase()));
+        Assert.assertNotNull(organizationController.getByName(ORGANIZATION_2_NAME.toLowerCase()));
+        Assert.assertNotNull(organizationController.getByName(ORGANIZATION_3_NAME.toLowerCase()));
+    }
+
+    @Test
+    public void getTeamByNameIgnoreCase() {
+        Assert.assertNotNull(teamController.getByName(TEAM_1_NAME.toLowerCase(), ORGANIZATION_1_NAME.toLowerCase()));
+        Assert.assertNotNull(teamController.getByName(TEAM_2_NAME.toLowerCase(), ORGANIZATION_2_NAME.toLowerCase()));
+        Assert.assertNotNull(teamController.getByName(TEAM_3_NAME.toLowerCase(), ORGANIZATION_3_NAME.toLowerCase()));
+    }
 
     @Test(dependsOnMethods = {"assignUsers"})
     public void getOrganizationsByUsers() {
@@ -153,5 +166,6 @@ public class OrganizationTests extends AbstractTestNGSpringContextTests {
         applicationController.deleteAll(null);
         teamController.deleteAll(null);
         userController.deleteAll(null);
+        organizationController.deleteAll(null);
     }
 }

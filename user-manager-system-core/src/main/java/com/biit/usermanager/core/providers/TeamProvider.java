@@ -35,10 +35,10 @@ public class TeamProvider extends ElementProvider<Team, Long, TeamRepository> {
     }
 
     public Optional<Team> findByNameAndOrganization(String name, Organization organization) {
-        return getRepository().findByNameAndOrganization(name, organization);
+        return getRepository().findByNameIgnoreCaseAndOrganization(name, organization);
     }
 
     public int deleteByName(String name, Organization organization) {
-        return getRepository().deleteByNameAndOrganization(name, organization);
+        return getRepository().deleteByNameIgnoreCaseAndOrganization(name, organization);
     }
 }
