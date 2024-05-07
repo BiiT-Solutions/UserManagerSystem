@@ -63,7 +63,7 @@ to the `User Manager System` API.
 ### Rest module and Rest Server module
 
 As the rest classes are used by the Rest Client are in a specific package without the spring boot repackage. The Rest
-module must be deployed as a standard one in Artifactory to be use as a test dependency by Rest Client module.
+module must be deployed as a standard one in Artifactory to be used as a test dependency by Rest Client module.
 
 The Rest Server module, includes all spring boot configuration that allows to be run as a server.
 
@@ -254,18 +254,15 @@ For defining custom roles of your application, you need to add on the `applicati
 property `user.provider.test.authorities`:
 
 ```
-jwt.secret=asd123
-jwt.expiration=604800000
-jwt.ip.check=false
-jwt.user=admin
-jwt.password=asd123
 user.provider.test.authorities=ADMIN,EDITOR,VIEWER
 ```
 
 If you do not set the parameter `user.provider.test.authorities`, by default has already the
-value `ADMIN,EDITOR,VIEWER`. That
-will generate the authorities `<<yourapplication>>_ADMIN`, `<<yourapplication>>_EDITOR`
+value `ADMIN,EDITOR,VIEWER`. That will generate the
+authorities `<<yourapplication>>_ADMIN`, `<<yourapplication>>_EDITOR`
 and `<<yourapplication>>_VIEWER`.
+
+This dependency also has a custom bean that implements `ISecurityController`.
 
 # Dependencies
 

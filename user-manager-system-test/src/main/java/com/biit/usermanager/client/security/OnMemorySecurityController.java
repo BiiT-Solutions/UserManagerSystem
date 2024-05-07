@@ -1,11 +1,12 @@
 package com.biit.usermanager.client.security;
 
 import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.ISecurityController;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
-import com.biit.usermanager.client.provider.UserManagerClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 
@@ -18,18 +19,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
-@Order(1)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Qualifier("securityController")
-public class SecurityController implements ISecurityController {
+public class OnMemorySecurityController implements ISecurityController {
 
     @Value("${spring.application.name:}")
     private String backendServiceName;
 
-    private final UserManagerClient userManagerClient;
+    private final IAuthenticatedUserProvider authenticatedUserProvider;
 
-    public SecurityController(UserManagerClient userManagerClient) {
-        this.userManagerClient = userManagerClient;
+    public OnMemorySecurityController(IAuthenticatedUserProvider authenticatedUserProvider) {
+        this.authenticatedUserProvider = authenticatedUserProvider;
     }
+
 
     @Override
     public void checkIfCanSeeUserData(String jwtUserName, UUID userToCheck, String... requiredRoles) {
@@ -43,7 +45,7 @@ public class SecurityController implements ISecurityController {
 
     @Override
     public void checkIfCanSeeUserData(String applicationName, String backendServiceName, String jwtUserName, UUID userToCheck, String... requiredRoles) {
-        checkIfCanSeeUserData(jwtUserName, userToCheck, userManagerClient.getRoles(jwtUserName, applicationName),
+        checkIfCanSeeUserData(jwtUserName, userToCheck, authenticatedUserProvider.getRoles(jwtUserName, applicationName),
                 checkRolesFormat(backendServiceName, requiredRoles));
     }
 
@@ -61,7 +63,7 @@ public class SecurityController implements ISecurityController {
     }
 
     private void checkIfCanSeeUserData(String jwtUserName, UUID userToCheck, Set<String> userRoles, String... requiredRoles) {
-        final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(jwtUserName);
+        final Optional<IAuthenticatedUser> user = authenticatedUserProvider.findByUsername(jwtUserName);
         if (user.isEmpty()) {
             throw new ActionNotAllowedException(this.getClass(), "No user exists with username '" + jwtUserName + "'.");
         }

@@ -1,7 +1,7 @@
 package com.biit.usermanager.client;
 
-import com.biit.usermanager.client.exceptions.ActionNotAllowedException;
-import com.biit.usermanager.client.provider.UserManagerClient;
+
+import com.biit.server.security.exceptions.ActionNotAllowedException;
 import com.biit.usermanager.client.security.SecurityController;
 import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
