@@ -2,7 +2,7 @@ package com.biit.usermanager.client;
 
 
 import com.biit.server.security.exceptions.ActionNotAllowedException;
-import com.biit.usermanager.client.security.SecurityController;
+import com.biit.usermanager.client.security.UserClientSecurityController;
 import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;
@@ -90,7 +90,7 @@ public class SecurityTests extends AbstractTestNGSpringContextTests {
     private ApplicationBackendServiceRoleConverter applicationBackendServiceRoleConverter;
 
     @Autowired
-    private SecurityController securityController;
+    private UserClientSecurityController userClientSecurityController;
 
     @Value("${spring.application.name}")
     private String backendService;
@@ -153,27 +153,27 @@ public class SecurityTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void checkAdminCanSeeOtherUserData() {
-        securityController.checkIfCanSeeUserData(APPLICATION_NAME, admin.getUsername(), guest.getUUID(), "USERMANAGERSYSTEM_ADMIN");
+        userClientSecurityController.checkIfCanSeeUserData(APPLICATION_NAME, admin.getUsername(), guest.getUUID(), "USERMANAGERSYSTEM_ADMIN");
     }
 
     @Test
     public void checkAdminCanSeeOtherUserDataWithoutApplication() {
-        securityController.checkIfCanSeeUserData(APPLICATION_NAME, admin.getUsername(), guest.getUUID(), "ADMIN");
+        userClientSecurityController.checkIfCanSeeUserData(APPLICATION_NAME, admin.getUsername(), guest.getUUID(), "ADMIN");
     }
 
     @Test(expectedExceptions = ActionNotAllowedException.class)
     public void checkGuestCannotSeeOtherUserData() {
-        securityController.checkIfCanSeeUserData(APPLICATION_NAME, guest.getUsername(), admin.getUUID(), "USERMANAGERSYSTEM_ADMIN");
+        userClientSecurityController.checkIfCanSeeUserData(APPLICATION_NAME, guest.getUsername(), admin.getUUID(), "USERMANAGERSYSTEM_ADMIN");
     }
 
     @Test
     public void checkGuestCanSeeOwnUserData() {
-        securityController.checkIfCanSeeUserData(APPLICATION_NAME, guest.getUsername(), guest.getUUID(), "USERMANAGERSYSTEM_ADMIN");
+        userClientSecurityController.checkIfCanSeeUserData(APPLICATION_NAME, guest.getUsername(), guest.getUUID(), "USERMANAGERSYSTEM_ADMIN");
     }
 
     @Test
     public void checkGuestCanSeeOwnUserDataWithoutApplication() {
-        securityController.checkIfCanSeeUserData(APPLICATION_NAME, guest.getUsername(), guest.getUUID(), "ADMIN");
+        userClientSecurityController.checkIfCanSeeUserData(APPLICATION_NAME, guest.getUsername(), guest.getUUID(), "ADMIN");
     }
 
     @AfterClass(alwaysRun = true)

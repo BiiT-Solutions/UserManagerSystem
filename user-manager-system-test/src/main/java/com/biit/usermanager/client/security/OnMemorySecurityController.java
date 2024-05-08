@@ -4,8 +4,8 @@ import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.ISecurityController;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
@@ -18,9 +18,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Primary
 @Controller
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@Qualifier("securityController")
 public class OnMemorySecurityController implements ISecurityController {
 
     @Value("${spring.application.name:}")

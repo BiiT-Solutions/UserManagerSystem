@@ -4,7 +4,6 @@ import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.ISecurityController;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
 import com.biit.usermanager.client.provider.UserManagerClient;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
@@ -19,15 +18,14 @@ import java.util.stream.Collectors;
 
 @Controller
 @Order(1)
-@Qualifier("securityController")
-public class SecurityController implements ISecurityController {
+public class UserClientSecurityController implements ISecurityController {
 
     @Value("${spring.application.name:}")
     private String backendServiceName;
 
     private final UserManagerClient userManagerClient;
 
-    public SecurityController(UserManagerClient userManagerClient) {
+    public UserClientSecurityController(UserManagerClient userManagerClient) {
         this.userManagerClient = userManagerClient;
     }
 
