@@ -48,7 +48,7 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = "saveUser")
     public void getUserByUserName() {
-        Optional<User> user = userRepository.findByUsername(USER_NAME);
+        Optional<User> user = userRepository.findByUsernameHash(USER_NAME);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
     }

@@ -4,8 +4,8 @@ import com.biit.database.encryption.BCryptPasswordConverter;
 import com.biit.database.encryption.BooleanCryptoConverter;
 import com.biit.database.encryption.LocalDateCryptoConverter;
 import com.biit.database.encryption.LocalDateTimeCryptoConverter;
+import com.biit.database.encryption.SHA512HashGenerator;
 import com.biit.database.encryption.StringCryptoConverter;
-import com.biit.database.encryption.UUIDCryptoConverter;
 import com.biit.server.persistence.entities.Element;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
@@ -48,12 +48,15 @@ public class User extends Element<Long> {
     private String idCard;
 
     @Column(name = "user_uuid", unique = true, length = UUID_COLUMN_LENGTH, nullable = false)
-    @Convert(converter = UUIDCryptoConverter.class)
     private UUID uuid = UUID.randomUUID();
 
     @Column(name = "username", nullable = false, unique = true, length = MAX_UNIQUE_COLUMN_LENGTH)
     @Convert(converter = StringCryptoConverter.class)
     private String username = "";
+
+    @Column(name = "username_hash", length = SHA512HashGenerator.ALGORITHM_LENGTH)
+    @Convert(converter = SHA512HashGenerator.class)
+    private String usernameHash;
 
     @Column(name = "name", nullable = false)
     @Convert(converter = StringCryptoConverter.class)
@@ -174,6 +177,15 @@ public class User extends Element<Long> {
 
     public void setUsername(String username) {
         this.username = username;
+        this.usernameHash = username;
+    }
+
+    public String getUsernameHash() {
+        return usernameHash;
+    }
+
+    public void setUsernameHash(String usernameHash) {
+        this.usernameHash = usernameHash;
     }
 
     public String getName() {

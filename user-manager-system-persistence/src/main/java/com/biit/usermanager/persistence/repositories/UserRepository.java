@@ -16,6 +16,8 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
+    Optional<User> findByUsernameHash(String username);
+
     Optional<User> findByEmail(String email);
 
     Optional<User> findByIdCard(String idCard);
