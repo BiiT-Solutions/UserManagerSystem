@@ -128,14 +128,6 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Get user by phone number", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/phones/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getByPhone(@Parameter(description = "Phone of an existing user", required = true) @PathVariable("phone") String phone,
-                              HttpServletRequest request) {
-        return getController().getByPhone(phone);
-    }
-
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets a list of expired users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/accounts-expired/{account_expired}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getByAccountExpired(@Parameter(description = "Account is expired", required = true)

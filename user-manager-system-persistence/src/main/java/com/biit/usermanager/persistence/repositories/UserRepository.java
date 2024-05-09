@@ -20,21 +20,13 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    Optional<User> findByIdCard(String idCard);
-
     Optional<User> findByUuid(UUID uuid);
 
     List<User> findByUuidIn(Collection<UUID> uuid);
 
-    Optional<User> findByNameAndLastname(String name, String lastname);
-
     List<User> findAllByAccountBlocked(boolean accountBlocked);
-
-    Optional<User> findByPhone(String phone);
-
-    List<User> findAllByPhone(String phone);
 
     List<User> findByAccountExpired(boolean accountExpired);
 
-    long deleteByUsername(String username);
+    long deleteByUsernameHash(String username);
 }

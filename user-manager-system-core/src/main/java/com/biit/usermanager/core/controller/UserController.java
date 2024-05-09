@@ -411,11 +411,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 .collect(Collectors.toList());
     }
 
-    public UserDTO getByPhone(String phone) {
-        return getConverter().convert(new UserConverterRequest(getProvider().findByPhone(phone).orElseThrow(() -> new UserNotFoundException(this.getClass(),
-                "No User with username '" + phone + "' found on the system."))));
-    }
-
     public List<UserDTO> getAllByExpired(boolean accountExpired) {
         final List<User> usersList = getProvider().findByAccountExpired(accountExpired);
         final List<UserDTO> usersdtList = new ArrayList<>();

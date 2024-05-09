@@ -19,7 +19,6 @@ public class Organization extends Element<String> {
 
     @Id
     @Column(name = "name")
-    @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
     @Column(name = "description")

@@ -54,41 +54,10 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
     }
 
     @Test(dependsOnMethods = "saveUser")
-    public void getUserByNameAndLastname() {
-        Optional<User> user = userRepository.findByNameAndLastname(NAME, LASTNAME);
-        Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(user.get().getName(), NAME);
-        Assert.assertEquals(user.get().getLastname(), LASTNAME);
-    }
-
-    @Test(dependsOnMethods = "saveUser")
     public void getUserByEmail() {
         Optional<User> user = userRepository.findByEmail(USER_EMAIL);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getEmail(), USER_EMAIL);
-    }
-
-    @Test(dependsOnMethods = "saveUser")
-    public void getUserByIdCard() {
-        Optional<User> user = userRepository.findByIdCard(USER_IDCARD);
-        Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(user.get().getIdCard(), USER_IDCARD);
-    }
-
-    @Test(dependsOnMethods = "saveUser")
-    public void getUserByPhone() {
-        Optional<User> user = userRepository.findByPhone(PHONE);
-        Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(user.get().getPhone(), PHONE);
-    }
-
-    @Test(dependsOnMethods = "saveUser")
-    public void howManyUsersPhone() {
-        List<User> users = userRepository.findAllByPhone(PHONE);
-        for (User user : users) {
-            Assert.assertNotNull(user);
-            Assert.assertEquals(user.getPhone(), PHONE);
-        }
     }
 
     @Test(dependsOnMethods = "saveUser")

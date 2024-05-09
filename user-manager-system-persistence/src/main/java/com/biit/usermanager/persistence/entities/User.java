@@ -1,7 +1,6 @@
 package com.biit.usermanager.persistence.entities;
 
 import com.biit.database.encryption.BCryptPasswordConverter;
-import com.biit.database.encryption.BooleanCryptoConverter;
 import com.biit.database.encryption.LocalDateCryptoConverter;
 import com.biit.database.encryption.LocalDateTimeCryptoConverter;
 import com.biit.database.encryption.SHA512HashGenerator;
@@ -111,15 +110,12 @@ public class User extends Element<Long> {
     private LocalDateTime passwordModifiedDate;
 
     @Column(name = "account_locked", nullable = false)
-    @Convert(converter = BooleanCryptoConverter.class)
     private boolean accountLocked = false;
 
     @Column(name = "account_blocked", nullable = false)
-    @Convert(converter = BooleanCryptoConverter.class)
     private boolean accountBlocked = false;
 
     @Column(name = "account_expired", nullable = false)
-    @Convert(converter = BooleanCryptoConverter.class)
     private boolean accountExpired = false;
 
     @ManyToMany(fetch = FetchType.LAZY)

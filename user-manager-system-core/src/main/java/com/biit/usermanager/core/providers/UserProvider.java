@@ -75,10 +75,6 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         return getRepository().findAllByAccountBlocked(accountBlocked);
     }
 
-    public Optional<User> findByPhone(String phone) {
-        return getRepository().findByPhone(phone);
-    }
-
     public List<User> findByAccountExpired(boolean accountExpired) {
         return getRepository().findByAccountExpired(accountExpired);
     }
@@ -88,7 +84,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     }
 
     public long deleteByUsername(String username) {
-        return getRepository().deleteByUsername(username);
+        return getRepository().deleteByUsernameHash(username);
     }
 
     public List<User> getByUserGroup(Long userGroupId) {

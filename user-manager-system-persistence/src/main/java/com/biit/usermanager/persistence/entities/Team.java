@@ -37,7 +37,6 @@ public class Team extends Element<Long> {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    @Convert(converter = StringCryptoConverter.class)
     private String name = "";
 
     @Column(name = "description")

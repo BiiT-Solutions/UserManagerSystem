@@ -92,12 +92,6 @@ public class BasicUserController extends KafkaElementController<User, Long, Basi
                 .collect(Collectors.toList());
     }
 
-    public BasicUserDTO getByPhone(String phone) {
-        return getConverter().convert(new BasicUserConverterRequest(getProvider().findByPhone(phone).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(),
-                        "No User with username '" + phone + "' found on the system."))));
-    }
-
     public List<BasicUserDTO> getAllByExpired(boolean accountExpired) {
         final List<User> usersList = getProvider().findByAccountExpired(accountExpired);
         final List<BasicUserDTO> usersdtList = new ArrayList<>();

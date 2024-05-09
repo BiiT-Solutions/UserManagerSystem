@@ -1,7 +1,6 @@
 package com.biit.usermanager.persistence.entities;
 
 import com.biit.database.encryption.LocalDateTimeCryptoConverter;
-import com.biit.database.encryption.StringCryptoConverter;
 import com.biit.server.persistence.entities.StorableObject;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -25,7 +24,6 @@ public class PasswordResetToken extends StorableObject {
     private Long id;
 
     @Column(name = "token", nullable = false)
-    @Convert(converter = StringCryptoConverter.class)
     private String token;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
