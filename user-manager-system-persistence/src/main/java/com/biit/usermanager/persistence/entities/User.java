@@ -6,6 +6,8 @@ import com.biit.database.encryption.LocalDateTimeCryptoConverter;
 import com.biit.database.encryption.SHA512HashGenerator;
 import com.biit.database.encryption.StringCryptoConverter;
 import com.biit.server.persistence.entities.Element;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -49,6 +51,7 @@ public class User extends Element<Long> {
     @Column(name = "user_uuid", unique = true, length = UUID_COLUMN_LENGTH, nullable = false)
     private UUID uuid = UUID.randomUUID();
 
+    @Access(AccessType.PROPERTY)
     @Column(name = "username", nullable = false, unique = true, length = MAX_UNIQUE_COLUMN_LENGTH)
     @Convert(converter = StringCryptoConverter.class)
     private String username = "";
