@@ -11,7 +11,7 @@ import java.util.Optional;
 @Transactional
 public interface UserGroupRepository extends ElementRepository<UserGroup, Long> {
 
-    Optional<UserGroup> findByName(String name);
+    Optional<UserGroup> findByNameIgnoreCase(String name);
 
-    long deleteByName(String name);
+    long deleteByNameIgnoreCase(String name);
 }

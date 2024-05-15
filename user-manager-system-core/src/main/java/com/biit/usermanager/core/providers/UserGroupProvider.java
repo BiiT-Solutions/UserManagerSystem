@@ -22,11 +22,11 @@ public class UserGroupProvider extends ElementProvider<UserGroup, Long, UserGrou
     }
 
     public Optional<UserGroup> findByName(String name) {
-        return getRepository().findByName(name);
+        return getRepository().findByNameIgnoreCase(name);
     }
 
     public long deleteByName(String name) {
-        return getRepository().deleteByName(name);
+        return getRepository().deleteByNameIgnoreCase(name);
     }
 
 

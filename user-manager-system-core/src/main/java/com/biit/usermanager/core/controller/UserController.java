@@ -659,10 +659,22 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return setGrantedAuthorities(convert(user), null, null);
     }
 
+
+    public List<UserDTO> getByUserGroup(String userGroupName) {
+        final UserGroup userGroup = userGroupProvider.findByName(userGroupName).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No UserGroup exists with name '" + userGroupName + "'."));
+        return getByUserGroup(userGroup);
+    }
+
+
     public List<UserDTO> getByUserGroup(Long userGroupId) {
         final UserGroup userGroup = userGroupProvider.findById(userGroupId).orElseThrow(()
                 -> new UserGroupNotFoundException(this.getClass(), "No UserGroup exists with id '" + userGroupId + "'."));
+        return getByUserGroup(userGroup);
+    }
 
+
+    public List<UserDTO> getByUserGroup(UserGroup userGroup) {
         final List<Long> userIds = new ArrayList<>();
         final Set<UserGroupUser> userGroupUsers = userGroupUserProvider.findByIdUserGroupId(userGroup.getId());
         userGroupUsers.forEach(user -> userIds.add(user.getId().getUserId()));

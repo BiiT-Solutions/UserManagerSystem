@@ -123,7 +123,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Gets all entities that have these uuids", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/uuids", produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<UserDTO> getAllByUUIDs(@Parameter(description = "List of users' uuids.")
-                                @RequestParam Collection<UUID> uuids, HttpServletRequest request) {
+                                             @RequestParam Collection<UUID> uuids, HttpServletRequest request) {
         return getController().findByUIDs(uuids);
     }
 
@@ -280,10 +280,20 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/user-group/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/user-groups/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsers(@Parameter(description = "Id of an existing user group", required = true) @PathVariable("id") Long id,
                                   HttpServletRequest request) {
         return getController().getByUserGroup(id);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/user-groups/names/{groupName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getUsersByUserGroup(@Parameter(description = "Name of an existing user group", required = true)
+                                             @PathVariable("groupName") String groupName,
+                                             HttpServletRequest request) {
+        return getController().getByUserGroup(groupName);
     }
 
 
