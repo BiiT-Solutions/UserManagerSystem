@@ -1,4 +1,4 @@
-package com.biit.usermanager.client.provider.models;
+package com.biit.usermanager.client.providers.models;
 
 
 import com.biit.logger.ExceptionType;

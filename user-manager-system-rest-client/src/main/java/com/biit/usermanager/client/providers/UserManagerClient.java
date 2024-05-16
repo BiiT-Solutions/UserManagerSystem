@@ -1,4 +1,4 @@
-package com.biit.usermanager.client.provider;
+package com.biit.usermanager.client.providers;
 
 import com.biit.rest.exceptions.EmptyResultException;
 import com.biit.rest.exceptions.InvalidResponseException;
@@ -8,8 +8,8 @@ import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
-import com.biit.usermanager.client.provider.converters.UserDTOConverter;
-import com.biit.usermanager.client.provider.models.Email;
+import com.biit.usermanager.client.providers.converters.UserDTOConverter;
+import com.biit.usermanager.client.providers.models.Email;
 import com.biit.usermanager.client.validators.EmailValidator;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.dto.UserDTO;

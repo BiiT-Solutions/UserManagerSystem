@@ -1,4 +1,4 @@
-package com.biit.usermanager.client.provider.converters;
+package com.biit.usermanager.client.providers.converters;
 
 import com.biit.server.security.CreateUserRequest;
 import com.biit.usermanager.dto.UserDTO;

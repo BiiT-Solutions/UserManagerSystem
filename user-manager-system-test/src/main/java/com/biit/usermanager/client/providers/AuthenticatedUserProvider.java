@@ -1,6 +1,11 @@
-package com.biit.server.security;
+package com.biit.usermanager.client.providers;
 
+import com.biit.server.client.user.AuthenticatedUser;
+import com.biit.server.security.CreateUserRequest;
+import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.IAuthenticatedUserProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Primary
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {

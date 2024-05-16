@@ -3,7 +3,7 @@ package com.biit.usermanager.client.security;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.ISecurityController;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
-import com.biit.usermanager.client.provider.UserManagerClient;
+import com.biit.usermanager.client.providers.UserManagerClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;

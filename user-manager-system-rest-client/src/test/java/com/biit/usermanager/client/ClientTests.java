@@ -1,7 +1,7 @@
 package com.biit.usermanager.client;
 
 import com.biit.server.security.IAuthenticatedUser;
-import com.biit.usermanager.client.provider.UserManagerClient;
+import com.biit.usermanager.client.providers.UserManagerClient;
 import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
 import com.biit.usermanager.core.controller.ApplicationRoleController;

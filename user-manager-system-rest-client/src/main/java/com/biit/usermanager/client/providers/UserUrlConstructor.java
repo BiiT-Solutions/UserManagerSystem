@@ -1,4 +1,4 @@
-package com.biit.usermanager.client.provider;
+package com.biit.usermanager.client.providers;
 
 import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import org.springframework.beans.factory.annotation.Value;
