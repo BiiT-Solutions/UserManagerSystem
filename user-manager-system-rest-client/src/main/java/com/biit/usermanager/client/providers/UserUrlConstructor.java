@@ -64,6 +64,11 @@ public class UserUrlConstructor {
         return getUsers() + "/ids/" + id;
     }
 
+    public String getUserByUid(String uuid) {
+        return getUsers() + "/uuids/" + uuid;
+    }
+
+
     public String updatePassword() {
         return getUsers() + "/passwords";
     }

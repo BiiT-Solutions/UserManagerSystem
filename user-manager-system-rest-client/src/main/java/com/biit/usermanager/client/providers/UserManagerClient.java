@@ -170,9 +170,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     public Optional<IAuthenticatedUser> findByUID(String id) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
-                    userUrlConstructor.getUserById(id))) {
+                    userUrlConstructor.getUserByUid(id))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserById(id), response.getStatus());
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByUid(id), response.getStatus());
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
