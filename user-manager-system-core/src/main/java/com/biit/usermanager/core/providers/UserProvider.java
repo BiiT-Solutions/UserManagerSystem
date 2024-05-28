@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.biit.database.encryption.KeyProperty.getDatabaseEncryptionKey;
+import static com.biit.database.encryption.KeyProperty.getEncryptionKey;
 
 @Service
 public class UserProvider extends ElementProvider<User, Long, UserRepository> {
@@ -33,7 +33,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     public Optional<User> findByUsername(String username) {
         //If encryption is enabled, use hash.
-        if (getDatabaseEncryptionKey() != null) {
+        if (getEncryptionKey() != null) {
             final Optional<User> authenticatedUser = getRepository().findByUsernameHash(username);
             if (authenticatedUser.isPresent()) {
                 authenticatedUser.get().setUsernameHash(authenticatedUser.get().getUsername());

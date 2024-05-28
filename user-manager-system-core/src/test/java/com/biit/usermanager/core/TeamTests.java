@@ -204,7 +204,7 @@ public class TeamTests extends AbstractTestNGSpringContextTests {
     }
 
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void cleanUp() {
         userGroupApplicationBackendServiceRoleProvider.deleteAll();
         applicationBackendServiceRoleController.deleteAll(null);
