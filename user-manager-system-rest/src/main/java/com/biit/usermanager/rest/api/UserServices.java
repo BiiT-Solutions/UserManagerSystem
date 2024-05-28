@@ -129,7 +129,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.viewerPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets all entities that have these uuids", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping(value = "/uuids", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/uuids", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Collection<UserDTO> getAllByUUIDsInBody(@Parameter(description = "List of users' uuids.")
                                                    @RequestBody Collection<UUID> uuids, HttpServletRequest request) {
         return getController().findByUIDs(uuids);
