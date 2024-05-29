@@ -19,7 +19,6 @@ import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
