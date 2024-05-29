@@ -63,4 +63,12 @@ public class ApplicationRoleId implements Serializable {
     public int hashCode() {
         return Objects.hash(application, role);
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationRoleId{"
+                + "application=" + application
+                + ", role=" + role
+                + '}';
+    }
 }

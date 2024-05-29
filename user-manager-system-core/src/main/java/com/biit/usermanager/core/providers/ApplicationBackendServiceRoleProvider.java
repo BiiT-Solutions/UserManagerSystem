@@ -1,5 +1,6 @@
 package com.biit.usermanager.core.providers;
 
+import com.biit.server.persistence.exceptions.DatabaseOperationNotAllowed;
 import com.biit.server.providers.CreatedElementProvider;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRoleId;
@@ -10,6 +11,7 @@ import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -88,13 +90,17 @@ public class ApplicationBackendServiceRoleProvider extends CreatedElementProvide
         if (entity == null) {
             return;
         }
-        userApplicationBackendServiceRoleRepository.deleteByIdApplicationNameAndIdRoleNameAndIdBackendServiceNameAndIdBackendServiceRole(
-                entity.getId().getApplicationRole().getId().getApplication().getName(),
-                entity.getId().getApplicationRole().getId().getRole().getName(),
-                entity.getId().getBackendServiceRole().getId().getBackendService().getName(),
-                entity.getId().getBackendServiceRole().getId().getName()
-        );
-        super.delete(entity);
+        try {
+            userApplicationBackendServiceRoleRepository.deleteByIdApplicationNameAndIdRoleNameAndIdBackendServiceNameAndIdBackendServiceRole(
+                    entity.getId().getApplicationRole().getId().getApplication().getName(),
+                    entity.getId().getApplicationRole().getId().getRole().getName(),
+                    entity.getId().getBackendServiceRole().getId().getBackendService().getName(),
+                    entity.getId().getBackendServiceRole().getId().getName()
+            );
+            super.delete(entity);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseOperationNotAllowed(this.getClass(), "You cannot perform this action, as other elements is using this entity", e);
+        }
     }
 
     @Override

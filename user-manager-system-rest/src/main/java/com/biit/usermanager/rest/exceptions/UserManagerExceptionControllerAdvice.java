@@ -3,6 +3,7 @@ package com.biit.usermanager.rest.exceptions;
 import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.logger.RestServerExceptionLogger;
+import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
@@ -68,6 +69,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> tokenExpiredException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorMessage(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ApplicationBackendRoleNotFoundException.class)
+    public ResponseEntity<Object> applicationBackendRoleNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorMessage(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
 

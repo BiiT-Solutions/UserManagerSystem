@@ -6,6 +6,7 @@ import com.biit.kafka.events.EventSubject;
 import com.biit.kafka.events.IEventSender;
 import com.biit.usermanager.core.converters.UserGroupConverter;
 import com.biit.usermanager.core.converters.models.UserGroupConverterRequest;
+import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
@@ -167,6 +168,11 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
                 .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
 
+        if (availableRoles.isEmpty()) {
+            throw new ApplicationBackendRoleNotFoundException(this.getClass(), "No backend roles are assigned to application '" + applicationName + "' "
+                    + "and role '" + applicationRoleName + "'. Please add a backend role first");
+        }
+
         //Add any missing permission.
         final List<UserGroupApplicationBackendServiceRole> alreadyAssignedPermissions = userGroupApplicationBackendServiceRoleProvider
                 .findBy(userGroup.getId(), applicationName, applicationRoleName);
@@ -174,7 +180,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         final Set<UserGroupApplicationBackendServiceRole> rolesToAdd = new HashSet<>();
         availableRoles.forEach(applicationBackendServiceRole -> {
 
-            //Collection of availableRoles launch a lazy, as these ids are not retrieved in a collection.
+            //Collection of availableRoles launches lazy, as these ids are not retrieved in a collection.
             final ApplicationBackendServiceRole applicationBackendServiceRole1 =
                     applicationBackendServiceRoleProvider.findById(applicationBackendServiceRole.getId())
                             .orElseThrow(() -> new ApplicationRoleNotFoundException(this.getClass(),

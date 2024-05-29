@@ -19,6 +19,7 @@ import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -79,7 +80,6 @@ public class ApplicationBackendServiceRoleController extends KafkaCreatedElement
                 new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application '" + applicationName + "' with role '"
                         + applicationRoleName + "' and backend service '" + backendServiceName + "' role '" + backendServiceRoleName + "'"));
         DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationBackendServiceRole, deletedBy);
-        getProvider().delete(applicationBackendServiceRole);
     }
 
     @Override
