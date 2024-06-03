@@ -55,6 +55,17 @@ public class OrganizationController extends KafkaElementController<Organization,
         final User user = userProvider.findById(userId).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with id '" + userId + "'."));
 
+        return getByUser(user);
+    }
+
+    public List<OrganizationDTO> getByUser(String username) {
+        final User user = userProvider.findByUsername(username).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No user exists with username '" + username + "'."));
+
+        return getByUser(user);
+    }
+
+    public List<OrganizationDTO> getByUser(User user) {
         return getConverter().convertAll(getProvider().findByUser(user).stream()
                 .map(this::createConverterRequest).collect(Collectors.toSet()));
     }

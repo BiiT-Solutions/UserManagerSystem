@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,12 +30,22 @@ public class OrganizationServices extends ElementServices<Organization, String, 
         super(controller);
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
     @Operation(summary = "Get all user's organizations.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<OrganizationDTO> getOrganizationsByUser(@Parameter(description = "User Id", required = true)
                                                               @PathVariable("userId") Long userId,
                                                               HttpServletRequest request) {
         return getController().getByUser(userId);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get current user's organizations.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<OrganizationDTO> getOrganizationsByUser(Authentication authentication,
+                                                              HttpServletRequest request) {
+        return getController().getByUser(authentication.getName());
     }
 }
