@@ -45,7 +45,6 @@ import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
-import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.PasswordResetToken;
 import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
