@@ -68,7 +68,7 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<Object> tokenExpiredException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
-        return new ResponseEntity<>(new ErrorMessage(ex.getMessage()), HttpStatus.GONE);
+        return new ResponseEntity<>(new ErrorMessage(ex.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ApplicationBackendRoleNotFoundException.class)
