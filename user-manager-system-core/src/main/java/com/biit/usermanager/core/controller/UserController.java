@@ -690,7 +690,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
         //Send an email with the token in a link!
         try {
-            emailService.sendPasswordRecoveryEmail(token);
+            emailService.sendPasswordRecoveryEmail(email, token);
         } catch (EmailNotSentException | FileNotFoundException e) {
             throw new InvalidRequestException("Cannot sent confirmation email!", e);
         } catch (InvalidEmailAddressException e) {

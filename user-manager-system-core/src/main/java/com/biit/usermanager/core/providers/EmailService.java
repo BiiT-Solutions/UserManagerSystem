@@ -15,33 +15,37 @@ import java.util.Collections;
 @Service
 public class EmailService {
 
-    private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "passwordRecoveryEmailTemplate.html";
+    private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "reset-password.html";
+    private static final String EMAIL_LINK_TAG = "EMAIL:LINK";
 
-    @Value("mail.server.smtp.server:null")
+    @Value("${mail.server.smtp.server:null}")
     private String smtpServer;
 
-    @Value("mail.server.smtp.port:587")
+    @Value("${mail.server.smtp.port:587}")
     private String smtpPort;
 
-    @Value("mail.server.smtp.username:null")
+    @Value("${mail.server.smtp.username:null}")
     private String emailUser;
 
-    @Value("mail.server.smtp.password:null")
+    @Value("${mail.server.smtp.password:null}")
     private String emailPassword;
 
-    @Value("mail.sender")
+    @Value("${mail.sender:null}")
     private String emailSender;
 
-    @Value("mail.copy.address")
+    @Value("${mail.copy.address:null}")
     private String mailCopy;
 
-    @Value("mail.password.recovery.subject")
+    @Value("${mail.password.recovery.subject:}")
     private String mailSubject;
 
+    @Value("${mail.forgot.password.link:}")
+    private String emailLink;
 
-    public void sendPasswordRecoveryEmail(String email) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
+
+    public void sendPasswordRecoveryEmail(String email, String token) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
         if (smtpServer == null || emailUser == null) {
-            final String emailTemplate = FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8);
+            final String emailTemplate = populateEmailFields(FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8), token);
             SendEmail.sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, Collections.singletonList(email), null,
                     mailCopy != null ? Collections.singletonList(mailCopy) : null, mailSubject,
                     emailTemplate, null);
@@ -49,5 +53,9 @@ public class EmailService {
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
         }
+    }
+
+    private String populateEmailFields(String html, String token) {
+        return html.replace(EMAIL_LINK_TAG, emailLink + "?token=" + token);
     }
 }
