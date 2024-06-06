@@ -331,6 +331,15 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
+    @Operation(summary = "Checks the validity of a token", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/public/tokens")
+    public void checkToken(
+            @Parameter(description = "Token to check", required = true) @RequestParam("token") String token,
+            HttpServletRequest request) {
+        getController().checkToken(token);
+    }
+
+
     @Operation(summary = "Changes the password from a user, using a token", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/public/change-password")
     public void resetPasswordFromToken(@Parameter(description = "Token obtained by mail", required = true) @RequestParam("token") String token,

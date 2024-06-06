@@ -5,7 +5,7 @@ import com.biit.server.exceptions.InvalidRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+@ResponseStatus(HttpStatus.GONE)
 public class TokenExpiredException extends InvalidRequestException {
 
     public TokenExpiredException(Class<?> clazz, String message, ExceptionType type) {
