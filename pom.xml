@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>user-manager-system</artifactId>
-    <version>0.3.132-SNAPSHOT</version>
+    <version>0.3.132</version>
     <name>User Manager System</name>
     <packaging>pom</packaging>
 
@@ -30,7 +30,7 @@
     <scm>
         <connection>scm:git:git.biit-solutions.com:Java/UserManagerSystem.git</connection>
         <developerConnection>scm:git:git.biit-solutions.com:Java/UserManagerSystem.git</developerConnection>
-        <tag>UserManagerSystem</tag>
+        <tag>user-manager-system-0.3.132</tag>
     </scm>
 
     <distributionManagement>
