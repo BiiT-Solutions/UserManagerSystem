@@ -44,7 +44,7 @@ public class EmailService {
             final String emailTemplate = FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8);
             SendEmail.sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, Collections.singletonList(email), null,
                     mailCopy != null ? Collections.singletonList(mailCopy) : null, mailSubject,
-                    emailTemplate);
+                    emailTemplate, null);
             UserManagerLogger.warning(this.getClass(), "Recovery password mail send to '{}'.", email);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
