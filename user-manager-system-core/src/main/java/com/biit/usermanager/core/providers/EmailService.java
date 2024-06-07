@@ -44,7 +44,7 @@ public class EmailService {
 
 
     public void sendPasswordRecoveryEmail(String email, String token) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
-        if (smtpServer == null || emailUser == null) {
+        if (smtpServer != null && emailUser != null) {
             final String emailTemplate = populateEmailFields(FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8), token);
             SendEmail.sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, Collections.singletonList(email), null,
                     mailCopy != null ? Collections.singletonList(mailCopy) : null, mailSubject,
@@ -52,6 +52,7 @@ public class EmailService {
             UserManagerLogger.warning(this.getClass(), "Recovery password mail send to '{}'.", email);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
+            throw new EmailNotSentException("Email settings not set. Emails will be ignored.");
         }
     }
 

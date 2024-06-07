@@ -680,9 +680,11 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return convertAll(getProvider().findByIdIn(userIds));
     }
 
-    public void resetPassword(String email) {
+    public void resetPassword(String email) throws EmailNotSentException {
         final User user = getProvider().findByEmail(email).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with the email '" + email + "'."));
+
+        passwordResetTokenProvider.deleteByUser(user);
 
         final String token = UUID.randomUUID().toString();
         final PasswordResetToken userToken = new PasswordResetToken(token, user);
@@ -691,7 +693,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         //Send an email with the token in a link!
         try {
             emailService.sendPasswordRecoveryEmail(email, token);
-        } catch (EmailNotSentException | FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new InvalidRequestException("Cannot sent confirmation email!", e);
         } catch (InvalidEmailAddressException e) {
             //Email must be already validated.

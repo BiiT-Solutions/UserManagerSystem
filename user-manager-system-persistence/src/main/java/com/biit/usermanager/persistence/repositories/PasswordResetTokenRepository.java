@@ -13,6 +13,9 @@ import java.util.Optional;
 public interface PasswordResetTokenRepository extends StorableObjectRepository<PasswordResetToken, Long> {
 
     Optional<PasswordResetToken> findByToken(String token);
+
     Optional<PasswordResetToken> findByUser(User user);
+
+    Optional<PasswordResetToken> deleteByUser(User user);
 
 }

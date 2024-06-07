@@ -32,6 +32,10 @@ public class PasswordResetTokenProvider extends StorableObjectProvider<PasswordR
         return getRepository().findByUser(user);
     }
 
+    public Optional<PasswordResetToken> deleteByUser(User user) {
+        return getRepository().deleteByUser(user);
+    }
+
     @Override
     public PasswordResetToken save(PasswordResetToken passwordResetToken) {
         if (passwordResetToken.getExpirationDate() == null) {

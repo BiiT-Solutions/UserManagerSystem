@@ -1,5 +1,6 @@
 package com.biit.usermanager.rest.api;
 
+import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.rest.ElementServices;
 import com.biit.server.security.model.UpdatePasswordRequest;
@@ -326,7 +327,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Generates a token for reseting the password", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/public/emails/{email}/reset-password")
     public void createResetPasswordToken(@Parameter(description = "Email from an existing user", required = true) @PathVariable("email") String email,
-                                         HttpServletRequest request) {
+                                         HttpServletRequest request) throws EmailNotSentException {
         getController().resetPassword(email);
     }
 

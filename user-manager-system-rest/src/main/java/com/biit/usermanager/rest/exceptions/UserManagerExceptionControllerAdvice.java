@@ -1,5 +1,6 @@
 package com.biit.usermanager.rest.exceptions;
 
+import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.logger.RestServerExceptionLogger;
@@ -75,6 +76,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> applicationBackendRoleNotFoundException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorMessage(ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmailNotSentException.class)
+    public ResponseEntity<Object> emailNotSentException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorMessage(ex.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
 
