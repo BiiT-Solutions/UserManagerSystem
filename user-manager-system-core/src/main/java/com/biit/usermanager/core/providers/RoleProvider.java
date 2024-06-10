@@ -8,6 +8,7 @@ import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.ApplicationRoleRepository;
 import com.biit.usermanager.persistence.repositories.RoleRepository;
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
+import com.biit.usermanager.persistence.repositories.UserGroupApplicationBackendServiceRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +24,18 @@ public class RoleProvider extends ElementProvider<Role, String, RoleRepository> 
     private final ApplicationRoleRepository applicationRoleRepository;
 
     private final UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository;
+    private final UserGroupApplicationBackendServiceRoleRepository userGroupApplicationBackendServiceRoleRepository;
 
     @Autowired
     public RoleProvider(RoleRepository repository, ApplicationBackendServiceRoleRepository applicationBackendServiceRoleRepository,
                         ApplicationRoleRepository applicationRoleRepository,
-                        UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository) {
+                        UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository,
+                        UserGroupApplicationBackendServiceRoleRepository userGroupApplicationBackendServiceRoleRepository) {
         super(repository);
         this.applicationBackendServiceRoleRepository = applicationBackendServiceRoleRepository;
         this.applicationRoleRepository = applicationRoleRepository;
         this.userApplicationBackendServiceRoleRepository = userApplicationBackendServiceRoleRepository;
+        this.userGroupApplicationBackendServiceRoleRepository = userGroupApplicationBackendServiceRoleRepository;
     }
 
     public Optional<Role> findByName(String name) {
@@ -42,6 +46,7 @@ public class RoleProvider extends ElementProvider<Role, String, RoleRepository> 
     public void delete(Role entity) {
         userApplicationBackendServiceRoleRepository.deleteByIdRoleName(entity.getName());
         final List<ApplicationRole> applicationRoles = applicationRoleRepository.findByIdRole(entity);
+        userGroupApplicationBackendServiceRoleRepository.deleteByIdRoleName(entity.getName());
         applicationBackendServiceRoleRepository.deleteByIdApplicationRoleIn(applicationRoles);
         applicationRoleRepository.deleteAll(applicationRoles);
         super.delete(entity);
@@ -57,6 +62,7 @@ public class RoleProvider extends ElementProvider<Role, String, RoleRepository> 
     public void deleteAll(Collection<Role> entities) {
         userApplicationBackendServiceRoleRepository.deleteByIdRoleNameIn(entities.stream().map(Role::getName).toList());
         final List<ApplicationRole> applicationRoles = applicationRoleRepository.findByIdRoleIn(entities);
+        userGroupApplicationBackendServiceRoleRepository.deleteByIdRoleNameIn(entities.stream().map(Role::getName).toList());
         applicationBackendServiceRoleRepository.deleteByIdApplicationRoleIn(applicationRoles);
         applicationRoleRepository.deleteAll(applicationRoles);
         super.deleteAll(entities);
