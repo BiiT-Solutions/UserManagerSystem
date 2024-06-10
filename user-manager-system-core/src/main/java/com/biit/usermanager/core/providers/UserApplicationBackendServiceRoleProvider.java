@@ -32,6 +32,10 @@ public class UserApplicationBackendServiceRoleProvider extends StorableObjectPro
         return getRepository().findByIdRoleName(roleName);
     }
 
+    public Set<UserApplicationBackendServiceRole> deleteByApplicationRoleName(String applicationRoleName) {
+        return getRepository().deleteByIdRoleName(applicationRoleName);
+    }
+
     public Set<UserApplicationBackendServiceRole> findByBackendServiceName(String backendServiceName) {
         return getRepository().findByIdBackendServiceName(backendServiceName);
     }

@@ -15,7 +15,6 @@ import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRo
 import com.biit.usermanager.persistence.repositories.RoleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -24,9 +23,6 @@ import java.util.Set;
 @Controller
 public class RoleController extends KafkaElementController<Role, String, RoleDTO, RoleRepository,
         RoleProvider, RoleConverterRequest, RoleConverter> {
-
-    @Value("${spring.application.name}")
-    private String applicationName;
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
 

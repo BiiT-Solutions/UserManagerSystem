@@ -36,6 +36,8 @@ public interface ApplicationBackendServiceRoleRepository extends CreatedElementR
 
     void deleteByIdApplicationRole(ApplicationRole applicationRole);
 
+    List<ApplicationBackendServiceRole> deleteByIdApplicationRoleIdRoleId(String applicationRoleName);
+
     void deleteByIdApplicationRoleIn(Collection<ApplicationRole> applicationRole);
 
 }

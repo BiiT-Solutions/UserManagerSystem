@@ -24,6 +24,8 @@ public interface ApplicationRoleRepository extends CreatedElementRepository<Appl
 
     List<ApplicationRole> findByIdRole(Role role);
 
+    List<ApplicationRole> deleteByIdRole(Role role);
+
     List<ApplicationRole> findByIdRoleIn(Collection<Role> role);
 
     List<ApplicationRole> findByIdRoleId(String roleId);

@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
+import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.Role;
 import com.biit.usermanager.persistence.repositories.ApplicationBackendServiceRoleRepository;
@@ -44,6 +45,12 @@ public class RoleProvider extends ElementProvider<Role, String, RoleRepository> 
         applicationBackendServiceRoleRepository.deleteByIdApplicationRoleIn(applicationRoles);
         applicationRoleRepository.deleteAll(applicationRoles);
         super.delete(entity);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        final Role entity = getRepository().findById(id).orElseThrow(() -> new RoleNotFoundException(this.getClass(), "No Role found with id '" + id + "'"));
+        delete(entity);
     }
 
     @Override
