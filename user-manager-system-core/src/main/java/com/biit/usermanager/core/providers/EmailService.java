@@ -57,6 +57,6 @@ public class EmailService {
     }
 
     private String populateEmailFields(String html, String token) {
-        return html.replace(EMAIL_LINK_TAG, emailLink + "?token=" + token);
+        return html.replace(EMAIL_LINK_TAG, emailLink + ";token=" + token);
     }
 }
