@@ -2,6 +2,7 @@ package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
+import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Application;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
@@ -89,6 +90,7 @@ public class RoleProvider extends ElementProvider<Role, String, RoleRepository> 
     }
 
     public void createDefaultRoleAdmin(Long userId, String roleName) {
+        UserManagerLogger.warning(this.getClass(), "Creating role '{}' for user '{}'.", roleName, userId);
         final Role role = super.save(new Role(roleName));
         final Application application = applicationRepository.save(new Application(backendServiceName));
         final ApplicationRole applicationRole = applicationRoleRepository.save(new ApplicationRole(application, role));
