@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.biit</groupId>
         <artifactId>user-manager-system</artifactId>
-        <version>0.3.155</version>
+        <version>0.3.156-SNAPSHOT</version>
     </parent>
 
     <properties>
