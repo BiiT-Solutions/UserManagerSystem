@@ -312,8 +312,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
                 createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(), createdBy);
         //Set roles if is the first user on a database.
-        createUserRequest.getAuthorities().forEach(authority -> roleProvider
-                .createDefaultRoleAdmin(authenticatedUser.getId(), authority.replaceAll(ROLE_PREFIX, "")));
+        if (createUserRequest.getAuthorities() != null) {
+            createUserRequest.getAuthorities().forEach(authority -> roleProvider
+                    .createDefaultRoleAdmin(authenticatedUser.getId(), authority.replaceAll(ROLE_PREFIX, "")));
+        }
         return authenticatedUser;
     }
 
