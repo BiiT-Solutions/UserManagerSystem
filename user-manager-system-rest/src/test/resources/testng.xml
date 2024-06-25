@@ -10,6 +10,7 @@
             <run>
                 <include name="userRoleTests"/>
                 <include name="userTests"/>
+                <include name="userCreation"/>
                 <!-- has problems on jenkins -->
                 <exclude name="forgotPasswordTests"/>
             </run>
@@ -17,6 +18,7 @@
         <classes>
             <class name="com.biit.usermanager.rest.tests.UserTests"/>
             <class name="com.biit.usermanager.rest.tests.UserRoleTests"/>
+            <class name="com.biit.usermanager.rest.tests.FirstUserCreationTest"/>
             <class name="com.biit.usermanager.rest.tests.ForgotPasswordTests"/>
         </classes>
     </test>

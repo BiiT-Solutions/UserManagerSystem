@@ -26,6 +26,11 @@ public class UserApplicationBackendServiceRole extends StorableObject {
         super();
     }
 
+    public UserApplicationBackendServiceRole(Long userId, ApplicationRole applicationRole, BackendServiceRole backendServiceRole) {
+        setId(new UserApplicationBackendServiceRoleId(userId, applicationRole.getId().getApplication().getName(), applicationRole.getId().getRole().getName(),
+                backendServiceRole.getId().getBackendService().getName(), backendServiceRole.getName()));
+    }
+
     public UserApplicationBackendServiceRole(Long userId, String applicationName, String roleName, String backendServiceName, String backendServiceRole) {
         this();
         setId(new UserApplicationBackendServiceRoleId(userId, applicationName, roleName, backendServiceName, backendServiceRole));

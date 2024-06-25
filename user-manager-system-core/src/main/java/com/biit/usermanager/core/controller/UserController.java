@@ -30,6 +30,7 @@ import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.EmailService;
 import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.core.providers.PasswordResetTokenProvider;
+import com.biit.usermanager.core.providers.RoleProvider;
 import com.biit.usermanager.core.providers.TeamMemberProvider;
 import com.biit.usermanager.core.providers.TeamProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
@@ -81,6 +82,8 @@ import java.util.stream.Collectors;
 public class UserController extends KafkaElementController<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
 
+    public static final String ROLE_PREFIX = "ROLE_";
+
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
@@ -109,6 +112,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     private final EmailService emailService;
 
+    private final RoleProvider roleProvider;
+
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
@@ -119,7 +124,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider,
                              TeamProvider teamProvider, OrganizationProvider organizationProvider, UserGroupUserProvider userGroupUserRepository,
                              TeamMemberProvider teamMemberProvider, PasswordResetTokenProvider passwordResetTokenProvider,
-                             EmailService emailService) {
+                             EmailService emailService, RoleProvider roleProvider) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
@@ -135,6 +140,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.teamMemberProvider = teamMemberProvider;
         this.passwordResetTokenProvider = passwordResetTokenProvider;
         this.emailService = emailService;
+        this.roleProvider = roleProvider;
     }
 
     @Override
@@ -303,8 +309,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
-        return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getFirstname(),
-                createUserRequest.getLastname(), createUserRequest.getPassword(), createdBy);
+        final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
+                createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(), createdBy);
+        //Set roles if is the first user on a database.
+        createUserRequest.getAuthorities().forEach(authority -> roleProvider
+                .createDefaultRoleAdmin(authenticatedUser.getId(), authority.replaceAll(ROLE_PREFIX, "")));
+        return authenticatedUser;
     }
 
     public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String createdBy) {
