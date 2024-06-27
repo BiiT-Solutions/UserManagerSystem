@@ -143,6 +143,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.roleProvider = roleProvider;
     }
 
+
     @Override
     protected UserConverterRequest createConverterRequest(User entity) {
         return new UserConverterRequest(entity);
@@ -153,6 +154,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
     }
+
 
     public UserDTO checkCredentials(String username, String email, String password) {
         final User user;
@@ -186,6 +188,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return userDTO;
     }
 
+
     public UserDTO getByEmail(String email) {
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
@@ -205,6 +208,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return getConverter().convert(new UserConverterRequest(getProvider().getById(id).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with id '" + id + "' found on the system."))));
     }
+
 
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username) {
@@ -236,6 +240,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
     }
 
+
     public Optional<IAuthenticatedUser> findByUsernameAndApplication(String username, String applicationName) {
         if (applicationName == null) {
             return findByUsername(username);
@@ -254,6 +259,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
     }
 
+
     @Override
     public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
         try {
@@ -265,6 +271,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw e;
         }
     }
+
 
     @Override
     public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
@@ -290,6 +297,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
     }
 
+
     @Override
     public Optional<IAuthenticatedUser> findByUID(String uid) {
         try {
@@ -307,6 +315,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
     }
 
+
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
@@ -319,35 +328,34 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return authenticatedUser;
     }
 
+
     public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String createdBy) {
         if (findByUsername(username).isPresent()) {
             UserManagerLogger.warning(this.getClass(), "Username '" + username + "' already exists!.");
             throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
         }
-        final UserDTO user = new UserDTO();
-        user.setUsername(username);
-        user.setUUID(UUID.randomUUID());
-        user.setFirstName(name != null ? name : "");
-        user.setLastname(lastName != null ? lastName : "");
-        user.setIdCard(uniqueId);
-        user.setPassword(password);
-        user.setCreatedBy(createdBy);
+        final UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(username);
+        userDTO.setUUID(UUID.randomUUID());
+        userDTO.setFirstName(name != null ? name : "");
+        userDTO.setLastname(lastName != null ? lastName : "");
+        userDTO.setIdCard(uniqueId);
+        userDTO.setPassword(password);
+        userDTO.setCreatedBy(createdBy);
+        final User user = getProvider().save(getConverter().reverse(userDTO));
+        UserManagerLogger.info(this.getClass(), "User '" + username + "' created on the system.");
         try {
-            return getConverter().convert(new UserConverterRequest(getProvider().save(getConverter().reverse(user))));
-        } finally {
-            UserManagerLogger.info(this.getClass(), "User '" + username + "' created on the system.");
+            emailService.sendUserCreationEmail(user);
+        } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
+            UserManagerLogger.errorMessage(this.getClass(), e);
         }
+        return getConverter().convert(new UserConverterRequest(user));
     }
+
 
     @Override
     public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
-        final User user = getProvider().findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
-        //Check old password.
-        if (oldPassword != null && !BCrypt.checkpw(bcryptSalt + oldPassword, user.getPassword())) {
-            UserManagerLogger.warning(this.getClass(), "Provided password is incorrect!.");
-            throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
-        }
+        final User user = checkPassword(username, oldPassword);
 
         user.setPassword(bcryptSalt + newPassword);
         user.setUpdatedBy(updatedBy);
@@ -372,21 +380,25 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return getConverter().convert(new UserConverterRequest(getProvider().save(user)));
     }
 
-    public void checkPassword(String username, String password) {
+
+    public User checkPassword(String username, String password) {
         final User user = getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
-        //Check old password.
+        //Check the password.
         if (password != null && !BCrypt.checkpw(bcryptSalt + password, user.getPassword())) {
             UserManagerLogger.warning(this.getClass(), "Provided password is incorrect!.");
             throw new InvalidParameterException(this.getClass(), "Provided password is incorrect!");
         }
+        return user;
     }
+
 
     public String getPassword(String username) {
         final User user = getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
         return user.getPassword();
     }
+
 
     /**
      * Gets the password using a user UID.
@@ -403,6 +415,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return user.getPassword();
     }
 
+
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         final User user = getProvider().findByUsername(createUserRequest.getUsername()).orElseThrow(() ->
@@ -417,10 +430,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return getConverter().convert(new UserConverterRequest(getProvider().update(user)));
     }
 
+
     public List<UserDTO> getByAccountBlocked(boolean accountBlocked) {
         return getProvider().findAllByAccountBlocked(accountBlocked).parallelStream().map(this::createConverterRequest).map(getConverter()::convert)
                 .collect(Collectors.toList());
     }
+
 
     public List<UserDTO> getAllByExpired(boolean accountExpired) {
         final List<User> usersList = getProvider().findByAccountExpired(accountExpired);
@@ -431,10 +446,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return usersdtList;
     }
 
+
     @Override
     public Collection<IAuthenticatedUser> findAll() {
         return getProvider().findAll().parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());
     }
+
 
     @Transactional
     @Override
@@ -447,6 +464,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
     }
 
+
     @Override
     public boolean delete(IAuthenticatedUser authenticatedUser) {
         if (authenticatedUser == null) {
@@ -454,6 +472,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
         return deleteUser(null, authenticatedUser.getUsername());
     }
+
 
     @Override
     public Set<String> getRoles(String username, String applicationName) {
@@ -470,6 +489,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return new HashSet<>();
     }
 
+
     @Override
     public void delete(UserDTO entity, String deletedBy) {
         if (Objects.equals(entity.getUsername(), deletedBy)) {
@@ -483,6 +503,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     public void delete(String username, String deletedBy) {
         delete(getByUsername(username), deletedBy);
     }
+
 
     /**
      * Populate the authorities for a user. If a group is selected, only the one of the group. If not the roles that are not at group level.
@@ -513,10 +534,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return setGrantedAuthoritiesByGroups(userDTO, application, backendService);
     }
 
+
     private UserDTO setGrantedAuthoritiesByGroups(UserDTO userDTO, Application application, BackendService backendService) {
         final List<UserGroup> userGroups = userGroupProvider.getByUserGroup(userDTO.getId());
         return setGrantedAuthorities(userDTO, userGroups, application, backendService);
     }
+
 
     private UserDTO setGrantedAuthorities(UserDTO userDTO, Collection<UserGroup> userGroups, Application application, BackendService backendService) {
         if (userDTO != null && userGroups != null) {
@@ -543,12 +566,14 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 -> new UserNotFoundException(this.getClass(), "No uses exists with username '" + username + "'."));
     }
 
+
     public void setApplicationBackendServiceRole(UserDTO
                                                          userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
         final User user = reverse(userDTO);
         user.setApplicationBackendServiceRoles(new HashSet<>(applicationBackendServiceRoles));
         getProvider().save(user);
     }
+
 
     public void assign(UserDTO userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
         applicationBackendServiceRoles.forEach(applicationBackendServiceRole -> {
@@ -564,6 +589,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             }
         });
     }
+
 
     public UserDTO assign(
             String username, String applicationName, String applicationRoleName) {
@@ -610,6 +636,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return setGrantedAuthorities(convert(user), null, null);
     }
 
+
     public UserDTO unAssign(
             String username, String applicationName, String applicationRoleName, String unassignedBy) {
 
@@ -630,6 +657,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         userApplicationBackendServiceRoleProvider.deleteAll(assignedPermissions);
         return setGrantedAuthorities(convert(user), null, null);
     }
+
 
     public UserDTO assign(
             String username, String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
@@ -692,19 +720,14 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return convertAll(getProvider().findByIdIn(userIds));
     }
 
+
     public void resetPassword(String email) throws EmailNotSentException {
         final User user = getProvider().findByEmail(email).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with the email '" + email + "'."));
 
-        passwordResetTokenProvider.deleteByUser(user);
-
-        final String token = UUID.randomUUID().toString();
-        final PasswordResetToken userToken = new PasswordResetToken(token, user);
-        passwordResetTokenProvider.save(userToken);
-
         //Send an email with the token in a link!
         try {
-            emailService.sendPasswordRecoveryEmail(email, token);
+            emailService.sendPasswordRecoveryEmail(user);
         } catch (FileNotFoundException e) {
             throw new InvalidRequestException("Cannot sent confirmation email!", e);
         } catch (InvalidEmailAddressException e) {
@@ -712,6 +735,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new RuntimeException(e);
         }
     }
+
 
     public PasswordResetToken checkToken(String token) {
         final PasswordResetToken passwordResetToken = passwordResetTokenProvider.findByToken(token).orElseThrow(()
@@ -729,6 +753,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         updatePassword(passwordResetToken.getUser().getUsername(), newPassword, passwordResetToken.getUser().getUsername());
     }
 
+
     public List<UserDTO> getByTeam(Long teamId) {
         teamProvider.findById(teamId).orElseThrow(()
                 -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
@@ -738,6 +763,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }
+
 
     public List<UserDTO> getByOrganization(String organizationName) {
         organizationProvider.findByName(organizationName).orElseThrow(()
