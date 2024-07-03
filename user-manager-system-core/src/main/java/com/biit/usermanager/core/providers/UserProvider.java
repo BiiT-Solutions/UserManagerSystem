@@ -3,6 +3,7 @@ package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.repositories.PasswordResetTokenRepository;
 import com.biit.usermanager.persistence.repositories.TeamMemberRepository;
 import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
 import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
@@ -27,14 +28,18 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     private final UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository;
 
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+
     @Autowired
     public UserProvider(UserRepository repository, UserGroupUserRepository userGroupUserRepository,
                         TeamMemberRepository teamMemberRepository,
-                        UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository) {
+                        UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository,
+                        PasswordResetTokenRepository passwordResetTokenRepository) {
         super(repository);
         this.userGroupUserRepository = userGroupUserRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userApplicationBackendServiceRoleRepository = userApplicationBackendServiceRoleRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -108,6 +113,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
             teamMemberRepository.deleteAll(teamMemberRepository.findByIdUserId(entity.getId()));
             userGroupUserRepository.deleteAll(userGroupUserRepository.findByIdUserId(entity.getId()));
             userApplicationBackendServiceRoleRepository.deleteByIdUserId(entity.getId());
+            passwordResetTokenRepository.deleteByUser(entity);
             //Flush is needed to avoid a ObjectOptimisticLockingFailureException: Row was updated or deleted by another
             //transaction (or unsaved-value mapping was incorrect).
             userApplicationBackendServiceRoleRepository.flush();
