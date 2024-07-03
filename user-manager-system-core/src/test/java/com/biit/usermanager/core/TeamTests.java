@@ -203,6 +203,10 @@ public class TeamTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(userController.getByTeam(teamDTO.getId()).size(), 0);
     }
 
+    @Test(priority = Integer.MAX_VALUE)
+    public void deleteUsersInTeam() {
+        userController.delete(user1, null);
+    }
 
     @AfterClass(alwaysRun = true)
     public void cleanUp() {

@@ -48,11 +48,9 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
 
     private static final String NEW_APPLICATION_NAME = "Jarvis";
     private static final String OTHER_APPLICATION_NAME = "Cortana";
-    private static final String NEW_ROLE_NAME = "IronMan";
 
     private static final String NEW_BACKEND_NAME = "Armour";
     private static final String OTHER_BACKEND_NAME = "Core";
-    private static final String NEW_BACKEND_ROLE_NAME = "Owner";
 
     @Autowired
     private UserController userController;
@@ -97,7 +95,7 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
 
     private BackendServiceDTO backendServiceDTO;
 
-    private List<BackendServiceRoleDTO> backendRoles = new ArrayList<>();
+    private final List<BackendServiceRoleDTO> backendRoles = new ArrayList<>();
 
     final List<ApplicationBackendServiceRoleDTO> applicationBackendServiceRoleDTOs = new ArrayList<>();
 

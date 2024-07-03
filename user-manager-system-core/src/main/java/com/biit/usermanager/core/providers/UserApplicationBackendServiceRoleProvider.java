@@ -89,4 +89,8 @@ public class UserApplicationBackendServiceRoleProvider extends StorableObjectPro
         );
     }
 
+    public void deleteByUserId(Long userId) {
+        getRepository().deleteByIdUserId(userId);
+    }
+
 }

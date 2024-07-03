@@ -156,6 +156,12 @@ public class OrganizationTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(userController.getByOrganization(organizationDTO3.getName()).size(), 1);
     }
 
+    @Test(priority = Integer.MAX_VALUE)
+    public void deleteUsers() {
+        userController.delete(user1, null);
+        userController.delete(user2, null);
+    }
+
 
     @AfterClass(alwaysRun = true)
     public void cleanUp() {

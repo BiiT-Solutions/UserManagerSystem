@@ -23,12 +23,16 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     private final TeamMemberRepository teamMemberRepository;
 
+    private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
+
     @Autowired
     public UserProvider(UserRepository repository, UserGroupUserRepository userGroupUserRepository,
-                        TeamMemberRepository teamMemberRepository) {
+                        TeamMemberRepository teamMemberRepository,
+                        UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
         super(repository);
         this.userGroupUserRepository = userGroupUserRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -83,10 +87,6 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         return getRepository().findAll();
     }
 
-    public long deleteByUsername(String username) {
-        return getRepository().deleteByUsernameHash(username);
-    }
-
     public List<User> getByUserGroup(Long userGroupId) {
         return findByIdIn(userGroupUserRepository.findByIdUserGroupId(userGroupId).stream()
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
@@ -95,6 +95,29 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     public List<User> getByTeam(Long teamId) {
         return findByIdIn(teamMemberRepository.findByIdTeamId(teamId).stream()
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
+    }
+
+    public void delete(User entity) {
+        if (entity != null) {
+            //Delete all FK first.
+            teamMemberRepository.deleteAll(teamMemberRepository.findByIdUserId(entity.getId()));
+            userGroupUserRepository.deleteAll(userGroupUserRepository.findByIdUserId(entity.getId()));
+            userApplicationBackendServiceRoleProvider.deleteByUserId(entity.getId());
+            //Delete entity.
+            getRepository().delete(entity);
+        }
+    }
+
+    public void deleteById(Long id) {
+        delete(findById(id).orElse(null));
+    }
+
+    public void deleteAll() {
+        deleteAll(findAll());
+    }
+
+    public void deleteAll(Collection<User> entities) {
+        entities.forEach(this::delete);
     }
 
 }

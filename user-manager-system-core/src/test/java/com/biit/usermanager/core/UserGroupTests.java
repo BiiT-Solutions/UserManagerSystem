@@ -184,6 +184,12 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(userController.getByUserGroup(userGroup.getId()).size(), 1);
     }
 
+    @Test(priority = Integer.MAX_VALUE)
+    public void deleteUsersInGroup() {
+        userController.delete(user1, null);
+        userController.delete(user2, null);
+    }
+
     @AfterClass
     public void cleanUp() {
         userGroupApplicationBackendServiceRoleProvider.deleteAll();
