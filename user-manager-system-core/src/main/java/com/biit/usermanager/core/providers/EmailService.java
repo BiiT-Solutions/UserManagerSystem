@@ -57,22 +57,26 @@ public class EmailService {
 
 
     public void sendPasswordRecoveryEmail(User user) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
-        if (smtpServer != null && emailUser != null && forgetPasswordEmailLink != null) {
+        if (smtpServer != null && emailUser != null && forgetPasswordEmailLink != null && !forgetPasswordEmailLink.isBlank()) {
             sendTemplate(user, PASSWORD_RECOVERY_EMAIL_TEMPLATE, forgetPasswordEmailLink);
             UserManagerLogger.warning(this.getClass(), "Recovery password mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
+            UserManagerLogger.debug(this.getClass(), "Values are smtpServer '{}', emailUser '{}', forgetPasswordEmailLink '{}'.",
+                    smtpServer, emailUser, forgetPasswordEmailLink);
             throw new EmailNotSentException("Email settings not set. Emails will be ignored.");
         }
     }
 
 
     public void sendUserCreationEmail(User user) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
-        if (smtpServer != null && emailUser != null && mailUserCreationLink != null) {
+        if (smtpServer != null && emailUser != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
             sendTemplate(user, USER_CREATION_EMAIL_TEMPLATE, mailUserCreationLink);
             UserManagerLogger.warning(this.getClass(), "User creation mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
+            UserManagerLogger.debug(this.getClass(), "Values are smtpServer '{}', emailUser '{}', mailUserCreationLink '{}'.",
+                    smtpServer, emailUser, mailUserCreationLink);
             throw new EmailNotSentException("Email settings not set. Emails will be ignored.");
         }
     }
