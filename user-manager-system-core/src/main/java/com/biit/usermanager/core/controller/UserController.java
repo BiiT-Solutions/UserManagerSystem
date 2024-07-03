@@ -347,7 +347,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         try {
             emailService.sendUserCreationEmail(user);
         } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
-            UserManagerLogger.errorMessage(this.getClass(), e);
+            UserManagerLogger.severe(this.getClass(), e.getMessage());
         }
         return getConverter().convert(new UserConverterRequest(user));
     }
@@ -491,6 +491,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
+    @Transactional
     public void delete(UserDTO entity, String deletedBy) {
         if (Objects.equals(entity.getUsername(), deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");

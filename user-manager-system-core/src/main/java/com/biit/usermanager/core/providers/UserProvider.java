@@ -4,8 +4,10 @@ package com.biit.usermanager.core.providers;
 import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.TeamMemberRepository;
+import com.biit.usermanager.persistence.repositories.UserApplicationBackendServiceRoleRepository;
 import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
 import com.biit.usermanager.persistence.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +25,16 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     private final TeamMemberRepository teamMemberRepository;
 
-    private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
+    private final UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository;
 
     @Autowired
     public UserProvider(UserRepository repository, UserGroupUserRepository userGroupUserRepository,
                         TeamMemberRepository teamMemberRepository,
-                        UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
+                        UserApplicationBackendServiceRoleRepository userApplicationBackendServiceRoleRepository) {
         super(repository);
         this.userGroupUserRepository = userGroupUserRepository;
         this.teamMemberRepository = teamMemberRepository;
-        this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
+        this.userApplicationBackendServiceRoleRepository = userApplicationBackendServiceRoleRepository;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -83,6 +85,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         return getRepository().findByAccountExpired(accountExpired);
     }
 
+    @Override
     public List<User> findAll() {
         return getRepository().findAll();
     }
@@ -97,25 +100,35 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
     }
 
+    @Override
+    @Transactional
     public void delete(User entity) {
         if (entity != null) {
             //Delete all FK first.
             teamMemberRepository.deleteAll(teamMemberRepository.findByIdUserId(entity.getId()));
             userGroupUserRepository.deleteAll(userGroupUserRepository.findByIdUserId(entity.getId()));
-            userApplicationBackendServiceRoleProvider.deleteByUserId(entity.getId());
+            userApplicationBackendServiceRoleRepository.deleteByIdUserId(entity.getId());
+            //Flush is needed to avoid a ObjectOptimisticLockingFailureException: Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect).
+            userApplicationBackendServiceRoleRepository.flush();
             //Delete entity.
             getRepository().delete(entity);
         }
     }
 
+    @Override
+    @Transactional
     public void deleteById(Long id) {
         delete(findById(id).orElse(null));
     }
 
+    @Override
+    @Transactional
     public void deleteAll() {
         deleteAll(findAll());
     }
 
+    @Override
+    @Transactional
     public void deleteAll(Collection<User> entities) {
         entities.forEach(this::delete);
     }

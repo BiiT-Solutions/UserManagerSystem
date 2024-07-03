@@ -3,12 +3,16 @@ package com.biit.usermanager.persistence.repositories;
 import com.biit.server.persistence.repositories.StorableObjectRepository;
 import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRoleId;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Repository
+@Transactional
 public interface UserGroupApplicationBackendServiceRoleRepository extends StorableObjectRepository<UserGroupApplicationBackendServiceRole,
         UserGroupApplicationBackendServiceRoleId> {
 

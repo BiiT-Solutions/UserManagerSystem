@@ -9,7 +9,6 @@ import com.biit.usermanager.core.controller.OrganizationController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.controller.UserController;
-import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
 import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.dto.ApplicationDTO;
@@ -203,12 +202,12 @@ public class TeamTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(userController.getByTeam(teamDTO.getId()).size(), 0);
     }
 
-    @Test(priority = Integer.MAX_VALUE)
-    public void deleteUsersInTeam() {
+    @AfterClass
+    public void deleteUsers() {
         userController.delete(user1, null);
     }
 
-    @AfterClass(alwaysRun = true)
+    @AfterClass(dependsOnMethods = "deleteUsers", alwaysRun = true)
     public void cleanUp() {
         userGroupApplicationBackendServiceRoleProvider.deleteAll();
         applicationBackendServiceRoleController.deleteAll(null);

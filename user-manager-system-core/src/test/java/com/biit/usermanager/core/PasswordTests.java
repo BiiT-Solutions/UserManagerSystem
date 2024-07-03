@@ -21,8 +21,6 @@ public class PasswordTests extends AbstractTestNGSpringContextTests {
 
     private static final String USER_NEW_PASSWORD = "password2";
 
-    private static final String[] USER_ROLES = new String[]{"admin", "viewer"};
-
     @Autowired
     private UserController userController;
 

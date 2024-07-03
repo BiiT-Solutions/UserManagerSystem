@@ -21,6 +21,7 @@ import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -301,7 +302,7 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(userApplicationBackendServiceRoleProvider.count(), existingUserRoles - 4);
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void cleanUp() {
         userApplicationBackendServiceRoleProvider.deleteAll();
         applicationBackendServiceRoleController.deleteAll(null);
