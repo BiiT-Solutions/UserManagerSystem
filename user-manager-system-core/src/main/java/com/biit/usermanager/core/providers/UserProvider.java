@@ -108,7 +108,8 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
             teamMemberRepository.deleteAll(teamMemberRepository.findByIdUserId(entity.getId()));
             userGroupUserRepository.deleteAll(userGroupUserRepository.findByIdUserId(entity.getId()));
             userApplicationBackendServiceRoleRepository.deleteByIdUserId(entity.getId());
-            //Flush is needed to avoid a ObjectOptimisticLockingFailureException: Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect).
+            //Flush is needed to avoid a ObjectOptimisticLockingFailureException: Row was updated or deleted by another
+            //transaction (or unsaved-value mapping was incorrect).
             userApplicationBackendServiceRoleRepository.flush();
             //Delete entity.
             getRepository().delete(entity);
