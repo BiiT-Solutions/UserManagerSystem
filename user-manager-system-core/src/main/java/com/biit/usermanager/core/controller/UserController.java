@@ -316,6 +316,20 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
+    @Transactional
+    public UserDTO create(UserDTO dto, String creatorName) {
+        final UserDTO userDTO = super.create(dto, creatorName);
+        if (userDTO != null) {
+            try {
+                emailService.sendUserCreationEmail(reverse(userDTO));
+            } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
+                UserManagerLogger.severe(this.getClass(), e.getMessage());
+            }
+        }
+        return userDTO;
+    }
+
+
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
