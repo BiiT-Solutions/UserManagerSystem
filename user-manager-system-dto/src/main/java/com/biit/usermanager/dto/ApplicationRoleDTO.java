@@ -1,8 +1,8 @@
 package com.biit.usermanager.dto;
 
-import com.biit.server.controllers.models.CreatedElementDTO;
+import com.biit.server.controllers.models.ElementDTO;
 
-public class ApplicationRoleDTO extends CreatedElementDTO {
+public class ApplicationRoleDTO extends ElementDTO<ApplicationRoleIdDTO> {
 
     private ApplicationRoleIdDTO id;
 
@@ -15,10 +15,12 @@ public class ApplicationRoleDTO extends CreatedElementDTO {
         setId(new ApplicationRoleIdDTO(application, role));
     }
 
+    @Override
     public ApplicationRoleIdDTO getId() {
         return id;
     }
 
+    @Override
     public void setId(ApplicationRoleIdDTO id) {
         this.id = id;
     }
