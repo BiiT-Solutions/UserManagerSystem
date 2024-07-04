@@ -1,5 +1,7 @@
 package com.biit.usermanager.dto;
 
+import java.util.Objects;
+
 public class ApplicationBackendServiceRoleIdDTO {
 
     private ApplicationRoleDTO applicationRole;
@@ -30,6 +32,23 @@ public class ApplicationBackendServiceRoleIdDTO {
 
     public void setBackendServiceRole(BackendServiceRoleDTO serviceRole) {
         this.serviceRole = serviceRole;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ApplicationBackendServiceRoleIdDTO that = (ApplicationBackendServiceRoleIdDTO) o;
+        return Objects.equals(applicationRole, that.applicationRole) && Objects.equals(serviceRole, that.serviceRole);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(applicationRole, serviceRole);
     }
 
     @Override

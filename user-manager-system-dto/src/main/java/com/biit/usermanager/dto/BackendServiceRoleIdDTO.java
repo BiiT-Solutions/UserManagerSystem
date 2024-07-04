@@ -1,8 +1,8 @@
 package com.biit.usermanager.dto;
 
-import com.biit.server.controllers.models.CreatedElementDTO;
+import java.util.Objects;
 
-public class BackendServiceRoleIdDTO extends CreatedElementDTO {
+public class BackendServiceRoleIdDTO {
 
     private BackendServiceDTO backendService;
 
@@ -32,6 +32,23 @@ public class BackendServiceRoleIdDTO extends CreatedElementDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BackendServiceRoleIdDTO that = (BackendServiceRoleIdDTO) o;
+        return Objects.equals(backendService, that.backendService) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(backendService, name);
     }
 
     @Override
