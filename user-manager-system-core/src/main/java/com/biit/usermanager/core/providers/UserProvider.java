@@ -45,19 +45,19 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     public Optional<User> findByUsername(String username) {
         //If encryption is enabled, use hash.
         if (getEncryptionKey() != null) {
-            final Optional<User> authenticatedUser = getRepository().findByUsernameHash(username);
+            final Optional<User> authenticatedUser = findByUsernameHash(username);
             if (authenticatedUser.isPresent()) {
-                authenticatedUser.get().setUsernameHash(authenticatedUser.get().getUsername());
+                authenticatedUser.get().setUsernameHash(authenticatedUser.get().getUsername().toLowerCase());
                 return authenticatedUser;
             }
             return Optional.empty();
         } else {
-            return getRepository().findByUsername(username);
+            return getRepository().findByUsernameIgnoreCase(username);
         }
     }
 
     public Optional<User> findByEmail(String email) {
-        return getRepository().findByEmail(email);
+        return getRepository().findByEmailIgnoreCase(email);
     }
 
 
@@ -67,6 +67,10 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
+    }
+
+    public Optional<User> findByUsernameHash(String username) {
+        return getRepository().findByUsernameHash(username.toLowerCase());
     }
 
     public Optional<User> findByUuid(UUID uuid) {

@@ -5,6 +5,7 @@ import com.biit.database.encryption.LocalDateCryptoConverter;
 import com.biit.database.encryption.LocalDateTimeCryptoConverter;
 import com.biit.database.encryption.SHA512HashGenerator;
 import com.biit.database.encryption.StringCryptoConverter;
+import com.biit.database.encryption.StringToLowerCryptoConverter;
 import com.biit.server.persistence.entities.Element;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
@@ -53,7 +54,7 @@ public class User extends Element<Long> {
 
     @Access(AccessType.PROPERTY)
     @Column(name = "username", nullable = false, unique = true, length = MAX_UNIQUE_COLUMN_LENGTH)
-    @Convert(converter = StringCryptoConverter.class)
+    @Convert(converter = StringToLowerCryptoConverter.class)
     private String username = "";
 
     @Column(name = "username_hash", length = SHA512HashGenerator.ALGORITHM_LENGTH)
@@ -176,7 +177,7 @@ public class User extends Element<Long> {
 
     public void setUsername(String username) {
         this.username = username;
-        this.usernameHash = username;
+        setUsernameHash(username.toLowerCase());
     }
 
     public String getUsernameHash() {
@@ -184,7 +185,7 @@ public class User extends Element<Long> {
     }
 
     public void setUsernameHash(String usernameHash) {
-        this.usernameHash = usernameHash;
+        this.usernameHash = usernameHash.toLowerCase();
     }
 
     public String getName() {

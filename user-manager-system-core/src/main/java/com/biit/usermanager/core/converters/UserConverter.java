@@ -47,6 +47,11 @@ public class UserConverter extends ElementConverter<User, UserDTO, UserConverter
         }
         user.setPassword(bcryptSalt + to.getPassword());
         user.setUuid(to.getUUID());
+        if (to.getUsername() != null) {
+            user.setUsername(to.getUsername().toLowerCase());
+        } else {
+            user.setUsername(to.getEmail().toLowerCase());
+        }
         return user;
     }
 }

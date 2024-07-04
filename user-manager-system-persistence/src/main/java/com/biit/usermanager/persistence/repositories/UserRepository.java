@@ -14,11 +14,11 @@ import java.util.UUID;
 @Transactional
 public interface UserRepository extends ElementRepository<User, Long> {
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findByUsernameIgnoreCase(String username);
 
     Optional<User> findByUsernameHash(String username);
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmailIgnoreCase(String email);
 
     Optional<User> findByUuid(UUID uuid);
 

@@ -355,7 +355,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
         userDTO = (UserDTO) authenticationService.addUser(userDTO);
         Assert.assertNotNull(userDTO.getId());
-        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME);
+        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME.toLowerCase());
     }
 
     @Test(dependsOnMethods = {"addUser"})
@@ -366,11 +366,11 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         authenticationService.updateUser(userDTO);
 
         userDTO = (UserDTO) authenticationService.getUserByEmail(NEW_USER_EMAIL);
-        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME_UPDATED);
+        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME_UPDATED.toLowerCase());
 
         userDTO.setUsername(NEW_USER_NAME);
         userDTO = (UserDTO) authenticationService.updateUser(userDTO);
-        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME);
+        Assert.assertEquals(userDTO.getUsername(), NEW_USER_NAME.toLowerCase());
     }
 
     @Test(dependsOnMethods = {"updateUser"})
