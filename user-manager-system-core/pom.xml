@@ -36,6 +36,10 @@
         </dependency>
         <dependency>
             <groupId>com.biit</groupId>
+            <artifactId>rest-server-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.biit</groupId>
             <artifactId>rest-server-dto</artifactId>
         </dependency>
         <dependency>

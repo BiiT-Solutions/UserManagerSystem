@@ -8,19 +8,28 @@ import com.biit.usermanager.persistence.entities.PasswordResetToken;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.utils.file.FileReader;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
 public class EmailService {
 
-    private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "reset-password.html";
-    private static final String USER_CREATION_EMAIL_TEMPLATE = "user-created.html";
+    //Templates are stored on BiiTRestServer project.
+    private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "email-templates/key.html";
+    private static final String USER_CREATION_EMAIL_TEMPLATE = "email-templates/key-holder.html";
+
     private static final String EMAIL_LINK_TAG = "EMAIL:LINK";
+    private static final String EMAIL_TITLE_TAG = "EMAIL:TITLE";
+    private static final String EMAIL_SUBTITLE_TAG = "EMAIL:SUBTITLE";
+    private static final String EMAIL_BODY_TAG = "EMAIL:BODY";
+    private static final String EMAIL_BUTTON_TAG = "EMAIL:BUTTON";
+    private static final String EMAIL_FOOTER_TAG = "EMAIL:FOOTER";
 
     @Value("${mail.server.smtp.server:#{null}}")
     private String smtpServer;
@@ -40,9 +49,6 @@ public class EmailService {
     @Value("${mail.copy.address:#{null}}")
     private String mailCopy;
 
-    @Value("${mail.password.recovery.subject:}")
-    private String mailSubject;
-
     @Value("${mail.forgot.password.link:}")
     private String forgetPasswordEmailLink;
 
@@ -51,14 +57,22 @@ public class EmailService {
 
     private final PasswordResetTokenProvider passwordResetTokenProvider;
 
-    public EmailService(PasswordResetTokenProvider passwordResetTokenProvider) {
+    private final MessageSource messageSource;
+
+    public EmailService(PasswordResetTokenProvider passwordResetTokenProvider, MessageSource messageSource) {
         this.passwordResetTokenProvider = passwordResetTokenProvider;
+        this.messageSource = messageSource;
     }
 
 
     public void sendPasswordRecoveryEmail(User user) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
         if (smtpServer != null && emailUser != null && forgetPasswordEmailLink != null && !forgetPasswordEmailLink.isBlank()) {
-            sendTemplate(user, PASSWORD_RECOVERY_EMAIL_TEMPLATE, forgetPasswordEmailLink);
+            final String token = generateToken(user).getToken();
+            final Locale locale = getUserLocale(user);
+            final String emailTemplate = populatePasswordRecoveryEmailFields(FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
+                    forgetPasswordEmailLink, token, locale);
+            sendTemplate(user,
+                    messageSource.getMessage("forgotten.password.mail.subject", null, locale), emailTemplate);
             UserManagerLogger.warning(this.getClass(), "Recovery password mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
@@ -71,7 +85,11 @@ public class EmailService {
 
     public void sendUserCreationEmail(User user) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
         if (smtpServer != null && emailUser != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
-            sendTemplate(user, USER_CREATION_EMAIL_TEMPLATE, mailUserCreationLink);
+            final String token = generateToken(user).getToken();
+            final Locale locale = getUserLocale(user);
+            final String emailTemplate = populateNewAccountCreatedEmailFields(FileReader.getResource(USER_CREATION_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
+                    mailUserCreationLink, token, locale);
+            sendTemplate(user, messageSource.getMessage("new.user.mail.subject", null, locale), emailTemplate);
             UserManagerLogger.warning(this.getClass(), "User creation mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
@@ -81,12 +99,16 @@ public class EmailService {
         }
     }
 
+    private Locale getUserLocale(User user) {
+        if (user.getLocale() != null && !user.getLocale().isBlank()) {
+            return Locale.forLanguageTag(user.getLocale());
+        }
+        return Locale.US;
+    }
 
-    private void sendTemplate(User user, String passwordRecoveryEmailTemplate, String forgetPasswordEmailLink)
-            throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
-        final String token = generateToken(user).getToken();
-        final String emailTemplate = populateEmailFields(FileReader.getResource(passwordRecoveryEmailTemplate, StandardCharsets.UTF_8),
-                forgetPasswordEmailLink, token);
+
+    private void sendTemplate(User user, String mailSubject, String emailTemplate)
+            throws EmailNotSentException, InvalidEmailAddressException {
         SendEmail.sendEmail(smtpServer, smtpPort, emailUser, emailPassword, emailSender, Collections.singletonList(user.getEmail()), null,
                 mailCopy != null ? Collections.singletonList(mailCopy) : null, mailSubject,
                 emailTemplate, null);
@@ -101,7 +123,22 @@ public class EmailService {
     }
 
 
-    private String populateEmailFields(String html, String link, String token) {
-        return html.replace(EMAIL_LINK_TAG, link + ";token=" + token);
+    private String populatePasswordRecoveryEmailFields(String html, String link, String token, Locale locale) {
+        return html.replace(EMAIL_LINK_TAG, link + ";token=" + token)
+                .replace(EMAIL_TITLE_TAG, messageSource.getMessage("forgotten.password.mail.title", null, locale))
+                .replace(EMAIL_SUBTITLE_TAG, messageSource.getMessage("forgotten.password.mail.subtitle", null, locale))
+                .replace(EMAIL_BODY_TAG, messageSource.getMessage("forgotten.password.mail.body", null, locale))
+                .replace(EMAIL_BUTTON_TAG, messageSource.getMessage("forgotten.password.mail.button", null, locale))
+                .replace(EMAIL_FOOTER_TAG, messageSource.getMessage("forgotten.password.mail.footer", null, locale));
+    }
+
+
+    private String populateNewAccountCreatedEmailFields(String html, String link, String token, Locale locale) {
+        return html.replace(EMAIL_LINK_TAG, link + ";token=" + token)
+                .replace(EMAIL_TITLE_TAG, messageSource.getMessage("new.user.mail.title", null, locale))
+                .replace(EMAIL_SUBTITLE_TAG, messageSource.getMessage("new.user.mail.subtitle", null, locale))
+                .replace(EMAIL_BODY_TAG, messageSource.getMessage("new.user.mail.body", null, locale))
+                .replace(EMAIL_BUTTON_TAG, messageSource.getMessage("new.user.mail.button", null, locale))
+                .replace(EMAIL_FOOTER_TAG, messageSource.getMessage("new.user.mail.footer", null, locale));
     }
 }

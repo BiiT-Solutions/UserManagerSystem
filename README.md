@@ -351,5 +351,4 @@ mail.smtp.server.username=
 mail.smtp.server.password=
 mail.sender=
 mail.copy.address=
-mail.password.recovery.subject=
 ```

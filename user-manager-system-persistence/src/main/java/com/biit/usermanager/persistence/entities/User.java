@@ -28,6 +28,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -218,6 +219,10 @@ public class User extends Element<Long> {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale.toLanguageTag();
     }
 
     public String getPassword() {
