@@ -21,8 +21,8 @@ import java.util.UUID;
 public class EmailService {
 
     //Templates are stored on BiiTRestServer project.
-    private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "/email-templates/key.html";
-    private static final String USER_CREATION_EMAIL_TEMPLATE = "/email-templates/key-holder.html";
+    private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "email-templates/key.html";
+    private static final String USER_CREATION_EMAIL_TEMPLATE = "email-templates/key-holder.html";
 
     private static final String EMAIL_LINK_TAG = "EMAIL:LINK";
     private static final String EMAIL_TITLE_TAG = "EMAIL:TITLE";
@@ -103,7 +103,7 @@ public class EmailService {
         if (user.getLocale() != null && !user.getLocale().isBlank()) {
             return Locale.forLanguageTag(user.getLocale());
         }
-        return Locale.US;
+        return Locale.ENGLISH;
     }
 
 
