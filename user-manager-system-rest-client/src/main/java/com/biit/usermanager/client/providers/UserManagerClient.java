@@ -47,6 +47,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         this.userUrlConstructor = userUrlConstructor;
         this.securityClient = securityClient;
         this.mapper = mapper;
+        UserManagerClientLogger.info(this.getClass(), "User Manager Client loaded correctly.");
     }
 
 
