@@ -30,6 +30,13 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
         uuid = UUID.randomUUID();
     }
 
+    public BasicUserDTO(String username, String name, String lastname) {
+        this();
+        this.username = username;
+        this.name = name;
+        this.lastname = lastname;
+    }
+
     @Override
     public Long getId() {
         return id;

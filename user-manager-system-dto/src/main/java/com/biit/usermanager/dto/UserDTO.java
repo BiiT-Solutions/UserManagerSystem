@@ -58,6 +58,15 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private Collection<String> applicationRoles;
 
+    public UserDTO() {
+        super();
+    }
+
+    public UserDTO(String username, String name, String lastname, String email) {
+        super(username, name, lastname);
+        setEmail(email);
+    }
+
     @JsonIgnore
     @Override
     public String getMobilePhone() {
