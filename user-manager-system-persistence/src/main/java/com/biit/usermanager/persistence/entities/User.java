@@ -178,7 +178,7 @@ public class User extends Element<Long> {
 
     public void setUsername(String username) {
         this.username = username;
-        setUsernameHash(username.toLowerCase());
+        setUsernameHash(username);
     }
 
     public String getUsernameHash() {
@@ -334,6 +334,57 @@ public class User extends Element<Long> {
             this.applicationBackendServiceRoles = new HashSet<>();
         }
         this.applicationBackendServiceRoles.add(applicationBackendServiceRole);
+    }
+
+    public void copy(User user) {
+        if (getIdCard() != null) {
+            setIdCard(user.getIdCard());
+        }
+        if (getUsername() != null) {
+            setUsername(user.getUsername());
+        }
+        if (getName() != null) {
+            setName(user.getName());
+        }
+        if (getLastname() != null) {
+            setLastname(user.getLastname());
+        }
+        if (getEmail() != null) {
+            setEmail(user.getEmail());
+        }
+        if (getLocale() != null) {
+            setLocale(user.getLocale());
+        }
+        setAccountLocked(user.isAccountLocked());
+        setAccountBlocked(user.isAccountBlocked());
+        setAccountExpired(user.isAccountExpired());
+        if (user.getPhone() != null) {
+            setPhone(user.getPhone());
+        }
+        if (user.getInitials() != null) {
+            setInitials(user.getInitials());
+        }
+        if (user.getBirthdate() != null) {
+            setBirthdate(user.getBirthdate());
+        }
+        if (user.getAddress() != null) {
+            setAddress(user.getAddress());
+        }
+        if (user.getPostalCode() != null) {
+            setPostalCode(user.getPostalCode());
+        }
+        if (user.getCity() != null) {
+            setCity(user.getCity());
+        }
+        if (user.getCountry() != null) {
+            setCountry(user.getCountry());
+        }
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            setPassword(user.getPassword());
+        }
+        if (user.getApplicationBackendServiceRoles() != null) {
+            setApplicationBackendServiceRoles(user.getApplicationBackendServiceRoles());
+        }
     }
 
     @Override

@@ -45,7 +45,9 @@ public class UserConverter extends ElementConverter<User, UserDTO, UserConverter
         if (to.getLocale() != null) {
             user.setLocale(to.getLocale().toLanguageTag().replace("-", "_"));
         }
-        user.setPassword(bcryptSalt + to.getPassword());
+        if (to.getPassword() != null && !to.getPassword().isBlank()) {
+            user.setPassword(bcryptSalt + to.getPassword());
+        }
         user.setUuid(to.getUUID());
         if (to.getUsername() != null) {
             user.setUsername(to.getUsername().toLowerCase());

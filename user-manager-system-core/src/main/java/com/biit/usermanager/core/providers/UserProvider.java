@@ -2,6 +2,7 @@ package com.biit.usermanager.core.providers;
 
 
 import com.biit.server.providers.ElementProvider;
+import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.PasswordResetTokenRepository;
 import com.biit.usermanager.persistence.repositories.TeamMemberRepository;
@@ -40,6 +41,24 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         this.teamMemberRepository = teamMemberRepository;
         this.userApplicationBackendServiceRoleRepository = userApplicationBackendServiceRoleRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
+    }
+
+
+    @Override
+    public User save(User entity) {
+        if (entity == null) {
+            return null;
+        }
+        if (entity.getId() == null) {
+            return getRepository().save(entity);
+        } else {
+            //Is it an update?
+            //Do not update the password field!
+            final User databaseUser = getRepository().findById(entity.getId()).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                    "No User with id '" + entity.getId() + "' found on the system."));
+            databaseUser.copy(entity);
+            return getRepository().save(databaseUser);
+        }
     }
 
     public Optional<User> findByUsername(String username) {

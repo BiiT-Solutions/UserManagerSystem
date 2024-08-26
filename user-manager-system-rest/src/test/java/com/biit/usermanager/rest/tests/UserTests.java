@@ -43,6 +43,7 @@ import java.util.List;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Test(groups = "userTests")
@@ -58,13 +59,14 @@ public class UserTests extends AbstractTestNGSpringContextTests {
     private static final String[] BACKEND_ROLES = new String[]{"ADMIN", "VIEWER"};
     private static final String APPLICATION_NAME = "DASHBOARD";
 
-    /* New DATA */
+    private static final String USER2_NAME = "user2";
+    private static final String USER2_UNIQUE_ID = "1111111BB";
+    private final static String USER2_FIRST_NAME = "Test2";
+    private final static String USER2_LAST_NAME = "User2";
+    private static final String USER2_PASSWORD = "password";
 
-    private static final String NEW_APPLICATION_NAME = "Jarvis";
-    private static final String NEW_ROLE_NAME = "IronMan";
-
-    private static final String NEW_BACKEND_NAME = "Armour";
-    private static final String NEW_BACKEND_ROLE_NAME = "Owner";
+    private final static String USER2_NEW_FIRST_NAME = "New Test2";
+    private final static String USER2_NEW_LAST_NAME = "New  User2";
 
 
     @Value("${bcrypt.salt:}")
@@ -178,6 +180,59 @@ public class UserTests extends AbstractTestNGSpringContextTests {
 
         jwtToken = createResult.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
         Assert.assertNotNull(jwtToken);
+    }
+
+    @Test(dependsOnMethods = "login")
+    public void updateUser() throws Exception {
+
+        //Create the admin user
+        final UserDTO user2 = (UserDTO) userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null);
+
+        //I can log in.
+        AuthRequest request = new AuthRequest();
+        request.setUsername(USER2_NAME);
+        request.setPassword(USER2_PASSWORD);
+
+        this.mockMvc
+                .perform(post("/auth/public/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
+                .andReturn();
+
+        //Change user data.
+        user2.setFirstname(USER2_NEW_FIRST_NAME);
+        user2.setLastname(USER2_NEW_LAST_NAME);
+
+        this.mockMvc
+                .perform(put("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .content(toJson(user2))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+
+        //Ensure that the password is not updated.
+        request = new AuthRequest();
+        request.setUsername(USER2_NAME);
+        request.setPassword(USER2_PASSWORD);
+
+        MvcResult createResult = this.mockMvc
+                .perform(post("/auth/public/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
+                .andReturn();
+
+        UserDTO authenticatedUser = fromJson(createResult.getResponse().getContentAsString(), UserDTO.class);
+        Assert.assertEquals(authenticatedUser.getName(), USER2_NEW_FIRST_NAME);
+
     }
 
 
