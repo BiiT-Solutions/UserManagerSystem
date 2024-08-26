@@ -765,6 +765,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     public void updatePassword(String token, String newPassword) {
         final PasswordResetToken passwordResetToken = checkToken(token);
+        UserManagerLogger.info(this.getClass(), "Updating password for user '{}'.", passwordResetToken.getUser().getUsername());
         updatePassword(passwordResetToken.getUser().getUsername(), newPassword, passwordResetToken.getUser().getUsername());
     }
 
