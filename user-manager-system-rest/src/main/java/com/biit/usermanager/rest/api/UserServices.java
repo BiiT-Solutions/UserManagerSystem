@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -358,7 +359,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Changes the password from a user, using a token", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/public/change-password")
     public void resetPasswordFromToken(@Parameter(description = "Token obtained by mail", required = true) @RequestParam("token") String token,
-                                       @RequestBody(required = true) PasswordChangeRequest passwordChangeRequest,
+                                       @RequestBody(required = true) @Valid PasswordChangeRequest passwordChangeRequest,
                                        HttpServletRequest request) {
         if (passwordChangeRequest == null || passwordChangeRequest.getNewPassword() == null) {
             throw new BadRequestException(this.getClass(), "Password is not set correctly.");

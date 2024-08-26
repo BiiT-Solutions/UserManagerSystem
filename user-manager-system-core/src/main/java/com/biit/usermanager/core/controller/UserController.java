@@ -366,6 +366,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return getConverter().convert(new UserConverterRequest(user));
     }
 
+    public void updatePassword(String token, String newPassword) {
+        final PasswordResetToken passwordResetToken = checkToken(token);
+        UserManagerLogger.info(this.getClass(), "Updating password for user '{}'.", passwordResetToken.getUser().getUsername());
+        updatePassword(passwordResetToken.getUser().getUsername(), newPassword, passwordResetToken.getUser().getUsername());
+    }
+
 
     @Override
     public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
@@ -378,7 +384,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
     /**
-     * Updates a user password, but does not check the old password. Only for using by Admins.
+     * Updates a user password, but does not check the old password. Only for using by Admins or first log in.
      *
      * @param username    user to be changed
      * @param newPassword the new password
@@ -760,13 +766,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new TokenExpiredException(this.getClass(), "Token has expired!");
         }
         return passwordResetToken;
-    }
-
-
-    public void updatePassword(String token, String newPassword) {
-        final PasswordResetToken passwordResetToken = checkToken(token);
-        UserManagerLogger.info(this.getClass(), "Updating password for user '{}'.", passwordResetToken.getUser().getUsername());
-        updatePassword(passwordResetToken.getUser().getUsername(), newPassword, passwordResetToken.getUser().getUsername());
     }
 
 
