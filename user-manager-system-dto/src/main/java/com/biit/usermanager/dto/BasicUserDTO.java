@@ -164,6 +164,11 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
         return lastname;
     }
 
+    @Override
+    public boolean isAccountExpired() {
+        return false;
+    }
+
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }

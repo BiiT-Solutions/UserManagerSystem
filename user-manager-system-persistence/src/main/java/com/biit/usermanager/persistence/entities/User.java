@@ -123,6 +123,10 @@ public class User extends Element<Long> {
     @Column(name = "account_expired", nullable = false)
     private boolean accountExpired = false;
 
+    @Column(name = "account_expiration_time")
+    @Convert(converter = LocalDateTimeCryptoConverter.class)
+    private LocalDateTime accountExpirationTime;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_by_application_backend_service_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -258,11 +262,24 @@ public class User extends Element<Long> {
     }
 
     public boolean isAccountExpired() {
-        return accountExpired;
+        return accountExpired || (getAccountExpirationTime() != null && LocalDateTime.now().isAfter(getAccountExpirationTime()));
     }
 
     public void setAccountExpired(boolean accountExpired) {
         this.accountExpired = accountExpired;
+        if (accountExpired) {
+            setAccountExpirationTime(LocalDateTime.now());
+        } else {
+            setAccountExpirationTime(null);
+        }
+    }
+
+    public LocalDateTime getAccountExpirationTime() {
+        return accountExpirationTime;
+    }
+
+    public void setAccountExpirationTime(LocalDateTime accountExpirationTime) {
+        this.accountExpirationTime = accountExpirationTime;
     }
 
     public String getPhone() {

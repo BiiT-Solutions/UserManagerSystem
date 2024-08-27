@@ -44,7 +44,7 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private boolean accountBlocked = false;
 
-    private boolean accountExpired = false;
+    private LocalDateTime accountExpirationTime;
 
     public String getIdCard() {
         return idCard;
@@ -76,7 +76,7 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
-        return !accountExpired;
+        return getAccountExpirationTime() == null || LocalDateTime.now().isBefore(getAccountExpirationTime());
     }
 
     @JsonIgnore
@@ -87,7 +87,7 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return !accountExpired;
+        return true;
     }
 
     @JsonIgnore
@@ -124,6 +124,19 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     @JsonIgnore
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    @Override
+    public boolean isAccountExpired() {
+        return getAccountExpirationTime() != null && LocalDateTime.now().isAfter(getAccountExpirationTime());
+    }
+
+    public LocalDateTime getAccountExpirationTime() {
+        return accountExpirationTime;
+    }
+
+    public void setAccountExpirationTime(LocalDateTime accountExpirationTime) {
+        this.accountExpirationTime = accountExpirationTime;
     }
 
     @JsonIgnore
@@ -238,14 +251,6 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public boolean isAccountExpired() {
-        return accountExpired;
-    }
-
-    public void setAccountExpired(boolean accountExpired) {
-        this.accountExpired = accountExpired;
     }
 
     @Override
