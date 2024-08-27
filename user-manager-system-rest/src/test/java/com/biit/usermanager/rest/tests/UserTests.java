@@ -36,6 +36,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +68,12 @@ public class UserTests extends AbstractTestNGSpringContextTests {
 
     private final static String USER2_NEW_FIRST_NAME = "New Test2";
     private final static String USER2_NEW_LAST_NAME = "New  User2";
+
+    private static final String USER3_NAME = "user3";
+    private static final String USER3_UNIQUE_ID = "2222222CC";
+    private final static String USER3_FIRST_NAME = "Test3";
+    private final static String USER3_LAST_NAME = "User3";
+    private static final String USER3_PASSWORD = "password";
 
 
     @Value("${bcrypt.salt:}")
@@ -247,6 +254,53 @@ public class UserTests extends AbstractTestNGSpringContextTests {
 
         List<UserDTO> users = Arrays.asList(fromJson(userResult.getResponse().getContentAsString(), UserDTO[].class));
         Assert.assertEquals(users.size(), 1);
+    }
+
+
+    @Test(dependsOnMethods = "login")
+    public void accountExpired() throws Exception {
+
+        //Create a new user
+        final UserDTO user2 = (UserDTO) userController.createUser(USER3_NAME, USER3_UNIQUE_ID, USER3_FIRST_NAME, USER3_LAST_NAME, USER3_PASSWORD, null);
+
+        //I can log in.
+        AuthRequest request = new AuthRequest();
+        request.setUsername(USER3_NAME);
+        request.setPassword(USER3_PASSWORD);
+
+        this.mockMvc
+                .perform(post("/auth/public/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
+                .andReturn();
+
+        //Change user data.
+        user2.setAccountExpirationTime(LocalDateTime.now().minusMinutes(1));
+
+        this.mockMvc
+                .perform(put("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .content(toJson(user2))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+
+        //Ensure that I cannot use the token any more.
+        MvcResult createResult = this.mockMvc
+                .perform(post("/auth/public/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isLocked())
+                .andExpect(MockMvcResultMatchers.header().doesNotExist(HttpHeaders.AUTHORIZATION))
+                .andReturn();
+
+
     }
 
 }
