@@ -131,6 +131,7 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
         return getAccountExpirationTime() != null && LocalDateTime.now().isAfter(getAccountExpirationTime());
     }
 
+    @Override
     public LocalDateTime getAccountExpirationTime() {
         return accountExpirationTime;
     }

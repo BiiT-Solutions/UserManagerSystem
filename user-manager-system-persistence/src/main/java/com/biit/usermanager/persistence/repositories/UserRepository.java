@@ -26,7 +26,5 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     List<User> findAllByAccountBlocked(boolean accountBlocked);
 
-    List<User> findByAccountExpired(boolean accountExpired);
-
     long deleteByUsernameHash(String username);
 }

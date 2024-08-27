@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
@@ -167,6 +168,11 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
     @Override
     public boolean isAccountExpired() {
         return false;
+    }
+
+    @Override
+    public LocalDateTime getAccountExpirationTime() {
+        return null;
     }
 
     public void setLastname(String lastname) {

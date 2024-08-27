@@ -457,16 +457,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
-    public List<UserDTO> getAllByExpired(boolean accountExpired) {
-        final List<User> usersList = getProvider().findByAccountExpired(accountExpired);
-        final List<UserDTO> usersdtList = new ArrayList<>();
-        for (final User user : usersList) {
-            usersdtList.add(getConverter().convert(new UserConverterRequest(user)));
-        }
-        return usersdtList;
-    }
-
-
     @Override
     public Collection<IAuthenticatedUser> findAll() {
         return getProvider().findAll().parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());

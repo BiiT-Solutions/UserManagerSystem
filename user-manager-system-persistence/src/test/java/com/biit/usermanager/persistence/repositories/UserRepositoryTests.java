@@ -60,16 +60,6 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(user.get().getEmail(), USER_EMAIL);
     }
 
-    @Test(dependsOnMethods = "saveUser")
-    public void getUsersExpired() {
-        List<User> users = userRepository.findByAccountExpired(true);
-        for (User user : users) {
-            Assert.assertNotNull(user);
-            Assert.assertTrue(user.isAccountExpired());
-        }
-        Assert.assertEquals(users.size(), 1);
-    }
-
     @AfterClass(alwaysRun = true)
     public void cleanUpUsers() {
         userRepository.deleteAll();

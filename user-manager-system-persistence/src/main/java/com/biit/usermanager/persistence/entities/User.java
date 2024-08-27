@@ -120,9 +120,6 @@ public class User extends Element<Long> {
     @Column(name = "account_blocked", nullable = false)
     private boolean accountBlocked = false;
 
-    @Column(name = "account_expired", nullable = false)
-    private boolean accountExpired = false;
-
     @Column(name = "account_expiration_time")
     @Convert(converter = LocalDateTimeCryptoConverter.class)
     private LocalDateTime accountExpirationTime;
@@ -262,11 +259,10 @@ public class User extends Element<Long> {
     }
 
     public boolean isAccountExpired() {
-        return accountExpired || (getAccountExpirationTime() != null && LocalDateTime.now().isAfter(getAccountExpirationTime()));
+        return (getAccountExpirationTime() != null && LocalDateTime.now().isAfter(getAccountExpirationTime()));
     }
 
     public void setAccountExpired(boolean accountExpired) {
-        this.accountExpired = accountExpired;
         if (accountExpired) {
             setAccountExpirationTime(LocalDateTime.now());
         } else {

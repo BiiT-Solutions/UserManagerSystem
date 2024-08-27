@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,15 +89,6 @@ public class BasicUserController extends KafkaElementController<User, Long, Basi
     public List<BasicUserDTO> getByAccountBlocked(Boolean accountBlocked) {
         return getProvider().findAllByAccountBlocked(accountBlocked).parallelStream().map(this::createConverterRequest).map(getConverter()::convert)
                 .collect(Collectors.toList());
-    }
-
-    public List<BasicUserDTO> getAllByExpired(boolean accountExpired) {
-        final List<User> usersList = getProvider().findByAccountExpired(accountExpired);
-        final List<BasicUserDTO> usersdtList = new ArrayList<>();
-        for (final User user : usersList) {
-            usersdtList.add(getConverter().convert(new BasicUserConverterRequest(user)));
-        }
-        return usersdtList;
     }
 
     public void delete(BasicUserDTO user) {
