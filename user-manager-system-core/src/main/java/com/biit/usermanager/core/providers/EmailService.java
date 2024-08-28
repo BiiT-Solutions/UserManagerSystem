@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -26,6 +27,8 @@ public class EmailService extends ServerEmailService {
 
     protected static final String EMAIL_LINK_TAG = "EMAIL:LINK";
     protected static final String EMAIL_BUTTON_TAG = "EMAIL:BUTTON";
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Value("${mail.forgot.password.link:}")
     private String forgetPasswordEmailLink;
@@ -64,10 +67,13 @@ public class EmailService extends ServerEmailService {
         if (user != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
+            final String bodyTag = user.getAccountExpirationTime() != null ? "new.user.mail.with.expiration.body" : "new.user.mail.body";
+            final Object[] args = new Object[]{user.getUsername(),
+                    user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(formatter) : ""};
             final String emailTemplate = populateNewAccountCreatedEmailFields(FileReader.getResource(USER_CREATION_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
-                    mailUserCreationLink, token, locale);
-            sendTemplate(user.getEmail(), getMessage("new.user.mail.subject", null, locale), emailTemplate,
-                    getMessage("new.user.mail.body", null, locale));
+                    mailUserCreationLink, token, args, bodyTag, locale);
+            sendTemplate(user.getEmail(), getMessage("new.user.mail.subject", args, locale), emailTemplate,
+                    getMessage(bodyTag, args, locale));
             UserManagerLogger.warning(this.getClass(), "User creation mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
@@ -102,12 +108,12 @@ public class EmailService extends ServerEmailService {
     }
 
 
-    private String populateNewAccountCreatedEmailFields(String html, String link, String token, Locale locale) {
+    private String populateNewAccountCreatedEmailFields(String html, String link, String token, Object[] args, String bodyTag, Locale locale) {
         return html.replace(EMAIL_LINK_TAG, link + ";token=" + token)
-                .replace(EMAIL_TITLE_TAG, getMessage("new.user.mail.title", null, locale))
-                .replace(EMAIL_SUBTITLE_TAG, getMessage("new.user.mail.subtitle", null, locale))
-                .replace(EMAIL_BODY_TAG, getMessage("new.user.mail.body", null, locale))
-                .replace(EMAIL_BUTTON_TAG, getMessage("new.user.mail.button", null, locale))
-                .replace(EMAIL_FOOTER_TAG, getMessage("new.user.mail.footer", null, locale));
+                .replace(EMAIL_TITLE_TAG, getMessage("new.user.mail.title", args, locale))
+                .replace(EMAIL_SUBTITLE_TAG, getMessage("new.user.mail.subtitle", args, locale))
+                .replace(EMAIL_BODY_TAG, getMessage(bodyTag, args, locale))
+                .replace(EMAIL_BUTTON_TAG, getMessage("new.user.mail.button", args, locale))
+                .replace(EMAIL_FOOTER_TAG, getMessage("new.user.mail.footer", args, locale));
     }
 }
