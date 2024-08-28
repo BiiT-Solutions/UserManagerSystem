@@ -36,6 +36,9 @@ public class EmailService extends ServerEmailService {
     @Value("${mail.user.creation.link:}")
     private String mailUserCreationLink;
 
+    @Value("${mail.access.application.link:}")
+    private String applicationLink;
+
     private final PasswordResetTokenProvider passwordResetTokenProvider;
 
 
@@ -69,7 +72,8 @@ public class EmailService extends ServerEmailService {
             final Locale locale = getUserLocale(user);
             final String bodyTag = user.getAccountExpirationTime() != null ? "new.user.mail.with.expiration.body" : "new.user.mail.body";
             final Object[] args = new Object[]{user.getName(), user.getLastname(), user.getUsername(),
-                    user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(formatter) : ""};
+                    user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(formatter) : "",
+                    applicationLink};
             final String emailTemplate = populateNewAccountCreatedEmailFields(FileReader.getResource(USER_CREATION_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
                     mailUserCreationLink, token, args, bodyTag, locale);
             sendTemplate(user.getEmail(), getMessage("new.user.mail.subject", args, locale), emailTemplate,
@@ -113,6 +117,7 @@ public class EmailService extends ServerEmailService {
                 .replace(EMAIL_TITLE_TAG, getMessage("new.user.mail.title", args, locale))
                 .replace(EMAIL_SUBTITLE_TAG, getMessage("new.user.mail.subtitle", args, locale))
                 .replace(EMAIL_BODY_TAG, getMessage(bodyTag, args, locale))
+                .replace(EMAIL_SECOND_PARAGRAPH, getMessage("new.user.mail.second.paragraph", args, locale))
                 .replace(EMAIL_BUTTON_TAG, getMessage("new.user.mail.button", args, locale))
                 .replace(EMAIL_FOOTER_TAG, getMessage("new.user.mail.footer", args, locale));
     }
