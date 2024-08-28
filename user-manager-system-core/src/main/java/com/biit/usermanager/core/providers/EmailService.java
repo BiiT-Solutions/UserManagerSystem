@@ -68,7 +68,7 @@ public class EmailService extends ServerEmailService {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
             final String bodyTag = user.getAccountExpirationTime() != null ? "new.user.mail.with.expiration.body" : "new.user.mail.body";
-            final Object[] args = new Object[]{user.getUsername(),
+            final Object[] args = new Object[]{user.getName(), user.getLastname(), user.getUsername(),
                     user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(formatter) : ""};
             final String emailTemplate = populateNewAccountCreatedEmailFields(FileReader.getResource(USER_CREATION_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
                     mailUserCreationLink, token, args, bodyTag, locale);
