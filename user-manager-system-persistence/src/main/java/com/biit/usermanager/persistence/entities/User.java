@@ -262,7 +262,7 @@ public class User extends Element<Long> {
         return (getAccountExpirationTime() != null && LocalDateTime.now().isAfter(getAccountExpirationTime()));
     }
 
-    public void setAccountExpired(boolean accountExpired) {
+    public void expireAccount(boolean accountExpired) {
         if (accountExpired) {
             setAccountExpirationTime(LocalDateTime.now());
         } else {
@@ -370,7 +370,6 @@ public class User extends Element<Long> {
         }
         setAccountLocked(user.isAccountLocked());
         setAccountBlocked(user.isAccountBlocked());
-        setAccountExpired(user.isAccountExpired());
         if (user.getPhone() != null) {
             setPhone(user.getPhone());
         }
@@ -397,6 +396,9 @@ public class User extends Element<Long> {
         }
         if (user.getApplicationBackendServiceRoles() != null) {
             setApplicationBackendServiceRoles(user.getApplicationBackendServiceRoles());
+        }
+        if (user.getAccountExpirationTime() != null) {
+            setAccountExpirationTime(user.getAccountExpirationTime());
         }
     }
 

@@ -278,7 +278,8 @@ public class UserTests extends AbstractTestNGSpringContextTests {
                 .andReturn();
 
         //Change user data.
-        user2.setAccountExpirationTime(LocalDateTime.now().minusMinutes(1));
+        final LocalDateTime expirationTime = LocalDateTime.now().minusMinutes(1);
+        user2.setAccountExpirationTime(expirationTime);
 
         this.mockMvc
                 .perform(put("/users")
@@ -290,8 +291,8 @@ public class UserTests extends AbstractTestNGSpringContextTests {
                 .andReturn();
 
 
-        //Ensure that I cannot use the token any more.
-        MvcResult createResult = this.mockMvc
+        //Ensure that I cannot use the token anymore.
+        this.mockMvc
                 .perform(post("/auth/public/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request))
@@ -301,6 +302,15 @@ public class UserTests extends AbstractTestNGSpringContextTests {
                 .andReturn();
 
 
+        MvcResult createResult = this.mockMvc
+                .perform(get("/users/" + user2.getId())
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        UserDTO authenticatedUser = fromJson(createResult.getResponse().getContentAsString(), UserDTO.class);
+        Assert.assertEquals(authenticatedUser.getAccountExpirationTime().withNano(0), expirationTime.withNano(0));
     }
 
 }

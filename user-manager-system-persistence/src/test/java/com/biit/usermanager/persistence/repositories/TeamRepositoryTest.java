@@ -105,7 +105,7 @@ public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
         user.setEmail(USER_EMAIL_1);
         user.setIdCard(USER_IDCARD_1);
         user.setPhone(PHONE_1);
-        user.setAccountExpired(true);
+        user.expireAccount(true);
 
         Assert.assertNull(user.getId());
         this.user = userRepository.save(user);
@@ -118,7 +118,7 @@ public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
         user2.setEmail(USER_EMAIL_2);
         user2.setIdCard(USER_IDCARD_2);
         user2.setPhone(PHONE_2);
-        user2.setAccountExpired(true);
+        user2.expireAccount(true);
 
         Assert.assertNull(user2.getId());
         this.user2 = userRepository.save(user2);
@@ -132,7 +132,7 @@ public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
         user3.setEmail(USER_EMAIL_3);
         user3.setIdCard(USER_IDCARD_3);
         user3.setPhone(PHONE_3);
-        user3.setAccountExpired(true);
+        user3.expireAccount(true);
 
         Assert.assertNull(user3.getId());
         this.user3 = userRepository.save(user3);

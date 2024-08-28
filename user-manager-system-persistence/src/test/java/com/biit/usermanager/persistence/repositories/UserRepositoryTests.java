@@ -9,7 +9,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -35,10 +34,10 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
         user.setEmail(USER_EMAIL);
         user.setIdCard(USER_IDCARD);
         user.setPhone(PHONE);
-        user.setAccountExpired(true);
+        user.expireAccount(true);
 
         User user2 = new User();
-        user2.setAccountExpired(false);
+        user2.expireAccount(false);
         userRepository.save(user2);
 
         Assert.assertNull(user.getId());
