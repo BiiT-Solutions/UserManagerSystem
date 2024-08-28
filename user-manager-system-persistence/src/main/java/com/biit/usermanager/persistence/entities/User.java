@@ -397,9 +397,7 @@ public class User extends Element<Long> {
         if (user.getApplicationBackendServiceRoles() != null) {
             setApplicationBackendServiceRoles(user.getApplicationBackendServiceRoles());
         }
-        if (user.getAccountExpirationTime() != null) {
-            setAccountExpirationTime(user.getAccountExpirationTime());
-        }
+        setAccountExpirationTime(user.getAccountExpirationTime());
     }
 
     @Override
