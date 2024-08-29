@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class PasswordResetTokenProvider extends StorableObjectProvider<PasswordResetToken, Long, PasswordResetTokenRepository> {
 
-    @Value("${user.password.recovery.token.expiration.time:600}")
+    @Value("${user.password.recovery.token.expiration.time:48}")
     private Long tokenExpirationTimeInSeconds;
 
 
@@ -39,7 +39,7 @@ public class PasswordResetTokenProvider extends StorableObjectProvider<PasswordR
     @Override
     public PasswordResetToken save(PasswordResetToken passwordResetToken) {
         if (passwordResetToken.getExpirationDate() == null) {
-            passwordResetToken.setExpirationDate(LocalDateTime.now().plusSeconds(tokenExpirationTimeInSeconds));
+            passwordResetToken.setExpirationDate(LocalDateTime.now().plusHours(tokenExpirationTimeInSeconds));
         }
         return super.save(passwordResetToken);
     }
