@@ -46,10 +46,10 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     }
 
 
-    @Operation(summary = "Checks if a username is already taken or not.")
+    @Operation(summary = "Checks if a group name is already taken or not.")
     @GetMapping(path = "/public/{name}/check")
     @ResponseStatus(value = HttpStatus.OK)
-    public void checkUsernameExists(@Parameter(description = "name", required = true)
+    public void checkGroupNameExists(@Parameter(description = "name", required = true)
                                     @PathVariable("name") String name,
                                     HttpServletRequest httpRequest) {
         getController().checkNameExists(name);
@@ -60,7 +60,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @Operation(summary = "Deletes a UserGroup by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/name/{name}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public void deleteUser(@Parameter(description = "name", required = true)
+    public void deleteGroup(@Parameter(description = "name", required = true)
                            @PathVariable("name") String name, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(name, authentication.getName());
     }
@@ -69,7 +69,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @Operation(summary = "Deletes a UserGroup by id.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public void deleteUser(@Parameter(description = "id", required = true)
+    public void deleteGroup(@Parameter(description = "id", required = true)
                            @PathVariable("id") Long id, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(id, authentication.getName());
     }

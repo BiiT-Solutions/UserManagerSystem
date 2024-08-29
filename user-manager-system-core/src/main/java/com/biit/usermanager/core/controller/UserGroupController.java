@@ -82,12 +82,12 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
     public UserGroupDTO getByName(String name) {
         return convert(getProvider().findByName(name).orElseThrow(
-                () -> new UserGroupNotFoundException(this.getClass(), "No user group exists with username '" + name + "'.")));
+                () -> new UserGroupNotFoundException(this.getClass(), "No user group exists with name '" + name + "'.")));
     }
 
     public void checkNameExists(String name) {
         getProvider().findByName(name).orElseThrow(()
-                -> new UserGroupNotFoundException(this.getClass(), "No user group exists with username '" + name + "'."));
+                -> new UserGroupNotFoundException(this.getClass(), "No user group exists with name '" + name + "'."));
     }
 
     @Transactional
@@ -103,7 +103,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
     /**
      * Populate the authorities for a user. If a group is selected, only the one of the group. If not the roles that are not at group level.
      *
-     * @param userGroupDTO The user to populate.
+     * @param userGroupDTO The group to populate.
      * @return the populated user.
      */
     private UserGroupDTO setGrantedAuthorities(UserGroupDTO userGroupDTO, Application application, BackendService backendService) {

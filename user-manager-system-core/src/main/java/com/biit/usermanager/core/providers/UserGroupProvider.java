@@ -30,8 +30,8 @@ public class UserGroupProvider extends ElementProvider<UserGroup, Long, UserGrou
     }
 
 
-    public List<UserGroup> getByUserGroup(Long userId) {
-        return findByIdIn(userGroupUserRepository.findByIdUserId(userId).stream()
+    public List<UserGroup> getByUserGroup(Long groupId) {
+        return findByIdIn(userGroupUserRepository.findByIdUserId(groupId).stream()
                 .map(userGroupUsers -> userGroupUsers.getId().getUserGroupId()).toList());
     }
 }
