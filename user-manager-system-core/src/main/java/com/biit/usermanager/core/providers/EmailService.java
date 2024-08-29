@@ -77,7 +77,8 @@ public class EmailService extends ServerEmailService {
             final String emailTemplate = populateNewAccountCreatedEmailFields(FileReader.getResource(USER_CREATION_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
                     mailUserCreationLink, token, args, bodyTag, locale);
             sendTemplate(user.getEmail(), getMessage("new.user.mail.subject", args, locale), emailTemplate,
-                    getMessage(bodyTag, args, locale));
+                    getMessage(bodyTag, args, locale) + "\n"
+                            + (!applicationLink.isBlank() ? getMessage("new.user.mail.second.paragraph", args, locale) : ""));
             UserManagerLogger.warning(this.getClass(), "User creation mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
