@@ -549,7 +549,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     private UserDTO setGrantedAuthoritiesByGroups(UserDTO userDTO, Application application, BackendService backendService) {
-        final List<UserGroup> userGroups = userGroupProvider.getByUserGroup(userDTO.getId());
+        final List<UserGroup> userGroups = userGroupProvider.getByUser(userDTO.getId());
         return setGrantedAuthorities(userDTO, userGroups, application, backendService);
     }
 
