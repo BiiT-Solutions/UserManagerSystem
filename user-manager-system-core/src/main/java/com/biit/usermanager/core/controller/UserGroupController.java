@@ -330,5 +330,15 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         return convert(getProvider().save(userGroup));
     }
 
+    public List<UserGroupDTO> getFromUser(String username) {
+        final User user = userProvider.findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No user exists with username '" + username + "'."));
+        return getFromUser(user);
+    }
+
+    public List<UserGroupDTO> getFromUser(User user) {
+        return convertAll(getProvider().getByUser(user.getId()));
+    }
+
 
 }

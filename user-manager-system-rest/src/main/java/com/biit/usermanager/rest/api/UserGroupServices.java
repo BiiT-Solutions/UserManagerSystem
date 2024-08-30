@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user-groups")
@@ -40,8 +41,8 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get UserGroup by name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/name/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserGroupDTO getByUsername(@Parameter(description = "Name of an existing group", required = true) @PathVariable("name") String name,
-                                      HttpServletRequest request) {
+    public UserGroupDTO getByGroupName(@Parameter(description = "Name of an existing group", required = true) @PathVariable("name") String name,
+                                       HttpServletRequest request) {
         return getController().getByName(name);
     }
 
@@ -50,8 +51,8 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @GetMapping(path = "/public/{name}/check")
     @ResponseStatus(value = HttpStatus.OK)
     public void checkGroupNameExists(@Parameter(description = "name", required = true)
-                                    @PathVariable("name") String name,
-                                    HttpServletRequest httpRequest) {
+                                     @PathVariable("name") String name,
+                                     HttpServletRequest httpRequest) {
         getController().checkNameExists(name);
     }
 
@@ -61,7 +62,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @DeleteMapping(path = "/name/{name}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void deleteGroup(@Parameter(description = "name", required = true)
-                           @PathVariable("name") String name, Authentication authentication, HttpServletRequest httpRequest) {
+                            @PathVariable("name") String name, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(name, authentication.getName());
     }
 
@@ -70,7 +71,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void deleteGroup(@Parameter(description = "id", required = true)
-                           @PathVariable("id") Long id, Authentication authentication, HttpServletRequest httpRequest) {
+                            @PathVariable("id") Long id, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(id, authentication.getName());
     }
 
@@ -204,5 +205,13 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             Authentication authentication,
             HttpServletRequest request) {
         return getController().unAssign(id, users, authentication.getName());
+    }
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Get all groups from a user.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserGroupDTO> getByUsername(@Parameter(description = "Name of an existing user", required = true) @PathVariable("username") String username,
+                                            HttpServletRequest request) {
+        return getController().getFromUser(username);
     }
 }
