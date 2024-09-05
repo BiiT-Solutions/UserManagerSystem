@@ -151,7 +151,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     public UserDTO getByUsername(String username) {
         final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."))));
+                new UserNotFoundException(this.getClass(), "No user with username '" + username + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
     }
 
@@ -161,7 +161,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         if (username != null) {
             try {
                 user = getProvider().findByUsername(username).orElseThrow(() -> new UserNotFoundException(this.getClass(),
-                        "No User with username '" + username + "' found on the system."));
+                        "No user with username '" + username + "' found on the system."));
             } catch (Exception e) {
                 UserManagerLogger.warning(this.getClass(), "No User with username '" + username + "' found on the system.");
                 throw e;
