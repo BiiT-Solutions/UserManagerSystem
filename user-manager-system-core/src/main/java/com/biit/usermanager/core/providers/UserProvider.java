@@ -78,7 +78,10 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     }
 
     public Optional<User> findByEmail(String email) {
-        return getRepository().findByEmailIgnoreCase(email);
+        if (email == null) {
+            return Optional.empty();
+        }
+        return getRepository().findByEmailIgnoreCase(email.trim());
     }
 
 

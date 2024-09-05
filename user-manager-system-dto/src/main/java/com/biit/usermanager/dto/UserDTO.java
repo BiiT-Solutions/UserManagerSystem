@@ -97,7 +97,10 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     }
 
     public String getEmail() {
-        return email;
+        if (email == null) {
+            return null;
+        }
+        return email.trim();
     }
 
     public void setEmail(String email) {

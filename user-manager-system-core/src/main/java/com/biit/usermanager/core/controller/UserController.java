@@ -83,6 +83,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
 
     public static final String ROLE_PREFIX = "ROLE_";
+    private final UserProvider userProvider;
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
@@ -124,7 +125,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider,
                              TeamProvider teamProvider, OrganizationProvider organizationProvider, UserGroupUserProvider userGroupUserRepository,
                              TeamMemberProvider teamMemberProvider, PasswordResetTokenProvider passwordResetTokenProvider,
-                             EmailService emailService, RoleProvider roleProvider) {
+                             EmailService emailService, RoleProvider roleProvider, UserProvider userProvider) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
@@ -141,6 +142,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.passwordResetTokenProvider = passwordResetTokenProvider;
         this.emailService = emailService;
         this.roleProvider = roleProvider;
+        this.userProvider = userProvider;
     }
 
 
@@ -318,6 +320,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     @Transactional
     public UserDTO create(UserDTO dto, String creatorName) {
+        //Check username does not exist. Ignore cases.
+        if (userProvider.findByUsername(dto.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
+        }
+        if (userProvider.findByEmail(dto.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
+        }
         final UserDTO userDTO = super.create(dto, creatorName);
         if (userDTO != null) {
             try {
