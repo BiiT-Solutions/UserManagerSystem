@@ -88,6 +88,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
+    @Value("#{new Boolean('${mail.user.creation.link.on.update:false}')}")
+    private boolean sendEmailOnUpdate = false;
+
     private final ApplicationProvider applicationProvider;
     private final BackendServiceProvider backendServiceProvider;
 
@@ -518,6 +521,23 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
         }
         super.delete(entity, deletedBy);
+    }
+
+    @Transactional
+    public UserDTO update(UserDTO dto, String updaterName) {
+        final User user = getProvider().findByUuid(dto.getUUID()).orElse(null);
+        try {
+            return super.update(dto, updaterName);
+        } finally {
+            //Send an email if the email account has been updated.
+            if (sendEmailOnUpdate && user != null && !Objects.equals(user.getEmail(), dto.getEmail())) {
+                try {
+                    emailService.sendUserCreationEmail(user);
+                } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
+                    UserManagerLogger.severe(this.getClass(), e.getMessage());
+                }
+            }
+        }
     }
 
 
