@@ -353,7 +353,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                        @RequestBody(required = true) @Valid PasswordChangeRequest passwordChangeRequest,
                                        HttpServletRequest request) {
         if (passwordChangeRequest == null || passwordChangeRequest.getNewPassword() == null) {
-            throw new BadRequestException(this.getClass(), "Password is not set correctly.");
+            throw new BadRequestException(this.getClass(), "Password request is not set correctly.");
         }
         getController().updatePassword(token, passwordChangeRequest.getNewPassword());
     }
