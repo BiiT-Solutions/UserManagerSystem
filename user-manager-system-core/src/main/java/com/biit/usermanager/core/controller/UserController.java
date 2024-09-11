@@ -373,6 +373,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         userDTO.setIdCard(uniqueId);
         userDTO.setPassword(password);
         userDTO.setCreatedBy(createdBy);
+        userDTO.setEmail("email" + getProvider().count() + "@email.com");
         final User user = getProvider().save(getConverter().reverse(userDTO));
         UserManagerLogger.info(this.getClass(), "User '" + username + "' created on the system.");
         try {
@@ -535,10 +536,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
         }
 
-        final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
-        if (!allowSameEmailAddressOnMultipleUsers && existingUserByEmail.isPresent()
-                && !Objects.equals(dto.getUUID(), existingUserByEmail.get().getUuid())) {
-            throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
+        if (!allowSameEmailAddressOnMultipleUsers) {
+            final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
+            if (existingUserByEmail.isPresent()
+                    && !Objects.equals(dto.getUUID(), existingUserByEmail.get().getUuid())) {
+                throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
+            }
         }
 
         try {

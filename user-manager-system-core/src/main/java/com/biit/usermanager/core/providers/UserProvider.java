@@ -81,7 +81,11 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         if (email == null) {
             return Optional.empty();
         }
-        return getRepository().findByEmailIgnoreCase(email.trim());
+        final List<User> users = getRepository().findByEmailIgnoreCase(email.trim());
+        if (!users.isEmpty()) {
+            return Optional.of(users.get(0));
+        }
+        return Optional.empty();
     }
 
 
