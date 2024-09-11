@@ -74,7 +74,7 @@ public class User extends Element<Long> {
     @Convert(converter = StringCryptoConverter.class)
     private String lastname = "";
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     @Convert(converter = StringCryptoConverter.class)
     private String email = "";
 

@@ -79,14 +79,6 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
         }
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
     @Override
     public String getUsername() {
         return username;

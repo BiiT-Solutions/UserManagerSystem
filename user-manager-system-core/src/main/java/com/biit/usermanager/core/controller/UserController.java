@@ -531,13 +531,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final User user = getProvider().findByUuid(dto.getUUID()).orElse(null);
 
         final Optional<User> existingUserByUsername = userProvider.findByUsername(dto.getUsername());
-        if (existingUserByUsername.isPresent() && !Objects.equals(dto.getUuid(), existingUserByUsername.get().getUuid())) {
+        if (existingUserByUsername.isPresent() && !Objects.equals(dto.getUUID(), existingUserByUsername.get().getUuid())) {
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
         }
 
         final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
         if (!allowSameEmailAddressOnMultipleUsers && existingUserByEmail.isPresent()
-                && !Objects.equals(dto.getUuid(), existingUserByEmail.get().getUuid())) {
+                && !Objects.equals(dto.getUUID(), existingUserByEmail.get().getUuid())) {
             throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
         }
 
