@@ -91,9 +91,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Value("#{new Boolean('${mail.user.creation.link.on.update:false}')}")
     private boolean sendEmailOnUpdate = false;
 
-    @Value("#{new Boolean('${users.can.share.email.address:false}')}")
-    private boolean allowSameEmailAddressOnMultipleUsers = false;
-
     private final ApplicationProvider applicationProvider;
     private final BackendServiceProvider backendServiceProvider;
 
@@ -330,7 +327,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         if (userProvider.findByUsername(dto.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
         }
-        if (!allowSameEmailAddressOnMultipleUsers && userProvider.findByEmail(dto.getEmail()).isPresent()) {
+        if (userProvider.findByEmail(dto.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
         }
         final UserDTO userDTO = super.create(dto, creatorName);
@@ -536,12 +533,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
         }
 
-        if (!allowSameEmailAddressOnMultipleUsers) {
-            final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
-            if (existingUserByEmail.isPresent()
-                    && !Objects.equals(dto.getUUID(), existingUserByEmail.get().getUuid())) {
-                throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
-            }
+        final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
+        if (existingUserByEmail.isPresent()
+                && !Objects.equals(dto.getUUID(), existingUserByEmail.get().getUuid())) {
+            throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
         }
 
         try {
