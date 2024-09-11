@@ -13,6 +13,7 @@ import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
+import com.biit.usermanager.core.exceptions.EmailAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
@@ -328,7 +329,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
         }
         if (userProvider.findByEmail(dto.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
+            throw new EmailAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
         }
         final UserDTO userDTO = super.create(dto, creatorName);
         if (userDTO != null) {
@@ -536,7 +537,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
         if (existingUserByEmail.isPresent()
                 && !Objects.equals(dto.getUUID(), existingUserByEmail.get().getUuid())) {
-            throw new UserAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
+            throw new EmailAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
         }
 
         try {
