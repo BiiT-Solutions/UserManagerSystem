@@ -67,7 +67,7 @@ public class EmailService extends ServerEmailService {
 
 
     public void sendUserCreationEmail(User user) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
-        if (user != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
+        if (user != null && user.getEmail() != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
             final String bodyTag = user.getAccountExpirationTime() != null ? "new.user.mail.with.expiration.body" : "new.user.mail.body";

@@ -348,7 +348,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
-                createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(), createdBy);
+                createUserRequest.getEmail(), createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(), createdBy);
         //Set roles if is the first user on a database.
         if (createUserRequest.getAuthorities() != null) {
             createUserRequest.getAuthorities().forEach(authority -> roleProvider
@@ -358,7 +358,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
-    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String createdBy) {
+    public IAuthenticatedUser createUser(String username, String uniqueId, String email, String name, String lastName, String password, String createdBy) {
         if (findByUsername(username).isPresent()) {
             UserManagerLogger.warning(this.getClass(), "Username '" + username + "' already exists!.");
             throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
@@ -371,7 +371,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         userDTO.setIdCard(uniqueId);
         userDTO.setPassword(password);
         userDTO.setCreatedBy(createdBy);
-        userDTO.setEmail("email" + getProvider().count() + "@email.com");
+        userDTO.setEmail(Objects.requireNonNullElseGet(email, () -> "email" + getProvider().count() + "@email.com"));
         final User user = getProvider().save(getConverter().reverse(userDTO));
         UserManagerLogger.info(this.getClass(), "User '" + username + "' created on the system.");
         try {
