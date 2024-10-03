@@ -3,6 +3,7 @@ package com.biit.usermanager.dto;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticatedUser {
     @Serial
     private static final long serialVersionUID = 6973886025199428759L;
