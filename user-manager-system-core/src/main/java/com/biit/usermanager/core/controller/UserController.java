@@ -357,6 +357,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return authenticatedUser;
     }
 
+    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String createdBy) {
+        return createUser(username, uniqueId, null, name, lastName, password, createdBy);
+    }
 
     public IAuthenticatedUser createUser(String username, String uniqueId, String email, String name, String lastName, String password, String createdBy) {
         if (findByUsername(username).isPresent()) {
