@@ -3,6 +3,8 @@ package com.biit.usermanager.rest.api;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.rest.ElementServices;
+import com.biit.server.security.CreateUserRequest;
+import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.UserConverter;
@@ -173,18 +175,12 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         return null;
     }
 
-    /**
-     * THIS METHOD MUST NOT BE HERE IF YOU FIND IT REMOVE IT IMMEDIATELY!!!
-     * @param username
-     * @param httpRequest
-     */
-    @Operation(summary = "Checks if a username is already taken or not.")
-    @GetMapping(path = "/public/{username}/restore")
-    @ResponseStatus(value = HttpStatus.OK)
-    public UserDTO adminRestore(@Parameter(description = "username", required = true)
-                                    @PathVariable("username") String username,
-                                    HttpServletRequest httpRequest) {
-        return (UserDTO) getController().updatePassword(username, "asd123", "admin");
+
+    @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds a new user into the system", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(path = "/public/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public IAuthenticatedUser register(@RequestBody CreateUserRequest request) {
+        return getController().createPublicUser(request);
     }
 
 

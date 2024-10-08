@@ -7,6 +7,7 @@ import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
+import com.biit.server.security.exceptions.ActionNotAllowedException;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
@@ -91,6 +92,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     @Value("#{new Boolean('${mail.user.creation.link.on.update:false}')}")
     private boolean sendEmailOnUpdate = false;
+
+    @Value("#{new Boolean('${user.public.register.enabled:false}')}")
+    private boolean allowPublicRegistration = false;
+
+    @Value("${user.public.register.duration.hours:1}")
+    private int publicUserExpirationHours = 1;
+
 
     private final ApplicationProvider applicationProvider;
     private final BackendServiceProvider backendServiceProvider;
@@ -345,6 +353,19 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
+    public IAuthenticatedUser createPublicUser(CreateUserRequest createUserRequest) {
+        if (allowPublicRegistration) {
+            final UserDTO userDTO = (UserDTO) create(createUserRequest, createUserRequest.getUsername());
+            userDTO.setAccountExpirationTime(LocalDateTime.now().plusHours(publicUserExpirationHours));
+            getProvider().save(reverse(userDTO));
+            userGroupUserProvider.assignToDefaultGroup(reverse(userDTO));
+            return userDTO;
+        } else {
+            throw new ActionNotAllowedException(this.getClass(), "Feature disabled.");
+        }
+    }
+
+
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
@@ -353,6 +374,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         if (createUserRequest.getAuthorities() != null) {
             createUserRequest.getAuthorities().forEach(authority -> roleProvider
                     .createDefaultRoleAdmin(authenticatedUser.getId(), authority.replaceAll(ROLE_PREFIX, "")));
+        } else {
+            //Set default group
+            userGroupUserProvider.assignToDefaultGroup(reverse(authenticatedUser));
         }
         return authenticatedUser;
     }

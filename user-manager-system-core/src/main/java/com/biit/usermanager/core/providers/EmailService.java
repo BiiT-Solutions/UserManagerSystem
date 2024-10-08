@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -42,7 +43,7 @@ public class EmailService extends ServerEmailService {
     private final PasswordResetTokenProvider passwordResetTokenProvider;
 
 
-    public EmailService(EmailSendPool emailSendPool, PasswordResetTokenProvider passwordResetTokenProvider, MessageSource messageSource) {
+    public EmailService(Optional<EmailSendPool> emailSendPool, PasswordResetTokenProvider passwordResetTokenProvider, MessageSource messageSource) {
         super(emailSendPool, messageSource);
         this.passwordResetTokenProvider = passwordResetTokenProvider;
     }
