@@ -176,9 +176,9 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Adds a new user into the system", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(path = "/public/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public IAuthenticatedUser register(@RequestBody CreateUserRequest request) {
         return getController().createPublicUser(request);
     }

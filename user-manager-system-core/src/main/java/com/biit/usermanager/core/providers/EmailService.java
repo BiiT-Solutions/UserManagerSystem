@@ -29,7 +29,7 @@ public class EmailService extends ServerEmailService {
     protected static final String EMAIL_LINK_TAG = "EMAIL:LINK";
     protected static final String EMAIL_BUTTON_TAG = "EMAIL:BUTTON";
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Value("${mail.forgot.password.link:}")
     private String forgetPasswordEmailLink;
@@ -73,7 +73,7 @@ public class EmailService extends ServerEmailService {
             final Locale locale = getUserLocale(user);
             final String bodyTag = user.getAccountExpirationTime() != null ? "new.user.mail.with.expiration.body" : "new.user.mail.body";
             final Object[] args = new Object[]{user.getName(), user.getLastname(), user.getUsername(),
-                    user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(formatter) : "",
+                    user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(FORMATTER) : "",
                     applicationLink};
             final String emailTemplate = populateNewAccountCreatedEmailFields(FileReader.getResource(USER_CREATION_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
                     mailUserCreationLink, token, args, bodyTag, locale);
