@@ -83,7 +83,8 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
+            UserManagerClientLogger.warning(this.getClass(), "User '" + username + "' not found!");
+            return Optional.empty();
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();
