@@ -355,6 +355,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     public IAuthenticatedUser createPublicUser(CreateUserRequest createUserRequest) {
         if (allowPublicRegistration) {
+            if (findByUsername(createUserRequest.getUsername()).isPresent()) {
+                UserManagerLogger.warning(this.getClass(), "Username '" + createUserRequest.getUsername() + "' already exists!.");
+                throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
+            }
             final UserDTO userDTO = (UserDTO) create(createUserRequest, createUserRequest.getUsername());
             userDTO.setAccountExpirationTime(LocalDateTime.now().plusHours(publicUserExpirationHours));
             getProvider().save(reverse(userDTO));

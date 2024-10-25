@@ -55,9 +55,10 @@ public class EmailService extends ServerEmailService {
             final Locale locale = getUserLocale(user);
             final String emailTemplate = populatePasswordRecoveryEmailFields(FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
                     forgetPasswordEmailLink, token, locale);
+            final Object[] args = emailArgs(user);
             sendTemplate(user.getEmail(),
-                    getMessage("forgotten.password.mail.subject", null, locale), emailTemplate,
-                    getMessage("forgotten.password.mail.body", null, locale));
+                    getMessage("forgotten.password.mail.subject", args, locale), emailTemplate,
+                    getMessage("forgotten.password.mail.body", args, locale));
             UserManagerLogger.warning(this.getClass(), "Recovery password mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
@@ -72,9 +73,7 @@ public class EmailService extends ServerEmailService {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
             final String bodyTag = user.getAccountExpirationTime() != null ? "new.user.mail.with.expiration.body" : "new.user.mail.body";
-            final Object[] args = new Object[]{user.getName(), user.getLastname(), user.getUsername(),
-                    user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(FORMATTER) : "",
-                    applicationLink};
+            final Object[] args = emailArgs(user);
             final String emailTemplate = populateNewAccountCreatedEmailFields(FileReader.getResource(USER_CREATION_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
                     mailUserCreationLink, token, args, bodyTag, locale);
             sendTemplate(user.getEmail(), getMessage("new.user.mail.subject", args, locale), emailTemplate,
@@ -86,6 +85,12 @@ public class EmailService extends ServerEmailService {
             UserManagerLogger.debug(this.getClass(), "Values are: mailUserCreationLink '{}'.", mailUserCreationLink);
             throw new EmailNotSentException("Email settings not set. Emails will be ignored.");
         }
+    }
+
+    private Object[] emailArgs(User user) {
+        return new Object[]{user.getName(), user.getLastname(), user.getUsername(),
+                user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(FORMATTER) : "",
+                applicationLink};
     }
 
     private Locale getUserLocale(User user) {
