@@ -53,9 +53,9 @@ public class EmailService extends ServerEmailService {
         if (user != null && forgetPasswordEmailLink != null && !forgetPasswordEmailLink.isBlank()) {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
-            final String emailTemplate = populatePasswordRecoveryEmailFields(FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
-                    forgetPasswordEmailLink, token, locale);
             final Object[] args = emailArgs(user);
+            final String emailTemplate = populatePasswordRecoveryEmailFields(FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
+                    forgetPasswordEmailLink, token, args, locale);
             sendTemplate(user.getEmail(),
                     getMessage("forgotten.password.mail.subject", args, locale), emailTemplate,
                     getMessage("forgotten.password.mail.body", args, locale));
@@ -109,13 +109,13 @@ public class EmailService extends ServerEmailService {
     }
 
 
-    private String populatePasswordRecoveryEmailFields(String html, String link, String token, Locale locale) {
+    private String populatePasswordRecoveryEmailFields(String html, String link, String token, Object[] args, Locale locale) {
         return html.replace(EMAIL_LINK_TAG, link + ";token=" + token)
-                .replace(EMAIL_TITLE_TAG, getMessage("forgotten.password.mail.title", null, locale))
-                .replace(EMAIL_SUBTITLE_TAG, getMessage("forgotten.password.mail.subtitle", null, locale))
-                .replace(EMAIL_BODY_TAG, getMessage("forgotten.password.mail.body", null, locale))
-                .replace(EMAIL_BUTTON_TAG, getMessage("forgotten.password.mail.button", null, locale))
-                .replace(EMAIL_FOOTER_TAG, getMessage("forgotten.password.mail.footer", null, locale));
+                .replace(EMAIL_TITLE_TAG, getMessage("forgotten.password.mail.title", args, locale))
+                .replace(EMAIL_SUBTITLE_TAG, getMessage("forgotten.password.mail.subtitle", args, locale))
+                .replace(EMAIL_BODY_TAG, getMessage("forgotten.password.mail.body", args, locale))
+                .replace(EMAIL_BUTTON_TAG, getMessage("forgotten.password.mail.button", args, locale))
+                .replace(EMAIL_FOOTER_TAG, getMessage("forgotten.password.mail.footer", args, locale));
     }
 
 
