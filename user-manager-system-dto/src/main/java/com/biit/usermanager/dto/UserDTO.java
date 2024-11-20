@@ -34,7 +34,6 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private String country;
 
-    @JsonIgnore
     private Locale locale;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -116,17 +115,10 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     }
 
     @Override
-    public String getLanguageId() {
-        return locale == null ? null : locale.toLanguageTag().replace("-", "_");
-    }
-
-    @JsonIgnore
-    @Override
     public Locale getLocale() {
         return locale;
     }
 
-    @JsonIgnore
     public void setLocale(Locale locale) {
         this.locale = locale;
     }

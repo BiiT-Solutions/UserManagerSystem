@@ -150,11 +150,6 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
         this.name = name;
     }
 
-    @Override
-    public String getLanguageId() {
-        return null;
-    }
-
     @JsonIgnore
     @Override
     public String getLastName() {
