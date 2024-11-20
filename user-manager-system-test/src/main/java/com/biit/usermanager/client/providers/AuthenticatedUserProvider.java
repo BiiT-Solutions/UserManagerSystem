@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -99,6 +100,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         authenticatedUser.setUID(uuid);
         authenticatedUser.setName(name);
         authenticatedUser.setLastname(lastName);
+        authenticatedUser.setLocale(Locale.ENGLISH);
         if (password != null) {
             authenticatedUser.setPassword(encoder.encode(bcryptSalt + password));
         }
