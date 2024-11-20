@@ -120,6 +120,11 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         return createUser(username, UUID.randomUUID().toString(), name, null, password);
     }
 
+    public void updateUser(AuthenticatedUser user) {
+        usersOnMemory.removeIf(x -> x.getUID().equals(user.getUID()));
+        usersOnMemory.add(user);
+    }
+
 
     @Override
     public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
