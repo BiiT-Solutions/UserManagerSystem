@@ -73,14 +73,14 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         return createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(), createUserRequest.getFirstname(),
-                createUserRequest.getLastname(), createUserRequest.getPassword());
+                createUserRequest.getLastname(), createUserRequest.getPassword(), Locale.ENGLISH);
     }
 
     public void clear() {
         usersOnMemory.clear();
     }
 
-    public IAuthenticatedUser createUser(String username, String uuid, String name, String lastName, String password) {
+    public IAuthenticatedUser createUser(String username, String uuid, String name, String lastName, String password, Locale locale) {
         if (findByUsername(username).isPresent()) {
             throw new RuntimeException("Username exists!");
         }
@@ -100,7 +100,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         authenticatedUser.setUID(uuid);
         authenticatedUser.setName(name);
         authenticatedUser.setLastname(lastName);
-        authenticatedUser.setLocale(Locale.ENGLISH);
+        authenticatedUser.setLocale(locale);
         if (password != null) {
             authenticatedUser.setPassword(encoder.encode(bcryptSalt + password));
         }
@@ -117,11 +117,14 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     }
 
     public IAuthenticatedUser createUser(String username, String name, String password) {
-        return createUser(username, UUID.randomUUID().toString(), name, null, password);
+        return createUser(username, UUID.randomUUID().toString(), name, null, password, Locale.ENGLISH);
     }
 
     public void updateUser(AuthenticatedUser user) {
-        usersOnMemory.removeIf(x -> x.getUID().equals(user.getUID()));
+        if (user == null) {
+            return;
+        }
+        usersOnMemory.removeIf(x -> Objects.equals(x.getUsername(), user.getUsername()));
         usersOnMemory.add(user);
     }
 
