@@ -91,4 +91,12 @@ public class UserGroup extends Element<Long> {
     public Set<User> getUsers() {
         return users;
     }
+
+    @Override
+    public String toString() {
+        return "UserGroup{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + '}';
+    }
 }

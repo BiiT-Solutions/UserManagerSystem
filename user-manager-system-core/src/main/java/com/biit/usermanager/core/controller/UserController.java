@@ -613,10 +613,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 }
             });
 
-            UserManagerLogger.debug(this.getClass(), "Assigning application roles '" + userDTO.getApplicationRoles()
-                    + "' to '" + userDTO.getUsername() + "'.");
-            UserManagerLogger.debug(this.getClass(), "Assigning backend roles '" + userDTO.getGrantedAuthorities()
-                    + "' to '" + userDTO.getUsername() + "'.");
+            UserManagerLogger.debug(this.getClass(), "Assigning application roles '{}' to '{}'.", userDTO.getApplicationRoles(), userDTO.getUsername());
+            UserManagerLogger.debug(this.getClass(), "Assigning backend roles '{}' to '{}'.", userDTO.getGrantedAuthorities(), userDTO.getUsername());
         }
         return setGrantedAuthoritiesByGroups(userDTO, application, backendService);
     }
@@ -643,6 +641,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                     userDTO.addGrantedAuthorities(RoleNameGenerator.createBackendRoleName(userApplicationBackendServiceRole));
                 }
             });
+            UserManagerLogger.debug(this.getClass(), "Assigning application roles '{}' to '{}' from groups '{}'.",
+                    userDTO.getApplicationRoles(), userDTO.getUsername(), userGroups);
+            UserManagerLogger.debug(this.getClass(), "Assigning backend roles '{}' to '{}' from groups '{}'.",
+                    userDTO.getGrantedAuthorities(), userDTO.getUsername(), userGroups);
         }
         return userDTO;
     }
