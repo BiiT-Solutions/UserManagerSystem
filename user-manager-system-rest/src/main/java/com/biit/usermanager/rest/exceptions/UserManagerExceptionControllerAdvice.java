@@ -12,6 +12,7 @@ import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleExcepti
 import com.biit.usermanager.core.exceptions.TeamAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import org.apache.kafka.common.errors.InvalidRequestException;
 import com.biit.server.exceptions.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -90,6 +91,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> emailNotSentException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "email_not_sent"), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> userNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "invalid_credentials", ex), HttpStatus.UNAUTHORIZED);
     }
 
 
