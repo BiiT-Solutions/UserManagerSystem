@@ -301,7 +301,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
         Assert.assertNotNull(jwtToken);
     }
 
-    @Test(expectedExceptions = UserDoesNotExistException.class)
+    @Test(expectedExceptions = InvalidCredentialsException.class)
     public void checkWrongUserWithAdminCredentials() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
         System.out.println(" ---------------------- EXPECTED EXCEPTIONS ---------------------------");
         authenticationService.authenticate(USER_EMAIL + "_wrong", USER_PASSWORD);
