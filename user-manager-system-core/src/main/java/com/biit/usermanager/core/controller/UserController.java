@@ -812,7 +812,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     public void resetPassword(String email) throws EmailNotSentException {
         final User user = getProvider().findByEmail(email).orElseThrow(()
-                -> new UserNotFoundException(this.getClass(), "No user exists with the email '" + email + "'."));
+                -> new EmailNotFoundException(this.getClass(), "No user exists with the email '" + email + "'."));
 
         //Send an email with the token in a link!
         try {

@@ -6,6 +6,7 @@ import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.logger.RestServerExceptionLogger;
 import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.EmailAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.EmailNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
@@ -97,6 +98,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> userNotFoundException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "invalid_credentials", ex), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<Object> emailNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "email_does_not_exists", ex), HttpStatus.NOT_FOUND);
     }
 
 
