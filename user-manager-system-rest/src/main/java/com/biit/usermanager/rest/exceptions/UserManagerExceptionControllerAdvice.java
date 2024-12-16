@@ -1,6 +1,7 @@
 package com.biit.usermanager.rest.exceptions;
 
 import com.biit.logger.mail.exceptions.EmailNotSentException;
+import com.biit.server.exceptions.ErrorResponse;
 import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.logger.RestServerExceptionLogger;
@@ -14,8 +15,8 @@ import com.biit.usermanager.core.exceptions.TeamAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
+import com.biit.usermanager.security.exceptions.OrganizationDoesNotExistException;
 import org.apache.kafka.common.errors.InvalidRequestException;
-import com.biit.server.exceptions.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -104,6 +105,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> emailNotFoundException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "email_does_not_exists", ex), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OrganizationDoesNotExistException.class)
+    public ResponseEntity<Object> organizationDoesNotExistException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "organization_does_not_exists", ex), HttpStatus.NOT_FOUND);
     }
 
 

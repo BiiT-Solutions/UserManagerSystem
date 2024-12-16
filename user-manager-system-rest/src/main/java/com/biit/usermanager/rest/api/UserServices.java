@@ -6,6 +6,7 @@ import com.biit.server.rest.ElementServices;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.model.UpdatePasswordRequest;
+import com.biit.server.security.rest.NetworkController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
@@ -46,8 +47,11 @@ import java.util.UUID;
 public class UserServices extends ElementServices<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter, UserController> {
 
-    public UserServices(UserController userController) {
+    private final NetworkController networkController;
+
+    public UserServices(UserController userController, NetworkController networkController) {
         super(userController);
+        this.networkController = networkController;
     }
 
     //@PreAuthorize("hasAuthority('USERMANAGERSYSTEM_ADMIN')")
@@ -176,10 +180,11 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @Operation(summary = "Adds a new user into the system", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Adds a new user into the system. For Sign Up", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(path = "/public/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public IAuthenticatedUser register(@RequestBody CreateUserRequest request) {
+    public IAuthenticatedUser register(@RequestBody CreateUserRequest request, HttpServletRequest httpRequest) {
+        UserManagerLogger.warning(this.getClass(), "Creating a new user from ip '" + networkController.getClientIP(httpRequest) + "'.");
         return getController().createPublicUser(request);
     }
 
@@ -190,6 +195,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public void checkUsernameExists(@Parameter(description = "username", required = true)
                                     @PathVariable("username") String username,
                                     HttpServletRequest httpRequest) {
+        UserManagerLogger.warning(this.getClass(), "Checking if a user exists from ip '" + networkController.getClientIP(httpRequest) + "'.");
         getController().checkUsernameExists(username);
     }
 
@@ -330,6 +336,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @GetMapping(value = "/public/emails/{email}/reset-password")
     public void createResetPasswordToken(@Parameter(description = "Email from an existing user", required = true) @PathVariable("email") String email,
                                          HttpServletRequest request) throws EmailNotSentException {
+        UserManagerLogger.warning(this.getClass(), "Requesting to rest a password from ip '" + networkController.getClientIP(request) + "'.");
         getController().resetPassword(email);
     }
 
@@ -339,6 +346,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public void checkToken(
             @Parameter(description = "Token to check", required = true) @RequestParam("token") String token,
             HttpServletRequest request) {
+        UserManagerLogger.warning(this.getClass(), "Checking the validity of a token from ip '" + networkController.getClientIP(request) + "'.");
         getController().checkToken(token);
     }
 
@@ -348,6 +356,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public void resetPasswordFromToken(@Parameter(description = "Token obtained by mail", required = true) @RequestParam("token") String token,
                                        @RequestBody(required = true) @Valid PasswordChangeRequest passwordChangeRequest,
                                        HttpServletRequest request) {
+        UserManagerLogger.warning(this.getClass(), "Changing a password from ip '" + networkController.getClientIP(request) + "'.");
         if (passwordChangeRequest == null || passwordChangeRequest.getNewPassword() == null) {
             throw new BadRequestException(this.getClass(), "Password request is not set correctly.");
         }

@@ -49,7 +49,9 @@ import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationRole;
 import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
+import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.PasswordResetToken;
+import com.biit.usermanager.persistence.entities.Team;
 import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
@@ -57,6 +59,7 @@ import com.biit.usermanager.persistence.entities.UserGroup;
 import com.biit.usermanager.persistence.entities.UserGroupApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.UserGroupUser;
 import com.biit.usermanager.persistence.repositories.UserRepository;
+import com.biit.usermanager.security.exceptions.OrganizationDoesNotExistException;
 import jakarta.transaction.Transactional;
 import org.apache.kafka.common.errors.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -364,6 +367,32 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             userDTO.setAccountExpirationTime(LocalDateTime.now().plusHours(publicUserExpirationHours));
             getProvider().save(reverse(userDTO));
             userGroupUserProvider.assignToDefaultGroup(reverse(userDTO));
+            //Assign to organization and team if needed.
+            try {
+                if (createUserRequest.getOrganization() != null && !createUserRequest.getOrganization().isBlank()) {
+                    final Organization organization = organizationProvider.findByName(createUserRequest.getOrganization()).orElseThrow(() ->
+                            new OrganizationDoesNotExistException("No organization exists with name '" + createUserRequest.getOrganization() + "'."));
+                    final Team team;
+                    if (createUserRequest.getTeam() != null && !createUserRequest.getTeam().isBlank()) {
+                        team = teamProvider.findByNameAndOrganization(createUserRequest.getTeam(), organization).orElseThrow(() ->
+                                new TeamNotFoundException(this.getClass(), "No team exists with name '" + createUserRequest.getTeam() + "'."));
+                    } else {
+                        //No team selected, assign to default.
+                        final List<Team> teamsFromOrganization = teamProvider.findByOrganization(organization);
+                        if (teamsFromOrganization.size() != 1) {
+                            throw new TeamNotFoundException(this.getClass(), "No default team exists for organization '"
+                                    + createUserRequest.getOrganization() + "'. "
+                                    + "Expecting only one group to be present on the organization to be selected as default one.");
+                        }
+                        team = teamsFromOrganization.get(0);
+                    }
+                    //Assign user to team.
+                    teamMemberProvider.assign(userDTO.getId(), team.getId());
+                }
+            } catch (Exception e) {
+                UserManagerLogger.warning(this.getClass(), "User '" + createUserRequest.getUsername() + "' cannot be assigned to an organization '"
+                        + createUserRequest.getOrganization() + "'. Error message is: " + e.getMessage());
+            }
             return userDTO;
         } else {
             throw new ActionNotAllowedException(this.getClass(), "Feature disabled.");
