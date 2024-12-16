@@ -1,12 +1,14 @@
 package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.ElementServices;
+import com.biit.server.security.rest.NetworkController;
 import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.converters.TeamConverter;
 import com.biit.usermanager.core.converters.models.TeamConverterRequest;
 import com.biit.usermanager.core.providers.TeamProvider;
 import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Team;
 import com.biit.usermanager.persistence.repositories.TeamRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,14 +30,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/teams")
 public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepository,
         TeamProvider, TeamConverterRequest, TeamConverter, TeamController> {
 
-    public TeamsServices(TeamController teamController) {
+    private final NetworkController networkController;
+
+    public TeamsServices(TeamController teamController, NetworkController networkController) {
         super(teamController);
+        this.networkController = networkController;
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
@@ -57,6 +64,17 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
                              @PathVariable("organizationName") String organizationName,
                              HttpServletRequest request) {
         return getController().getByOrganization(organizationName);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Gets all teams from an organization. This method is public!")
+    @GetMapping(value = "/public/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<String> getNames(@Parameter(description = "Organization name")
+                                 @PathVariable("organizationName") String organizationName,
+                                 HttpServletRequest request) {
+        UserManagerLogger.warning(this.getClass(), "Requesting teams from organization '" + organizationName + "' on ip '" + networkController.getClientIP(request) + "'.");
+        return getController().getByOrganization(organizationName).stream().filter(Objects::nonNull).map(TeamDTO::getName).collect(Collectors.toList());
     }
 
 
