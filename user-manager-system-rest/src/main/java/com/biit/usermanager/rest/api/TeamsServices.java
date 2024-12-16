@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -73,7 +74,8 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     public List<String> getNames(@Parameter(description = "Organization name")
                                  @PathVariable("organizationName") String organizationName,
                                  HttpServletRequest request) {
-        UserManagerLogger.warning(this.getClass(), "Requesting teams from organization '" + organizationName + "' on ip '" + networkController.getClientIP(request) + "'.");
+        UserManagerLogger.warning(this.getClass(), "Requesting teams from organization '" + organizationName + "' on ip '"
+                + networkController.getClientIP(request) + "'.");
         return getController().getByOrganization(organizationName).stream().filter(Objects::nonNull).map(TeamDTO::getName).collect(Collectors.toList());
     }
 
@@ -145,8 +147,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
-    @Operation(summary = "Removes members from a Team.",
-            security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Removes members from a Team.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users/remove",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TeamDTO removeUsers(
@@ -156,5 +157,16 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
             Authentication authentication,
             HttpServletRequest request) {
         return getController().unAssign(id, users, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Gets all teams from a user.", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/users/{userUuid}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<TeamDTO> getTeams(
+            @Parameter(description = "UUid of an existing User", required = true)
+            @PathVariable("userUuid") UUID uuid, Authentication authentication, HttpServletRequest request) {
+        return getController().getFromUser(uuid);
     }
 }
