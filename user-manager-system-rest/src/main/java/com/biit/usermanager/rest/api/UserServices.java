@@ -322,6 +322,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         return getController().getByTeam(teamId);
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get Organization's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
