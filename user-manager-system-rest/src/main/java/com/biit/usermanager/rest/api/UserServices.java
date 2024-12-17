@@ -316,10 +316,10 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get users from team", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/teams/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> getUsersByTeam(@Parameter(description = "Id of an existing team", required = true) @PathVariable("id") Long id,
+    @GetMapping(value = "/teams/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getUsersByTeam(@Parameter(description = "Id of an existing team", required = true) @PathVariable("teamId") Long teamId,
                                         HttpServletRequest request) {
-        return getController().getByTeam(id);
+        return getController().getByTeam(teamId);
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
