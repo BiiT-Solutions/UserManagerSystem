@@ -111,4 +111,7 @@ public class UserUrlConstructor {
                 + "/applications/" + applicationName;
     }
 
+    public String getUsersByTeam(Long teamId) {
+        return getUsers() + "/teams/" + teamId;
+    }
 }

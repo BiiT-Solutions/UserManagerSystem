@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -384,6 +385,26 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             return new HashSet<>();
         }
         return roles;
+    }
+
+
+    public Collection<IAuthenticatedUser> findByTeam(Long teamId) {
+        try {
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByTeam(teamId))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByTeam(teamId),
+                        response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
 
