@@ -69,7 +69,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
 
     @Operation(summary = "Gets all teams from an organization. This method is public!")
-    @GetMapping(value = "c/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/public/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> getNames(@Parameter(description = "Organization name")
                                  @PathVariable("organizationName") String organizationName,
                                  HttpServletRequest request) {
