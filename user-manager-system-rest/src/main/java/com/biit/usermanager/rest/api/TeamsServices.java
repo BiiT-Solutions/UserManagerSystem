@@ -162,8 +162,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Gets all teams from a user.", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping(value = "/users/{userUuid}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/users/{userUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<TeamDTO> getTeams(
             @Parameter(description = "UUid of an existing User", required = true)
             @PathVariable("userUuid") UUID uuid, Authentication authentication, HttpServletRequest request) {
