@@ -315,7 +315,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
-    @Operation(summary = "Get Team's users", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/teams/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsersByTeam(@Parameter(description = "Id of an existing team", required = true) @PathVariable("id") Long id,
                                         HttpServletRequest request) {
