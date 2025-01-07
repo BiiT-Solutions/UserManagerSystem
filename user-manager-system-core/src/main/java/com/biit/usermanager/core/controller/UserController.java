@@ -409,7 +409,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             createUserRequest.getAuthorities().forEach(authority -> roleProvider
                     .createDefaultRoleAdmin(authenticatedUser.getId(), authority.replaceAll(ROLE_PREFIX, "")));
         } else {
-            //Set default group
+            //Set default role group
             userGroupUserProvider.assignToDefaultGroup(reverse(authenticatedUser));
         }
         return authenticatedUser;
@@ -433,6 +433,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         userDTO.setPassword(password);
         userDTO.setCreatedBy(createdBy);
         userDTO.setEmail(Objects.requireNonNullElseGet(email, () -> "email" + getProvider().count() + "@email.com"));
+        //Check the email account.
+        final Optional<User> existingUserByEmail = userProvider.findByEmail(userDTO.getEmail());
+        if (existingUserByEmail.isPresent()
+                && !Objects.equals(userDTO.getUUID(), existingUserByEmail.get().getUuid())) {
+            throw new EmailAlreadyExistsException(this.getClass(), "Email '" + userDTO.getEmail() + "' already exists!");
+        }
         final User user = getProvider().save(getConverter().reverse(userDTO));
         UserManagerLogger.info(this.getClass(), "User '" + username + "' created on the system.");
         try {
