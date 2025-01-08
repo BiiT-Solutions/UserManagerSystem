@@ -25,6 +25,7 @@ public class EmailService extends ServerEmailService {
     //Templates are stored on BiiTRestServer project.
     private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "email-templates/key.html";
     private static final String USER_CREATION_EMAIL_TEMPLATE = "email-templates/key-holder.html";
+    private static final String USER_UPDATE_EMAIL_TEMPLATE = "email-templates/cauldron.html";
 
     protected static final String EMAIL_LINK_TAG = "EMAIL:LINK";
     protected static final String EMAIL_BUTTON_TAG = "EMAIL:BUTTON";
@@ -87,10 +88,28 @@ public class EmailService extends ServerEmailService {
         }
     }
 
+
+    public void sendUserUpdateEmail(User user, String oldMail) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
+        if (user != null && oldMail != null) {
+            final Locale locale = getUserLocale(user);
+            final String bodyTag = "update.user.mail.body";
+            final Object[] args = emailArgs(user);
+            final String emailTemplate = populateUpdateAccountCreatedEmailFields(FileReader.getResource(USER_UPDATE_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
+                    args, bodyTag, locale);
+            sendTemplate(oldMail, getMessage("update.user.mail.subject", args, locale), emailTemplate,
+                    getMessage(bodyTag, args, locale) + "\n"
+                            + (!applicationLink.isBlank() ? getMessage("update.user.mail.second.paragraph", args, locale) : ""));
+            UserManagerLogger.warning(this.getClass(), "User update mail send to '{}'.", user);
+        } else {
+            UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
+            throw new EmailNotSentException("Email settings not set. Emails will be ignored.");
+        }
+    }
+
     private Object[] emailArgs(User user) {
         return new Object[]{user.getName(), user.getLastname(), user.getUsername(),
                 user.getAccountExpirationTime() != null ? user.getAccountExpirationTime().format(FORMATTER) : "",
-                applicationLink};
+                applicationLink, user.getEmail()};
     }
 
     private Locale getUserLocale(User user) {
@@ -127,5 +146,13 @@ public class EmailService extends ServerEmailService {
                 .replace(EMAIL_SECOND_PARAGRAPH, getMessage("new.user.mail.second.paragraph", args, locale))
                 .replace(EMAIL_BUTTON_TAG, getMessage("new.user.mail.button", args, locale))
                 .replace(EMAIL_FOOTER_TAG, getMessage("new.user.mail.footer", args, locale));
+    }
+
+    private String populateUpdateAccountCreatedEmailFields(String html, Object[] args, String bodyTag, Locale locale) {
+        return html.replace(EMAIL_TITLE_TAG, getMessage("update.user.mail.title", args, locale))
+                .replace(EMAIL_SUBTITLE_TAG, getMessage("update.user.mail.subtitle", args, locale))
+                .replace(EMAIL_BODY_TAG, getMessage(bodyTag, args, locale))
+                .replace(EMAIL_SECOND_PARAGRAPH, getMessage("update.user.mail.second.paragraph", args, locale))
+                .replace(EMAIL_FOOTER_TAG, getMessage("update.user.mail.footer", args, locale));
     }
 }

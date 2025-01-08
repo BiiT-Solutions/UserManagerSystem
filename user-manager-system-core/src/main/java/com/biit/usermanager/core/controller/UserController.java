@@ -613,7 +613,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             //Send an email if the email account has been updated.
             if (sendEmailOnUpdate && user != null && !Objects.equals(user.getEmail(), dto.getEmail())) {
                 try {
-                    emailService.sendUserCreationEmail(user);
+                    emailService.sendUserUpdateEmail(user, dto.getEmail());
                 } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
                     UserManagerLogger.severe(this.getClass(), e.getMessage());
                 }
