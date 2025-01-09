@@ -10,6 +10,7 @@ import com.biit.server.security.rest.NetworkController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
+import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.UserDTO;
@@ -196,7 +197,12 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                     @PathVariable("username") String username,
                                     HttpServletRequest httpRequest) {
         UserManagerLogger.warning(this.getClass(), "Checking if a user exists from ip '" + networkController.getClientIP(httpRequest) + "'.");
-        getController().checkUsernameExists(username);
+        try {
+            getController().checkUsernameExists(username);
+            throw new UserAlreadyExistsException(this.getClass(), "User already exists.");
+        } catch (UserNotFoundException ignored) {
+            // Do nothing, as the user does not exist.
+        }
     }
 
 

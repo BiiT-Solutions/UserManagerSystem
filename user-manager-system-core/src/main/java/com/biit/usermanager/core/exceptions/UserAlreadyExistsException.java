@@ -5,7 +5,7 @@ import com.biit.server.logger.LoggedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+@ResponseStatus(HttpStatus.CONFLICT)
 public class UserAlreadyExistsException extends LoggedException {
     private static final long serialVersionUID = 7032994111678894370L;
 
@@ -14,7 +14,7 @@ public class UserAlreadyExistsException extends LoggedException {
     }
 
     public UserAlreadyExistsException(Class<?> clazz, String message) {
-        super(clazz, message, ExceptionType.INFO, HttpStatus.BAD_REQUEST);
+        super(clazz, message, ExceptionType.INFO, HttpStatus.CONFLICT);
     }
 
     public UserAlreadyExistsException(Class<?> clazz) {
