@@ -55,7 +55,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         this.networkController = networkController;
     }
 
-    //@PreAuthorize("hasAuthority('USERMANAGERSYSTEM_ADMIN')")
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -63,6 +63,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                  HttpServletRequest request) {
         return getController().getByUsername(username);
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by email", security = @SecurityRequirement(name = "bearerAuth"))
@@ -73,6 +74,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                 "No User with email '" + email + "' found on the system."));
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Check user and password", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/credentials", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -80,6 +82,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                     HttpServletRequest request) {
         return getController().checkCredentials(credentialsRequest.getUsername(), credentialsRequest.getEmail(), credentialsRequest.getPassword());
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username and application. The granted authorities are filtered by the application name.",
@@ -94,6 +97,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username and backend service. The granted authorities are filtered by the selected service name.",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -107,6 +111,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by email and application", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/emails/{email}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -119,6 +124,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                 "No User with email '" + email + "' found on the system."));
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/uuids/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -128,6 +134,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                 "No User with uuid '" + uuid + "' found on the system."));
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.viewerPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets all entities that have these uuids", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/uuids", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -135,6 +142,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                              @RequestParam Collection<UUID> uuids, HttpServletRequest request) {
         return getController().findByUIDs(uuids);
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.viewerPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets all entities that have these uuids", security = @SecurityRequirement(name = "bearerAuth"))
@@ -144,6 +152,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         return getController().findByUIDs(uuids);
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets all enable/disable users .", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/enabled/{enabled}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -151,6 +160,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                     @PathVariable("enabled") boolean enable, HttpServletRequest request) {
         return getController().getByAccountBlocked(enable);
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Updates the password of the current logged in user.", security = @SecurityRequirement(name = "bearerAuth"))
@@ -163,6 +173,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             UserManagerLogger.errorMessage(this.getClass(), e);
         }
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Updates a password by an admin user. Does not require to know the old password.",
@@ -368,5 +379,16 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             throw new BadRequestException(this.getClass(), "Password request is not set correctly.");
         }
         getController().updatePassword(token, passwordChangeRequest.getNewPassword());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Gets a user by its external reference.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
+    @GetMapping(path = "/reference/{externalReference}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public UserDTO getsUserByExternalReference(@Parameter(description = "Reference from a 3rd party application.", required = true)
+                                               @PathVariable("externalReference") String externalReference,
+                                               Authentication authentication, HttpServletRequest httpRequest) {
+        return getController().getByExternalReference(externalReference);
     }
 }

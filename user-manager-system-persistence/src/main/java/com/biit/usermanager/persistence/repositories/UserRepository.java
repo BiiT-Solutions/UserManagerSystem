@@ -27,4 +27,6 @@ public interface UserRepository extends ElementRepository<User, Long> {
     List<User> findAllByAccountBlocked(boolean accountBlocked);
 
     long deleteByUsernameHash(String username);
+
+    List<User> findByExternalReference(String externalReference);
 }

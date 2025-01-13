@@ -124,6 +124,10 @@ public class User extends Element<Long> {
     @Convert(converter = LocalDateTimeCryptoConverter.class)
     private LocalDateTime accountExpirationTime;
 
+    //For linking users to users from a 3rd party application.
+    @Column(name = "external_reference")
+    private String externalReference;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_by_application_backend_service_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -334,6 +338,14 @@ public class User extends Element<Long> {
         this.country = country;
     }
 
+    public String getExternalReference() {
+        return externalReference;
+    }
+
+    public void setExternalReference(String externalReference) {
+        this.externalReference = externalReference;
+    }
+
     public Set<ApplicationBackendServiceRole> getApplicationBackendServiceRoles() {
         return applicationBackendServiceRoles;
     }
@@ -396,6 +408,9 @@ public class User extends Element<Long> {
         }
         if (user.getApplicationBackendServiceRoles() != null) {
             setApplicationBackendServiceRoles(user.getApplicationBackendServiceRoles());
+        }
+        if (user.getExternalReference() != null) {
+            setExternalReference(user.getExternalReference());
         }
         setAccountExpirationTime(user.getAccountExpirationTime());
     }

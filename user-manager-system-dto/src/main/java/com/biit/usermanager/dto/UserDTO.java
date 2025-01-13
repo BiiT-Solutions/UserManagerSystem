@@ -47,6 +47,8 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     private LocalDateTime accountExpirationTime;
 
+    private String externalReference;
+
     public String getIdCard() {
         return idCard;
     }
@@ -249,6 +251,14 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getExternalReference() {
+        return externalReference;
+    }
+
+    public void setExternalReference(String externalReference) {
+        this.externalReference = externalReference;
     }
 
     @Override

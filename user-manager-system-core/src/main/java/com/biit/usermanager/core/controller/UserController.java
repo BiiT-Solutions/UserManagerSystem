@@ -898,4 +898,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     public List<UserDTO> findByUIDs(Collection<UUID> uuids) {
         return convertAll(getProvider().findByUuids(uuids));
     }
+
+
+    public UserDTO getByExternalReference(String externalReference) {
+        return convert(getProvider().findByExternalReference(externalReference).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No user with reference '" + externalReference + "' exists.")));
+    }
 }

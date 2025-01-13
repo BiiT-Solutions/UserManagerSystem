@@ -2,6 +2,7 @@ package com.biit.usermanager.core.providers;
 
 
 import com.biit.server.providers.ElementProvider;
+import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.User;
@@ -162,6 +163,21 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     @Transactional
     public void deleteAll(Collection<User> entities) {
         entities.forEach(this::delete);
+    }
+
+    public Optional<User> findByExternalReference(String externalReference) {
+        if (externalReference == null) {
+            return Optional.empty();
+        }
+        final List<User> users = getRepository().findByExternalReference(externalReference);
+        //As external reference is not unique (can have nulls), we can have a list. But only one is expected.
+        if (users.isEmpty()) {
+            return Optional.empty();
+        }
+        if (users.size() > 1) {
+            throw new InvalidParameterException(this.getClass(), "Multiple users found for external reference '" + externalReference + "'");
+        }
+        return Optional.of(users.get(0));
     }
 
 }
