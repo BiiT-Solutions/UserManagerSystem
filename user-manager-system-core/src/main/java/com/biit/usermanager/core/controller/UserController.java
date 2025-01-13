@@ -16,6 +16,7 @@ import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.EmailAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.EmailNotFoundException;
+import com.biit.usermanager.core.exceptions.ExternalReferenceAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
@@ -343,6 +344,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         if (userProvider.findByEmail(dto.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
         }
+        if (dto.getExternalReference() != null && userProvider.findByExternalReference(dto.getExternalReference()).isPresent()) {
+            throw new ExternalReferenceAlreadyExistsException(this.getClass(),
+                    "External reference '" + dto.getExternalReference() + "' already in use!");
+        }
         final UserDTO userDTO = super.create(dto, creatorName);
         if (userDTO != null) {
             try {
@@ -599,6 +604,14 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final Optional<User> existingUserByUsername = userProvider.findByUsername(dto.getUsername());
         if (existingUserByUsername.isPresent() && !Objects.equals(dto.getUUID(), existingUserByUsername.get().getUuid())) {
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
+        }
+
+        if (dto.getExternalReference() != null) {
+            final Optional<User> userWithReference = getProvider().findByExternalReference(dto.getExternalReference());
+            if (userWithReference.isPresent() && Objects.equals(userWithReference.get().getUuid(), dto.getUUID())) {
+                throw new ExternalReferenceAlreadyExistsException(this.getClass(),
+                        "External reference '" + dto.getExternalReference() + "' already in use!");
+            }
         }
 
         final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
