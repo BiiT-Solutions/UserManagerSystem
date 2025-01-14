@@ -27,6 +27,8 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
 
     private String lastname = "";
 
+    private String externalReference;
+
     public BasicUserDTO() {
         uuid = UUID.randomUUID();
     }
@@ -177,6 +179,15 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
     @Override
     public Locale getLocale() {
         return null;
+    }
+
+    @Override
+    public String getExternalReference() {
+        return externalReference;
+    }
+
+    public void setExternalReference(String externalReference) {
+        this.externalReference = externalReference;
     }
 
     @Override
