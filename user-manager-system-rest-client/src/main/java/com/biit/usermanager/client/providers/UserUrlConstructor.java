@@ -114,4 +114,12 @@ public class UserUrlConstructor {
     public String getUsersByTeam(Long teamId) {
         return getUsers() + "/teams/" + teamId;
     }
+
+    public String getUsersByExternalReference(String externalReference) {
+        return getUsers() + "/references/" + externalReference;
+    }
+
+    public String getUsersByExternalReferences() {
+        return getUsers() + "/references";
+    }
 }

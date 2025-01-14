@@ -918,6 +918,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
+    @Override
+    public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
+        final Optional<User> user = getProvider().findByExternalReference(externalReference);
+        return user.map(value -> (IAuthenticatedUser) value);
+    }
+
     public UserDTO getByExternalReference(String externalReference) {
         return convert(getProvider().findByExternalReference(externalReference).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No user with reference '" + externalReference + "' exists.")));

@@ -202,6 +202,12 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         setRoles(user, roles);
     }
 
+    @Override
+    public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
+        return usersOnMemory.stream().filter(iAuthenticatedUser -> iAuthenticatedUser.getExternalReference().equals(externalReference))
+                .findAny();
+    }
+
     public void setRoles(IAuthenticatedUser user, Set<String> roles) {
         userRoles.put(user, roles);
     }

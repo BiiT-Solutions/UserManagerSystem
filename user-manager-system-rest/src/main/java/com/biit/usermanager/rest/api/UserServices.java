@@ -2,10 +2,12 @@ package com.biit.usermanager.rest.api;
 
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.exceptions.BadRequestException;
+import com.biit.server.logger.RestServerLogger;
 import com.biit.server.rest.ElementServices;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.model.UpdatePasswordRequest;
+import com.biit.server.security.rest.BruteForceService;
 import com.biit.server.security.rest.NetworkController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.UserConverter;
@@ -24,8 +26,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,6 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @RestController
@@ -48,11 +53,18 @@ import java.util.UUID;
 public class UserServices extends ElementServices<User, Long, UserDTO, UserRepository,
         UserProvider, UserConverterRequest, UserConverter, UserController> {
 
-    private final NetworkController networkController;
+    private static final int MAX_WAITING_SECONDS = 10;
+    private static final long MILLIS = 1000L;
 
-    public UserServices(UserController userController, NetworkController networkController) {
+    private final Random random = new Random();
+
+    private final NetworkController networkController;
+    private final BruteForceService bruteForceService;
+
+    public UserServices(UserController userController, NetworkController networkController, BruteForceService bruteForceService) {
         super(userController);
         this.networkController = networkController;
+        this.bruteForceService = bruteForceService;
     }
 
 
@@ -204,16 +216,30 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Checks if a username is already taken or not.")
     @GetMapping(path = "/public/{username}/check")
     @ResponseStatus(value = HttpStatus.OK)
-    public void checkUsernameExists(@Parameter(description = "username", required = true)
-                                    @PathVariable("username") String username,
-                                    HttpServletRequest httpRequest) {
-        UserManagerLogger.warning(this.getClass(), "Checking if a user exists from ip '" + networkController.getClientIP(httpRequest) + "'.");
+    public ResponseEntity<Void> checkUsernameExists(@Parameter(description = "username", required = true)
+                                                    @PathVariable("username") String username,
+                                                    HttpServletRequest httpRequest) {
+        final String ip = networkController.getClientIP(httpRequest);
+        if (bruteForceService.isBlocked(ip)) {
+            try {
+                Thread.sleep(random.nextInt(MAX_WAITING_SECONDS) * MILLIS);
+            } catch (InterruptedException e) {
+                RestServerLogger.warning(this.getClass(), "Too many attempts from IP '" + ip + "'.");
+                final HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.RETRY_AFTER, String.valueOf(bruteForceService.getElementsTime().get(ip)
+                        + bruteForceService.getExpirationTime()));
+                return new ResponseEntity<>(headers, HttpStatus.LOCKED);
+            }
+        }
+        UserManagerLogger.warning(this.getClass(), "Checking if a user exists from ip '" + ip + "'.");
         try {
             getController().checkUsernameExists(username);
+            bruteForceService.loginSucceeded(ip);
             throw new UserAlreadyExistsException(this.getClass(), "User already exists.");
         } catch (UserNotFoundException ignored) {
-            // Do nothing, as the user does not exist.
+            bruteForceService.loginFailed(ip);
         }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 

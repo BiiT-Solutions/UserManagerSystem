@@ -26,8 +26,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +39,8 @@ import java.util.Set;
 @Order(2)
 @Qualifier("userManagerClient")
 public class UserManagerClient implements IAuthenticatedUserProvider {
+
+    private static final String EXTERNAL_REFERENCE_PARAMETER = "references";
 
     private final UserUrlConstructor userUrlConstructor;
 
@@ -342,6 +346,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         }
     }
 
+
     @Override
     public boolean delete(IAuthenticatedUser authenticatedUser) {
         try {
@@ -360,6 +365,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             return false;
         }
     }
+
 
     @Override
     public Set<String> getRoles(String username, String applicationName) {
@@ -394,6 +400,49 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     userUrlConstructor.getUsersByTeam(teamId))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByTeam(teamId),
+                        response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
+    @Override
+    public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
+        try {
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByExternalReference(externalReference))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByExternalReference(externalReference),
+                        response.getStatus());
+                return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+
+    public Collection<IAuthenticatedUser> findByExternalReferences(List<String> externalReferences) {
+        try {
+            final Map<String, Object> parameters = new HashMap<>();
+            parameters.put(EXTERNAL_REFERENCE_PARAMETER, externalReferences);
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByExternalReferences(), parameters, null)) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByExternalReferences(),
                         response.getStatus());
                 return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
             }
