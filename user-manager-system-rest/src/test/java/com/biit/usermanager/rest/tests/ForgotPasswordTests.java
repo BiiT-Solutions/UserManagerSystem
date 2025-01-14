@@ -77,7 +77,7 @@ public class ForgotPasswordTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void createUser() {
         //Create the admin user
-        userDTO = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null);
+        userDTO = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
         userDTO.setEmail(USER_EMAIL);
         userController.update(userDTO, null);
     }

@@ -29,4 +29,6 @@ public interface UserRepository extends ElementRepository<User, Long> {
     long deleteByUsernameHash(String username);
 
     List<User> findByExternalReference(String externalReference);
+
+    List<User> findByExternalReferenceIn(List<String> externalReference);
 }

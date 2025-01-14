@@ -83,8 +83,8 @@ public class OrganizationTests extends AbstractTestNGSpringContextTests {
 
     @BeforeClass
     public void createUsers() {
-        user1 = (UserDTO) userController.createUser(USER_1_NAME, USER_1_UNIQUE_ID, USER_1_FIRST_NAME, USER_1_LAST_NAME, USER_1_PASSWORD, null);
-        user2 = (UserDTO) userController.createUser(USER_2_NAME, USER_2_UNIQUE_ID, USER_2_FIRST_NAME, USER_2_LAST_NAME, USER_2_PASSWORD, null);
+        user1 = (UserDTO) userController.createUser(USER_1_NAME, USER_1_UNIQUE_ID, USER_1_FIRST_NAME, USER_1_LAST_NAME, USER_1_PASSWORD, null, null);
+        user2 = (UserDTO) userController.createUser(USER_2_NAME, USER_2_UNIQUE_ID, USER_2_FIRST_NAME, USER_2_LAST_NAME, USER_2_PASSWORD, null, null);
     }
 
 

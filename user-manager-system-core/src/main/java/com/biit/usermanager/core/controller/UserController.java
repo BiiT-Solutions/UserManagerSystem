@@ -408,7 +408,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Override
     public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
         final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
-                createUserRequest.getEmail(), createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(), createdBy);
+                createUserRequest.getEmail(), createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(),
+                createUserRequest.getExternalReference(), createdBy);
         //Set roles if is the first user on a database.
         if (createUserRequest.getAuthorities() != null) {
             createUserRequest.getAuthorities().forEach(authority -> roleProvider
@@ -417,14 +418,17 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             //Set default role group
             userGroupUserProvider.assignToDefaultGroup(reverse(authenticatedUser));
         }
+        //Assign 3rd party reference.
         return authenticatedUser;
     }
 
-    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String createdBy) {
-        return createUser(username, uniqueId, null, name, lastName, password, createdBy);
+    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String externalReference,
+                                         String createdBy) {
+        return createUser(username, uniqueId, null, name, lastName, password, externalReference, createdBy);
     }
 
-    public IAuthenticatedUser createUser(String username, String uniqueId, String email, String name, String lastName, String password, String createdBy) {
+    public IAuthenticatedUser createUser(String username, String uniqueId, String email, String name, String lastName, String password,
+                                         String externalReference, String createdBy) {
         if (findByUsername(username).isPresent()) {
             UserManagerLogger.warning(this.getClass(), "Username '" + username + "' already exists!.");
             throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
@@ -438,6 +442,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         userDTO.setPassword(password);
         userDTO.setCreatedBy(createdBy);
         userDTO.setEmail(Objects.requireNonNullElseGet(email, () -> "email" + getProvider().count() + "@email.com"));
+        userDTO.setExternalReference(externalReference);
         //Check the email account.
         final Optional<User> existingUserByEmail = userProvider.findByEmail(userDTO.getEmail());
         if (existingUserByEmail.isPresent()
@@ -916,5 +921,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     public UserDTO getByExternalReference(String externalReference) {
         return convert(getProvider().findByExternalReference(externalReference).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No user with reference '" + externalReference + "' exists.")));
+    }
+
+    public List<UserDTO> getByExternalReference(List<String> externalReference) {
+        return convertAll(getProvider().findByExternalReferences(externalReference));
     }
 }

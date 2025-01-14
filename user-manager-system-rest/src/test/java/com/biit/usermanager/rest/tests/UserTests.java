@@ -129,7 +129,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void createAdminUser() {
         //Create the admin user
-        admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null);
+        admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
 
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
@@ -193,7 +193,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
     public void updateUser() throws Exception {
 
         //Create the admin user
-        final UserDTO user2 = (UserDTO) userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null);
+        final UserDTO user2 = (UserDTO) userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null, null);
 
         //I can log in.
         AuthRequest request = new AuthRequest();
@@ -261,7 +261,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
     public void accountExpired() throws Exception {
 
         //Create a new user
-        final UserDTO user2 = (UserDTO) userController.createUser(USER3_NAME, USER3_UNIQUE_ID, USER3_FIRST_NAME, USER3_LAST_NAME, USER3_PASSWORD, null);
+        final UserDTO user2 = (UserDTO) userController.createUser(USER3_NAME, USER3_UNIQUE_ID, USER3_FIRST_NAME, USER3_LAST_NAME, USER3_PASSWORD, null, null);
 
         //I can log in.
         AuthRequest request = new AuthRequest();

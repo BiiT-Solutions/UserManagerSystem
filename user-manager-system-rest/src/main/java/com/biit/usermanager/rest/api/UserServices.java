@@ -382,13 +382,23 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets a user by its external reference.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
-    @GetMapping(path = "/reference/{externalReference}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(path = "/references/{externalReference}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public UserDTO getsUserByExternalReference(@Parameter(description = "Reference from a 3rd party application.", required = true)
                                                @PathVariable("externalReference") String externalReference,
                                                Authentication authentication, HttpServletRequest httpRequest) {
         return getController().getByExternalReference(externalReference);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @Operation(summary = "Gets a user by its external reference.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
+    @GetMapping(path = "/references", produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public Collection<UserDTO> getsUserByExternalReference(@Parameter(description = "List of references", required = true) @RequestParam("references")
+                                                           List<String> externalReferences, Authentication authentication, HttpServletRequest httpRequest) {
+        return getController().getByExternalReference(externalReferences);
     }
 }

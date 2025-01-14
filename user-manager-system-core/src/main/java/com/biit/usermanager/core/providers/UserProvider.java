@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -179,6 +180,13 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
             throw new ExternalReferenceAlreadyExistsException(this.getClass(), "Multiple users found for external reference '" + externalReference + "'");
         }
         return Optional.of(users.get(0));
+    }
+
+    public List<User> findByExternalReferences(List<String> externalReferences) {
+        if (externalReferences == null || externalReferences.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return getRepository().findByExternalReferenceIn(externalReferences);
     }
 
 }
