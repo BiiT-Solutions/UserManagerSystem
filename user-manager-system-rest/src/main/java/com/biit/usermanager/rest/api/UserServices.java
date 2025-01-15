@@ -420,7 +420,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
 
     @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege)")
-    @Operation(summary = "Gets a user by its external reference.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
+    @Operation(summary = "Gets multiple users by their external references.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
     @GetMapping(path = "/references", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public Collection<UserDTO> getsUserByExternalReference(@Parameter(description = "List of references", required = true) @RequestParam("references")
