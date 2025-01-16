@@ -410,8 +410,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets a user by its external reference.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
-    @GetMapping(path = "/references/{externalReference}", produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    @GetMapping(path = "/references/{externalReference}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
     public UserDTO getsUserByExternalReference(@Parameter(description = "Reference from a 3rd party application.", required = true)
                                                @PathVariable("externalReference") String externalReference,
                                                Authentication authentication, HttpServletRequest httpRequest) {
@@ -421,8 +421,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets multiple users by their external references.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
-    @GetMapping(path = "/references", produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    @GetMapping(path = "/references", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
     public Collection<UserDTO> getsUserByExternalReference(@Parameter(description = "List of references", required = true) @RequestParam("references")
                                                            List<String> externalReferences, Authentication authentication, HttpServletRequest httpRequest) {
         return getController().getByExternalReference(externalReferences);
