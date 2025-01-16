@@ -199,7 +199,7 @@ public class UserExternalReferenceTests extends AbstractTestNGSpringContextTests
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        UserDTO user = fromJson(userResult.getResponse().getContentAsString(), UserDTO.class);
+        final UserDTO user = fromJson(userResult.getResponse().getContentAsString(), UserDTO.class);
         Assert.assertEquals(user.getExternalReference(), USER2_EXTERNAL_REFERENCE);
         Assert.assertEquals(user.getLastname(), USER2_LAST_NAME);
     }
@@ -217,7 +217,7 @@ public class UserExternalReferenceTests extends AbstractTestNGSpringContextTests
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        List<UserDTO> users = Arrays.asList(fromJson(userResult.getResponse().getContentAsString(), UserDTO[].class));
+        final List<UserDTO> users = Arrays.asList(fromJson(userResult.getResponse().getContentAsString(), UserDTO[].class));
         Assert.assertEquals(users.get(0).getExternalReference(), USER2_EXTERNAL_REFERENCE);
         Assert.assertEquals(users.get(0).getLastname(), USER2_LAST_NAME);
     }

@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = UserManagerServer.class)
 @Test(groups = {"clientTests"})
@@ -45,6 +46,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_FIRST_NAME = "Test";
     private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
+    private static final String USER_EXTERNAL_REFERENCE = UUID.randomUUID().toString();
     private static final String[] APPLICATION_ROLES = new String[]{"WRITER", "READER"};
     private static final String[] BACKEND_ROLES = new String[]{"ADMIN", "VIEWER"};
     private static final String APPLICATION_NAME = "DASHBOARD";
@@ -93,7 +95,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void setDefaultData() {
         //Create the admin user
-        final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
+        final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, USER_EXTERNAL_REFERENCE, null);
 
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
@@ -174,6 +176,13 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     }
 
     @Test
+    public void findUserFromExternalReference() {
+        Optional<IAuthenticatedUser> user = userManagerClient.findByExternalReference(USER_EXTERNAL_REFERENCE);
+        Assert.assertTrue(user.isPresent());
+        Assert.assertEquals(user.get().getUsername(), USER_NAME);
+    }
+
+    @Test
     public void getPassword() {
         Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, userManagerClient.getPassword(USER_NAME)));
     }
@@ -183,10 +192,5 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
         Assert.assertTrue(user.isPresent());
         Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, userManagerClient.getPasswordByUid(user.get().getUID())));
-    }
-
-    @Test
-    public void getUserGrantedAuthorities() {
-
     }
 }
