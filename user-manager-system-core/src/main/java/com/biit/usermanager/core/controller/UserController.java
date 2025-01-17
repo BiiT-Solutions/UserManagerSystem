@@ -632,7 +632,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 try {
                     UserManagerLogger.warning(this.getClass(), "User's mail has been changed from '{}' to '{}'.",
                             oldEmail, dto.getEmail());
-                    emailService.sendUserUpdateEmail(user, dto.getEmail());
+                    emailService.sendUserUpdateEmail(user, oldEmail);
                 } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
                     UserManagerLogger.severe(this.getClass(), e.getMessage());
                 }
