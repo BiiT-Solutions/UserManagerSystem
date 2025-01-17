@@ -95,7 +95,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
-    @Value("#{new Boolean('${mail.user.creation.link.on.update:false}')}")
+    @Value("#{new Boolean('${mail.updated.warning.email:false}')}")
     private boolean sendEmailOnUpdate = false;
 
     @Value("#{new Boolean('${user.public.register.enabled:false}')}")
