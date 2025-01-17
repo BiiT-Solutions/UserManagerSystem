@@ -603,6 +603,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Transactional
     public UserDTO update(UserDTO dto, String updaterName) {
         final User user = getProvider().findByUuid(dto.getUUID()).orElse(null);
+        final String oldEmail = (user != null) ? user.getEmail() : null;
 
         final Optional<User> existingUserByUsername = getProvider().findByUsername(dto.getUsername());
         if (existingUserByUsername.isPresent() && !Objects.equals(dto.getUUID(), existingUserByUsername.get().getUuid())) {
@@ -627,17 +628,17 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             return super.update(dto, updaterName);
         } finally {
             //Send an email if the email account has been updated.
-            if (sendEmailOnUpdate && user != null && !Objects.equals(user.getEmail(), dto.getEmail())) {
+            if (sendEmailOnUpdate && oldEmail != null && !Objects.equals(oldEmail, dto.getEmail())) {
                 try {
                     UserManagerLogger.warning(this.getClass(), "User's mail has been changed from '{}' to '{}'.",
-                            user.getEmail(), dto.getEmail());
+                            oldEmail, dto.getEmail());
                     emailService.sendUserUpdateEmail(user, dto.getEmail());
                 } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
                     UserManagerLogger.severe(this.getClass(), e.getMessage());
                 }
             } else {
                 UserManagerLogger.warning(this.getClass(), "Not sending email warning, as sendEmailOnUpdate is '{}' and email has changed from '{}' to '{}'.",
-                        sendEmailOnUpdate, (user != null ? user.getEmail() : "null"), dto.getEmail());
+                        sendEmailOnUpdate, oldEmail, dto.getEmail());
             }
         }
     }
