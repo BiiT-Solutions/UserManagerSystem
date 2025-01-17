@@ -635,6 +635,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
                     UserManagerLogger.severe(this.getClass(), e.getMessage());
                 }
+            } else {
+                UserManagerLogger.warning(this.getClass(), "Not sending email warning, as sendEmailOnUpdate is '{}' and email has changed from '{}' to '{}'.",
+                        sendEmailOnUpdate, (user != null ? user.getEmail() : "null"), dto.getEmail());
             }
         }
     }
