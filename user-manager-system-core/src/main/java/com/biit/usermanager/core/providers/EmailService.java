@@ -91,6 +91,7 @@ public class EmailService extends ServerEmailService {
 
     public void sendUserUpdateEmail(User user, String oldMail) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
         if (user != null && oldMail != null) {
+            UserManagerLogger.debug(this.getClass(), "Sending an email for change from '{}' to '{}'.", oldMail, user.getEmail());
             final Locale locale = getUserLocale(user);
             final String bodyTag = "update.user.mail.body";
             final Object[] args = emailArgs(user);

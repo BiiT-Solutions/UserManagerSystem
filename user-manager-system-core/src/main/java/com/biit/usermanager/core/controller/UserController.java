@@ -90,7 +90,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
 
     public static final String ROLE_PREFIX = "ROLE_";
-    private final UserProvider userProvider;
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
@@ -142,7 +141,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider,
                              TeamProvider teamProvider, OrganizationProvider organizationProvider, UserGroupUserProvider userGroupUserRepository,
                              TeamMemberProvider teamMemberProvider, PasswordResetTokenProvider passwordResetTokenProvider,
-                             EmailService emailService, RoleProvider roleProvider, UserProvider userProvider) {
+                             EmailService emailService, RoleProvider roleProvider) {
         super(provider, converter, userEventSender);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
@@ -159,7 +158,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.passwordResetTokenProvider = passwordResetTokenProvider;
         this.emailService = emailService;
         this.roleProvider = roleProvider;
-        this.userProvider = userProvider;
     }
 
 
@@ -338,13 +336,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Transactional
     public UserDTO create(UserDTO dto, String creatorName) {
         //Check username does not exist. Ignore cases.
-        if (userProvider.findByUsername(dto.getUsername()).isPresent()) {
+        if (getProvider().findByUsername(dto.getUsername()).isPresent()) {
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
         }
-        if (userProvider.findByEmail(dto.getEmail()).isPresent()) {
+        if (getProvider().findByEmail(dto.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
         }
-        if (dto.getExternalReference() != null && userProvider.findByExternalReference(dto.getExternalReference()).isPresent()) {
+        if (dto.getExternalReference() != null && getProvider().findByExternalReference(dto.getExternalReference()).isPresent()) {
             throw new ExternalReferenceAlreadyExistsException(this.getClass(),
                     "External reference '" + dto.getExternalReference() + "' already in use!");
         }
@@ -444,7 +442,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         userDTO.setEmail(Objects.requireNonNullElseGet(email, () -> "email" + getProvider().count() + "@email.com"));
         userDTO.setExternalReference(externalReference);
         //Check the email account.
-        final Optional<User> existingUserByEmail = userProvider.findByEmail(userDTO.getEmail());
+        final Optional<User> existingUserByEmail = getProvider().findByEmail(userDTO.getEmail());
         if (existingUserByEmail.isPresent()
                 && !Objects.equals(userDTO.getUUID(), existingUserByEmail.get().getUuid())) {
             throw new EmailAlreadyExistsException(this.getClass(), "Email '" + userDTO.getEmail() + "' already exists!");
@@ -606,7 +604,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     public UserDTO update(UserDTO dto, String updaterName) {
         final User user = getProvider().findByUuid(dto.getUUID()).orElse(null);
 
-        final Optional<User> existingUserByUsername = userProvider.findByUsername(dto.getUsername());
+        final Optional<User> existingUserByUsername = getProvider().findByUsername(dto.getUsername());
         if (existingUserByUsername.isPresent() && !Objects.equals(dto.getUUID(), existingUserByUsername.get().getUuid())) {
             throw new UserAlreadyExistsException(this.getClass(), "Username '" + dto.getUsername() + "' already exists!");
         }
@@ -619,7 +617,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             }
         }
 
-        final Optional<User> existingUserByEmail = userProvider.findByEmail(dto.getEmail());
+        final Optional<User> existingUserByEmail = getProvider().findByEmail(dto.getEmail());
         if (existingUserByEmail.isPresent()
                 && !Objects.equals(dto.getUUID(), existingUserByEmail.get().getUuid())) {
             throw new EmailAlreadyExistsException(this.getClass(), "Email '" + dto.getEmail() + "' already exists!");
@@ -631,6 +629,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             //Send an email if the email account has been updated.
             if (sendEmailOnUpdate && user != null && !Objects.equals(user.getEmail(), dto.getEmail())) {
                 try {
+                    UserManagerLogger.warning(this.getClass(), "User's mail has been changed from '{}' to '{}'.",
+                            user.getEmail(), dto.getEmail());
                     emailService.sendUserUpdateEmail(user, dto.getEmail());
                 } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
                     UserManagerLogger.severe(this.getClass(), e.getMessage());
