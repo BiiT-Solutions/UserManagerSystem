@@ -13,7 +13,10 @@ public final class UserDTOConverter {
         userDTO.setFirstname(createUserRequest.getFirstname());
         userDTO.setLastName(createUserRequest.getLastname());
         userDTO.setUsername(createUserRequest.getUsername());
-        if (createUserRequest.getUsername().contains("@") && createUserRequest.getUsername().contains(".")) {
+        userDTO.setExternalReference(createUserRequest.getExternalReference());
+        if (createUserRequest.getEmail() != null && !createUserRequest.getEmail().isBlank()) {
+            userDTO.setEmail(createUserRequest.getEmail());
+        } else if (createUserRequest.getUsername().contains("@") && createUserRequest.getUsername().contains(".")) {
             userDTO.setEmail(createUserRequest.getUsername());
         }
         userDTO.setPassword(createUserRequest.getPassword());
