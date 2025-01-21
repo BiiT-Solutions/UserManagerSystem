@@ -23,6 +23,7 @@ import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleExcepti
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.UserDoesNotExistsException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.UserEventSender;
@@ -168,7 +169,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     public UserDTO getByUsername(String username) {
         final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(this.getClass(), "No user with username '" + username + "' found on the system."))));
+                new UserDoesNotExistsException(this.getClass(), "No user with username '" + username + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
     }
 
