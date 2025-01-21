@@ -122,4 +122,8 @@ public class UserUrlConstructor {
     public String getUsersByExternalReferences() {
         return getUsers() + "/references";
     }
+
+    public String checkUsername(String username) {
+        return getUsers() + "/public/" + username + "/check";
+    }
 }

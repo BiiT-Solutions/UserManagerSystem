@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -453,6 +454,17 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+
+    public boolean usernameExists(String username) {
+        try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                userUrlConstructor.checkUsername(username))) {
+            UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                    userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.checkUsername(username),
+                    response.getStatus());
+            return HttpStatus.valueOf(response.getStatus()).is2xxSuccessful();
         }
     }
 
