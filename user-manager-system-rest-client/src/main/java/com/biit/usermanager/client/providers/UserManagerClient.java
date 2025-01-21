@@ -42,6 +42,7 @@ import java.util.Set;
 public class UserManagerClient implements IAuthenticatedUserProvider {
 
     private static final String EXTERNAL_REFERENCE_PARAMETER = "references";
+    private static final int CONFLICT_CODE = 409;
 
     private final UserUrlConstructor userUrlConstructor;
 
@@ -464,7 +465,10 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                     userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.checkUsername(username),
                     response.getStatus());
-            return HttpStatus.valueOf(response.getStatus()).is2xxSuccessful();
+            if (response.getStatus() == CONFLICT_CODE) {
+                return true;
+            }
+            return !HttpStatus.valueOf(response.getStatus()).is2xxSuccessful();
         }
     }
 

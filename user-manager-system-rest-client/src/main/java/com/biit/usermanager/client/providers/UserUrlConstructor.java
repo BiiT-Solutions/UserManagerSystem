@@ -124,6 +124,6 @@ public class UserUrlConstructor {
     }
 
     public String checkUsername(String username) {
-        return getUsers() + "/public/" + username + "/check";
+        return getUsers() + "/public/" + username + "/available";
     }
 }

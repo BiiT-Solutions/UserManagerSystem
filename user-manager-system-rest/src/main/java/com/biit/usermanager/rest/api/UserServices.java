@@ -213,8 +213,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @Operation(summary = "Checks if a username is already taken or not.")
-    @GetMapping(path = "/public/{username}/check")
+    @Operation(summary = "Checks if a username is available or not.")
+    @GetMapping(path = "/public/{username}/available")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<Void> checkUsernameExists(@Parameter(description = "username", required = true)
                                                     @PathVariable("username") String username,

@@ -193,4 +193,10 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
         Assert.assertTrue(user.isPresent());
         Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, userManagerClient.getPasswordByUid(user.get().getUID())));
     }
+
+    @Test
+    public void checkUsernameExists() {
+        Assert.assertTrue(userManagerClient.usernameExists(USER_NAME));
+        Assert.assertFalse(userManagerClient.usernameExists(USER_NAME + "_wrong"));
+    }
 }
