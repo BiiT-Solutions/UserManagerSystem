@@ -9,6 +9,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -54,9 +55,9 @@ public class UserRepositoryTests extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = "saveUser")
     public void getUserByEmail() {
-        Optional<User> user = userRepository.findByEmailIgnoreCase(USER_EMAIL);
-        Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(user.get().getEmail(), USER_EMAIL);
+        List<User> users = userRepository.findByEmailIgnoreCase(USER_EMAIL);
+        Assert.assertFalse(users.isEmpty());
+        Assert.assertEquals(users.get(0).getEmail(), USER_EMAIL);
     }
 
     @AfterClass(alwaysRun = true)

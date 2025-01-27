@@ -18,7 +18,7 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     Optional<User> findByUsernameHash(String username);
 
-    Optional<User> findByEmailIgnoreCase(String email);
+    List<User> findByEmailIgnoreCase(String email);
 
     Optional<User> findByUuid(UUID uuid);
 
