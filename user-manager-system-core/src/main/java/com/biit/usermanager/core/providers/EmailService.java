@@ -41,6 +41,12 @@ public class EmailService extends ServerEmailService {
     @Value("${mail.access.application.link:}")
     private String applicationLink;
 
+    @Value("#{new Boolean('${mail.updated.warning.email:false}')}")
+    private boolean sendEmailOnUpdate = false;
+
+    @Value("#{new Boolean('${mail.user.account.created:false}')}")
+    private boolean sendEmailOnCreation = false;
+
     private final PasswordResetTokenProvider passwordResetTokenProvider;
 
 
@@ -70,7 +76,7 @@ public class EmailService extends ServerEmailService {
 
 
     public void sendUserCreationEmail(User user) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
-        if (user != null && user.getEmail() != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
+        if (sendEmailOnCreation && user != null && user.getEmail() != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
             final String bodyTag = user.getAccountExpirationTime() != null ? "new.user.mail.with.expiration.body" : "new.user.mail.body";
@@ -90,7 +96,7 @@ public class EmailService extends ServerEmailService {
 
 
     public void sendUserUpdateEmail(User user, String oldMail) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
-        if (user != null && oldMail != null) {
+        if (sendEmailOnUpdate && user != null && oldMail != null) {
             UserManagerLogger.debug(this.getClass(), "Sending an email for change from '{}' to '{}'.", oldMail, user.getEmail());
             final Locale locale = getUserLocale(user);
             final String bodyTag = "update.user.mail.body";

@@ -95,9 +95,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
-    @Value("#{new Boolean('${mail.updated.warning.email:false}')}")
-    private boolean sendEmailOnUpdate = false;
-
     @Value("#{new Boolean('${user.public.register.enabled:false}')}")
     private boolean allowPublicRegistration = false;
 
@@ -629,7 +626,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             return super.update(dto, updaterName);
         } finally {
             //Send an email if the email account has been updated.
-            if (sendEmailOnUpdate && oldEmail != null && !Objects.equals(oldEmail, dto.getEmail())) {
+            if (oldEmail != null && !Objects.equals(oldEmail, dto.getEmail())) {
                 try {
                     UserManagerLogger.warning(this.getClass(), "User's mail has been changed from '{}' to '{}'.",
                             oldEmail, dto.getEmail());
@@ -637,9 +634,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
                     UserManagerLogger.severe(this.getClass(), e.getMessage());
                 }
-            } else {
-                UserManagerLogger.warning(this.getClass(), "Not sending email warning, as sendEmailOnUpdate is '{}' and email has changed from '{}' to '{}'.",
-                        sendEmailOnUpdate, oldEmail, dto.getEmail());
             }
         }
     }
