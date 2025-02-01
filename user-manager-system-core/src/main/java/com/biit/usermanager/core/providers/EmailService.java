@@ -32,6 +32,9 @@ public class EmailService extends ServerEmailService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+    @Value("${mail.server.enabled:true}")
+    private boolean mailEnabled;
+
     @Value("${mail.forgot.password.link:}")
     private String forgetPasswordEmailLink;
 
@@ -76,6 +79,9 @@ public class EmailService extends ServerEmailService {
 
 
     public void sendUserCreationEmail(User user) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
+        if (!mailEnabled) {
+            return;
+        }
         if (sendEmailOnCreation && user != null && user.getEmail() != null && mailUserCreationLink != null && !mailUserCreationLink.isBlank()) {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
@@ -96,6 +102,9 @@ public class EmailService extends ServerEmailService {
 
 
     public void sendUserUpdateEmail(User user, String oldMail) throws FileNotFoundException, EmailNotSentException, InvalidEmailAddressException {
+        if (!mailEnabled) {
+            return;
+        }
         if (sendEmailOnUpdate && user != null && oldMail != null) {
             UserManagerLogger.debug(this.getClass(), "Sending an email for change from '{}' to '{}'.", oldMail, user.getEmail());
             final Locale locale = getUserLocale(user);
