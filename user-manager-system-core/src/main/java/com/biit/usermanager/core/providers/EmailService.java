@@ -32,7 +32,7 @@ public class EmailService extends ServerEmailService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    @Value("${mail.server.enabled:true}")
+    @Value("#{new Boolean('${mail.server.enabled:true}')}")
     private boolean mailEnabled;
 
     @Value("${mail.forgot.password.link:}")
