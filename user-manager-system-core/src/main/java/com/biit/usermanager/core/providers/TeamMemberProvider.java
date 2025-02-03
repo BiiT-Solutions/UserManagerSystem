@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.StorableObjectProvider;
+import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.TeamMemberId;
 import com.biit.usermanager.persistence.repositories.TeamMemberRepository;
@@ -31,6 +32,7 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
     }
 
     public TeamMember assign(Long userId, Long teamId) {
+        UserManagerLogger.debug(this.getClass(), "Assigning team '{}' to user '{}'", teamId, userId);
         return save(new TeamMember(teamId, userId));
     }
 }

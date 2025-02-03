@@ -385,6 +385,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                                     + createUserRequest.getOrganization() + "'. "
                                     + "Expecting only one group to be present on the organization to be selected as default one.");
                         }
+                        UserManagerLogger.debug(this.getClass(), "Using default team '" + createUserRequest.getOrganization() + "'.");
                         team = teamsFromOrganization.get(0);
                     }
                     //Assign user to team.
