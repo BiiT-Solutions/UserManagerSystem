@@ -390,6 +390,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                     }
                     //Assign user to team.
                     teamMemberProvider.assign(userDTO.getId(), team.getId());
+                    UserManagerLogger.info(this.getClass(), "Assigning user '{}' to team '{}'.", userDTO.getUsername(), team.getName());
+                } else {
+                    UserManagerLogger.debug(this.getClass(), "No organization provided meanwhile creating a user.");
                 }
             } catch (Exception e) {
                 UserManagerLogger.warning(this.getClass(), "User '" + createUserRequest.getUsername() + "' cannot be assigned to an organization '"
