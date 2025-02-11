@@ -4,7 +4,12 @@ import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serial;
+
 public class RoleDTO extends ElementDTO<String> implements IRole<String> {
+
+    @Serial
+    private static final long serialVersionUID = -1038904769010325039L;
 
     private String name;
 
