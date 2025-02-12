@@ -303,7 +303,8 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
 
     public UserGroupDTO assignByUsernames(Long userGroupId, Collection<String> usernames, String assignedBy) {
-        return assign(userGroupId, userConverter.convertAll(userProvider.findByUsernames(usernames).stream().map(UserConverterRequest::new).toList()), assignedBy);
+        return assign(userGroupId, userConverter.convertAll(userProvider.findByUsernames(usernames).stream()
+                .map(UserConverterRequest::new).toList()), assignedBy);
     }
 
 
