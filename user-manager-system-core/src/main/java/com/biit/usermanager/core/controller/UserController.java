@@ -236,6 +236,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
+    public UserDTO findByUUID(UUID uuid) {
+        return convert(getProvider().findByUuid(uuid).orElseThrow(() ->
+                new UserDoesNotExistsException(this.getClass(), "No user with uuid '" + uuid + "' found on the system.")));
+    }
+
+
     @Override
     public Optional<IAuthenticatedUser> findByUsername(String username, String backendServiceName) {
         if (backendServiceName == null) {
@@ -331,6 +337,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
+    @Override
     @Transactional
     public UserDTO create(UserDTO dto, String creatorName) {
         //Check username does not exist. Ignore cases.

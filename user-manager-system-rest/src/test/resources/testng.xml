@@ -12,6 +12,7 @@
                 <include name="userTests"/>
                 <include name="userExternalReferenceTests"/>
                 <include name="userCreation"/>
+                <include name="userGroupTests"/>
                 <!-- has problems on jenkins -->
                 <exclude name="forgotPasswordTests"/>
             </run>
@@ -20,6 +21,7 @@
             <class name="com.biit.usermanager.rest.tests.UserTests"/>
             <class name="com.biit.usermanager.rest.tests.UserExternalReferenceTests"/>
             <class name="com.biit.usermanager.rest.tests.UserRoleTests"/>
+            <class name="com.biit.usermanager.rest.tests.UserGroupTests"/>
             <class name="com.biit.usermanager.rest.tests.FirstUserCreationTest"/>
             <class name="com.biit.usermanager.rest.tests.ForgotPasswordTests"/>
         </classes>

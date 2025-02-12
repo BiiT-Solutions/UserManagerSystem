@@ -16,7 +16,11 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     Optional<User> findByUsernameIgnoreCase(String username);
 
+    List<User> findByUsernameIn(Collection<String> usernames);
+
     Optional<User> findByUsernameHash(String username);
+
+    List<User> findByUsernameHashIn(Collection<String> usernames);
 
     List<User> findByEmailIgnoreCase(String email);
 
@@ -30,5 +34,5 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     List<User> findByExternalReference(String externalReference);
 
-    List<User> findByExternalReferenceIn(List<String> externalReference);
+    List<User> findByExternalReferenceIn(Collection<String> externalReference);
 }

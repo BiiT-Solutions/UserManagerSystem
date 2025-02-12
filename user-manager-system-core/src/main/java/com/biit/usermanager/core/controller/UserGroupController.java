@@ -4,7 +4,9 @@ package com.biit.usermanager.core.controller;
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.kafka.events.EventSubject;
 import com.biit.kafka.events.IEventSender;
+import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.UserGroupConverter;
+import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.converters.models.UserGroupConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
@@ -43,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Controller
 public class UserGroupController extends KafkaElementController<UserGroup, Long, UserGroupDTO, UserGroupRepository,
@@ -59,13 +62,15 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
 
     private final UserGroupUserRepository userGroupUserRepository;
 
+    private final UserConverter userConverter;
+
     protected UserGroupController(UserGroupProvider provider, UserGroupConverter converter,
                                   IEventSender<UserGroupDTO> eventSender,
                                   ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider,
                                   UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
                                   BackendServiceRoleProvider backendServiceRoleProvider,
                                   ApplicationRoleProvider applicationRoleProvider, UserProvider userProvider,
-                                  UserGroupUserRepository userGroupUserRepository) {
+                                  UserGroupUserRepository userGroupUserRepository, UserConverter userConverter) {
         super(provider, converter, eventSender);
         this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.userGroupApplicationBackendServiceRoleProvider = userGroupApplicationBackendServiceRoleProvider;
@@ -73,6 +78,7 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         this.applicationRoleProvider = applicationRoleProvider;
         this.userProvider = userProvider;
         this.userGroupUserRepository = userGroupUserRepository;
+        this.userConverter = userConverter;
     }
 
     @Override
@@ -294,6 +300,17 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         //Load again all roles.
         return setGrantedAuthorities(convert(userGroup), null, null);
     }
+
+
+    public UserGroupDTO assignByUsernames(Long userGroupId, Collection<String> usernames, String assignedBy) {
+        return assign(userGroupId, userConverter.convertAll(userProvider.findByUsernames(usernames).stream().map(UserConverterRequest::new).toList()), assignedBy);
+    }
+
+
+    public UserGroupDTO assignByUUID(Long userGroupId, Collection<UUID> usersUUIDs, String assignedBy) {
+        return assign(userGroupId, userConverter.convertAll(userProvider.findByUuids(usersUUIDs).stream().map(UserConverterRequest::new).toList()), assignedBy);
+    }
+
 
     public UserGroupDTO assign(Long userGroupId, Collection<UserDTO> users, String assignedBy) {
         final UserGroup userGroup = getProvider().findById(userGroupId).orElseThrow(()

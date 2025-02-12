@@ -79,6 +79,19 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         }
     }
 
+
+    public List<User> findByUsernames(Collection<String> usernames) {
+        //If encryption is enabled, use hash.
+        if (getEncryptionKey() != null) {
+            final List<User> authenticatedUser = findByUsernameHash(usernames);
+            authenticatedUser.forEach(u -> u.setUsernameHash(u.getUsername().toLowerCase()));
+            return authenticatedUser;
+        } else {
+            return getRepository().findByUsernameIn(usernames);
+        }
+    }
+
+
     public Optional<User> findByEmail(String email) {
         if (email == null) {
             return Optional.empty();
@@ -102,6 +115,10 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     public Optional<User> findByUsernameHash(String username) {
         return getRepository().findByUsernameHash(username.toLowerCase());
+    }
+
+    public List<User> findByUsernameHash(Collection<String> usernames) {
+        return getRepository().findByUsernameHashIn(usernames);
     }
 
     public Optional<User> findByUuid(UUID uuid) {

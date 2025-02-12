@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user-groups")
@@ -66,6 +67,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
         getController().delete(name, authentication.getName());
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a UserGroup by id.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/{id}")
@@ -74,6 +76,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
                             @PathVariable("id") Long id, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(id, authentication.getName());
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign roles to a group. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
@@ -95,6 +98,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
         return getController().assign(name, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign roles to a group. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/id/{id}/applications/{applicationName}/application-roles/{applicationRoleName}"
@@ -115,6 +119,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
         return getController().assign(id, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign application roles to a UserGroup. Assigns all related backend services that are defined.",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -130,6 +135,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             HttpServletRequest request) {
         return getController().assign(name, applicationName, applicationRoleName);
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Assign application roles to a UserGroup. Assigns all related backend services that are defined.",
@@ -147,6 +153,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
         return getController().assign(id, applicationName, applicationRoleName);
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes application roles from a User Group.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(value = "/name/{name}/applications/{applicationName}/application-roles/{applicationRoleName}",
@@ -162,6 +169,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             HttpServletRequest request) {
         return getController().unAssign(name, applicationName, applicationRoleName, authentication.getName());
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes application roles from a User Group.", security = @SecurityRequirement(name = "bearerAuth"))
@@ -179,10 +187,12 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
         return getController().unAssign(id, applicationName, applicationRoleName, authentication.getName());
     }
 
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Adds Users to the UserGroup.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO addUsers(
             @Parameter(description = "Id of an existing User Group", required = true)
@@ -193,10 +203,44 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
         return getController().assign(id, users, authentication.getName());
     }
 
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds Users to the UserGroup.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/{id}/users/uuids",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO addUsersByUuids(
+            @Parameter(description = "Id of an existing User Group", required = true)
+            @PathVariable("id") Long id,
+            @RequestBody Collection<UUID> usersUUIDs,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().assignByUUID(id, usersUUIDs, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds Users to the UserGroup.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/{id}/users/usernames",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO addUsersByUsernames(
+            @Parameter(description = "Id of an existing User Group", required = true)
+            @PathVariable("id") Long id,
+            @RequestBody Collection<String> usernames,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().assignByUsernames(id, usernames, authentication.getName());
+    }
+
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Removes Users from the UserGroup.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users/remove",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO removeUsers(
             @Parameter(description = "Id of an existing User Group", required = true)
