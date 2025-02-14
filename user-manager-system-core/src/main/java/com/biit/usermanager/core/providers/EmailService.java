@@ -68,7 +68,7 @@ public class EmailService extends ServerEmailService {
                     forgetPasswordEmailLink, token, args, locale);
             sendTemplate(user.getEmail(),
                     getMessage("forgotten.password.mail.subject", args, locale), emailTemplate,
-                    getMessage("forgotten.password.mail.body", args, locale));
+                    getMessage("forgotten.password.mail.body", args, locale), true);
             UserManagerLogger.warning(this.getClass(), "Recovery password mail send to '{}'.", user);
         } else {
             UserManagerLogger.warning(this.getClass(), "Email settings not set. Emails will be ignored.");
