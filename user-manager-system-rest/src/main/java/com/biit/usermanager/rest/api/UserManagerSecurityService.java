@@ -20,4 +20,8 @@ public class UserManagerSecurityService extends SecurityService {
     public String getEditorPrivilege() {
         return "USERMANAGERSYSTEM_EDITOR";
     }
+
+    public String getTokenPrivilege() {
+        return "USERMANAGERSYSTEM_TOKEN";
+    }
 }
