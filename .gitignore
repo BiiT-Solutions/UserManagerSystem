@@ -21,4 +21,5 @@ release.properties
 *.iml
 *.swp
 .attach_pid*
+application-testing.properties
 
