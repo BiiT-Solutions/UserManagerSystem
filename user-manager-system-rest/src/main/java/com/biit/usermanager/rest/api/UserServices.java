@@ -376,7 +376,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @Operation(summary = "Generates a token for reseting the password", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Generates a token for reseting the password")
     @GetMapping(value = "/public/emails/{email}/reset-password")
     public void createResetPasswordToken(@Parameter(description = "Email from an existing user", required = true) @PathVariable("email") String email,
                                          HttpServletRequest request) throws EmailNotSentException {
@@ -385,7 +385,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @Operation(summary = "Checks the validity of a token", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Checks the validity of a token")
     @GetMapping(value = "/public/tokens")
     public void checkToken(
             @Parameter(description = "Token to check", required = true) @RequestParam("token") String token,
@@ -395,7 +395,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @Operation(summary = "Changes the password from a user, using a token", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Changes the password from a user, using a token")
     @PostMapping(value = "/public/change-password")
     public void resetPasswordFromToken(@Parameter(description = "Token obtained by mail", required = true) @RequestParam("token") String token,
                                        @RequestBody(required = true) @Valid PasswordChangeRequest passwordChangeRequest,
