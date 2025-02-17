@@ -204,7 +204,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @Operation(summary = "Adds a new user into the system. For Sign Up", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Adds a new user into the system. For Sign Up")
     @PostMapping(path = "/public/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public IAuthenticatedUser register(@RequestBody CreateUserRequest request, HttpServletRequest httpRequest) {
