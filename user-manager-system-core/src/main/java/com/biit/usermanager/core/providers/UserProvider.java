@@ -67,7 +67,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     public Optional<User> findByUsername(String username) {
         //If encryption is enabled, use hash.
-        if (getEncryptionKey() != null) {
+        if (getEncryptionKey() != null && !getEncryptionKey().isBlank()) {
             final Optional<User> authenticatedUser = findByUsernameHash(username);
             if (authenticatedUser.isPresent()) {
                 authenticatedUser.get().setUsernameHash(authenticatedUser.get().getUsername().toLowerCase());
@@ -82,7 +82,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     public List<User> findByUsernames(Collection<String> usernames) {
         //If encryption is enabled, use hash.
-        if (getEncryptionKey() != null) {
+        if (getEncryptionKey() != null && !getEncryptionKey().isBlank()) {
             final List<User> authenticatedUser = findByUsernameHash(usernames);
             authenticatedUser.forEach(u -> u.setUsernameHash(u.getUsername().toLowerCase()));
             return authenticatedUser;
@@ -97,7 +97,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
             return Optional.empty();
         }
 
-        if (getEncryptionKey() != null) {
+        if (getEncryptionKey() != null && !getEncryptionKey().isBlank()) {
             final List<User> authenticatedUser = findByEmailHash(email);
             //We have some legacy data where an email is shared between multiple email accounts.
             if (!authenticatedUser.isEmpty()) {
