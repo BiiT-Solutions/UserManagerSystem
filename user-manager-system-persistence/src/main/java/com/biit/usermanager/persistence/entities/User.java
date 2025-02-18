@@ -78,6 +78,10 @@ public class User extends Element<Long> {
     @Convert(converter = StringCryptoConverter.class)
     private String email = "";
 
+    @Column(name = "email_hash", length = SHA512HashGenerator.ALGORITHM_LENGTH)
+    @Convert(converter = SHA512HashGenerator.class)
+    private String emailHash;
+
     @Column(name = "birthdate")
     @Convert(converter = LocalDateCryptoConverter.class)
     private LocalDate birthdate;
@@ -191,7 +195,11 @@ public class User extends Element<Long> {
     }
 
     public void setUsernameHash(String usernameHash) {
-        this.usernameHash = usernameHash.toLowerCase();
+        if (usernameHash != null) {
+            this.usernameHash = usernameHash.toLowerCase();
+        } else {
+            this.usernameHash = null;
+        }
     }
 
     public String getName() {
@@ -216,6 +224,19 @@ public class User extends Element<Long> {
 
     public void setEmail(String email) {
         this.email = email;
+        setEmailHash(email);
+    }
+
+    public String getEmailHash() {
+        return emailHash;
+    }
+
+    public void setEmailHash(String emailHash) {
+        if (emailHash != null) {
+            this.emailHash = emailHash.toLowerCase();
+        } else {
+            this.emailHash = null;
+        }
     }
 
     public String getLocale() {

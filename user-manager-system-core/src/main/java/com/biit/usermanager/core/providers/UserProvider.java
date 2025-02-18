@@ -96,12 +96,22 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         if (email == null) {
             return Optional.empty();
         }
-        //We have some legacy data where an email is shared between multiple email accounts.
-        final List<User> users = getRepository().findByEmailIgnoreCase(email.trim());
-        if (users.isEmpty()) {
+
+        if (getEncryptionKey() != null) {
+            final List<User> authenticatedUser = findByEmailHash(email);
+            //We have some legacy data where an email is shared between multiple email accounts.
+            if (!authenticatedUser.isEmpty()) {
+                authenticatedUser.get(0).setEmail(authenticatedUser.get(0).getEmail().toLowerCase().trim());
+                return Optional.of(authenticatedUser.get(0));
+            }
             return Optional.empty();
+        } else {
+            final List<User> users = getRepository().findByEmailIgnoreCase(email.trim());
+            if (users.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(users.get(0));
         }
-        return Optional.of(users.get(0));
     }
 
 
@@ -119,6 +129,14 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
     public List<User> findByUsernameHash(Collection<String> usernames) {
         return getRepository().findByUsernameHashIn(usernames);
+    }
+
+    public List<User> findByEmailHash(String email) {
+        return getRepository().findByEmailHash(email);
+    }
+
+    public List<User> findByEmailHash(Collection<String> emails) {
+        return getRepository().findByEmailHashIn(emails);
     }
 
     public Optional<User> findByUuid(UUID uuid) {

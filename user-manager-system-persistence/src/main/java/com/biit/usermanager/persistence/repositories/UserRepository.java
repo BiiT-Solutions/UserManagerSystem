@@ -22,6 +22,10 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     List<User> findByUsernameHashIn(Collection<String> usernames);
 
+    List<User> findByEmailHash(String email);
+
+    List<User> findByEmailHashIn(Collection<String> emails);
+
     List<User> findByEmailIgnoreCase(String email);
 
     Optional<User> findByUuid(UUID uuid);

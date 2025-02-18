@@ -1,8 +1,6 @@
 package com.biit.usermanager.persistence.entities;
 
-import com.biit.database.encryption.StringCryptoConverter;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -25,7 +23,6 @@ public class BackendServiceRoleId implements Serializable {
     private BackendService backendService;
 
     @Column(name = "name", nullable = false, length = MAX_UNIQUE_COLUMN_LENGTH)
-    @Convert(converter = StringCryptoConverter.class)
     private String name;
 
     public BackendServiceRoleId() {
