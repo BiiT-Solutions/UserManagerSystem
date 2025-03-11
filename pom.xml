@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>user-manager-system</artifactId>
-    <version>0.4.160-SNAPSHOT</version>
+    <version>0.4.166-SNAPSHOT</version>
     <name>User Manager System</name>
     <packaging>pom</packaging>
 
