@@ -351,6 +351,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new ExternalReferenceAlreadyExistsException(this.getClass(),
                     "External reference '" + dto.getExternalReference() + "' already in use!");
         }
+        //If username is not set, is the email.
+        if ((dto.getUsername() == null || dto.getUsername().isBlank()) && (dto.getEmail() != null && !dto.getEmail().isBlank())) {
+            dto.setUsername(dto.getEmail());
+        }
         final UserDTO userDTO = super.create(dto, creatorName);
         if (userDTO != null) {
             try {
