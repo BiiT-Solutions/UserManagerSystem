@@ -12,6 +12,7 @@
                 <include name="userGroupTests"/>
                 <include name="teamTests"/>
                 <include name="organizationTests"/>
+                <include name="emails"/>
             </run>
         </groups>
         <classes>
@@ -20,6 +21,7 @@
             <class name="com.biit.usermanager.core.UserGroupTests"/>
             <class name="com.biit.usermanager.core.TeamTests"/>
             <class name="com.biit.usermanager.core.OrganizationTests"/>
+            <class name="com.biit.usermanager.core.EmailTests"/>
         </classes>
     </test>
 </suite>
