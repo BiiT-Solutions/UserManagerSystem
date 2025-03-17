@@ -89,7 +89,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     public List<TeamDTO> getByOrganization(String organizationName) {
         final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() ->
                 new OrganizationNotFoundException(this.getClass(), "Organization with name '" + organizationName + "' not found."));
-        return getByOrganization(organization);
+        return getByOrganization(organization).stream().sorted().toList();
     }
 
 
@@ -107,7 +107,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
 
     public List<TeamDTO> getTeamsWithoutParent() {
-        return getConverter().convertAll(getProvider().findByParentIsNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParentIsNull().stream().map(this::createConverterRequest).sorted().collect(Collectors.toList()));
     }
 
 
@@ -119,7 +119,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     public List<TeamDTO> getTeamsWithParent(Long parentId) {
         final Team team = getProvider().findById(parentId).orElseThrow(()
                 -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + parentId + "'."));
-        return getConverter().convertAll(getProvider().findByParent(team).stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParent(team).stream().map(this::createConverterRequest).sorted().collect(Collectors.toList()));
     }
 
 
@@ -174,6 +174,6 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
     public List<TeamDTO> getFromUser(User user) {
         final Set<TeamMember> teamMembers = teamMemberProvider.findByIdUserId(user.getId());
-        return get(teamMembers.stream().map(teamMember -> teamMember.getId().getTeamId()).collect(Collectors.toList()));
+        return get(teamMembers.stream().map(teamMember -> teamMember.getId().getTeamId()).sorted().collect(Collectors.toList()));
     }
 }

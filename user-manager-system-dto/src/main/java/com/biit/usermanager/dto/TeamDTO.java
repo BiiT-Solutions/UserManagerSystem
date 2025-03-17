@@ -3,7 +3,7 @@ package com.biit.usermanager.dto;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IGroup;
 
-public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
+public class TeamDTO extends ElementDTO<Long> implements IGroup<Long>, Comparable<TeamDTO> {
 
     private Long id;
 
@@ -89,5 +89,19 @@ public class TeamDTO extends ElementDTO<Long> implements IGroup<Long> {
         return "TeamDTO{"
                 + "name='" + name + '\''
                 + "}";
+    }
+
+    @Override
+    public int compareTo(TeamDTO otherTeam) {
+        if (otherTeam == null) {
+            return 1;
+        }
+        if (this.name != null) {
+            return this.name.compareTo(otherTeam.getName());
+        }
+        if (this.id != null) {
+            return this.id.compareTo(otherTeam.getId());
+        }
+        return 0;
     }
 }
