@@ -10,7 +10,6 @@ import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.BackendServiceRoleEventSender;
 import com.biit.usermanager.core.kafka.UserEventSender;
-import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.BackendServiceProvider;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
@@ -38,7 +37,6 @@ public class BackendServiceRoleController extends KafkaCreatedElementController<
     private final UserProvider userProvider;
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
-    private final ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider;
 
     private final UserEventSender userEventSender;
 
@@ -47,12 +45,11 @@ public class BackendServiceRoleController extends KafkaCreatedElementController<
                                            UserProvider userProvider,
                                            BackendServiceRoleEventSender eventSender,
                                            UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
-                                           ApplicationBackendServiceRoleProvider applicationBackendServiceRoleProvider, UserEventSender userEventSender) {
+                                           UserEventSender userEventSender) {
         super(provider, converter, eventSender);
         this.backendServiceProvider = backendServiceProvider;
         this.userProvider = userProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
-        this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.userEventSender = userEventSender;
     }
 

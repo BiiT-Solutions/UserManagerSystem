@@ -8,7 +8,8 @@
 
     <service>
         <!--  jsr-107-compliant-atomics is for using with JCache -->
-        <jsr107:defaults enable-management="true" enable-statistics="true" default-template="default-cache-template" jsr-107-compliant-atomics="true">
+        <jsr107:defaults enable-management="true" enable-statistics="true" default-template="default-cache-template"
+                         jsr-107-compliant-atomics="true">
         </jsr107:defaults>
     </service>
 
@@ -51,8 +52,9 @@
         <key-type>java.lang.Integer</key-type>
         <value-type>com.biit.usermanager.persistence.entities.ApplicationRole</value-type>
     </cache>
+
     <cache alias="backend_service_roles" uses-template="default-cache-template">
         <key-type>java.lang.Integer</key-type>
-        <value-type>com.biit.usermanager.persistence.entities.ApplicationRole</value-type>
+        <value-type>com.biit.usermanager.persistence.entities.BackendServiceRole</value-type>
     </cache>
 </config>
