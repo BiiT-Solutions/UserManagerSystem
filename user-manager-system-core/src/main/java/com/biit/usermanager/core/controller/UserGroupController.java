@@ -301,6 +301,13 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         return setGrantedAuthorities(convert(userGroup), null, null);
     }
 
+    public UserGroupDTO assignByUsernames(String name, Collection<String> usernames, String assignedBy) {
+        final UserGroup userGroup = getProvider().findByName(name).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No userGroup exists with name '" + name + "'."));
+
+        return assignByUsernames(userGroup.getId(), usernames, assignedBy);
+    }
+
 
     public UserGroupDTO assignByUsernames(Long userGroupId, Collection<String> usernames, String assignedBy) {
         return assign(userGroupId, userConverter.convertAll(userProvider.findByUsernames(usernames).stream()
@@ -308,10 +315,24 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
     }
 
 
+    public UserGroupDTO assignByUUID(String name, Collection<UUID> usersUUIDs, String assignedBy) {
+        final UserGroup userGroup = getProvider().findByName(name).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No userGroup exists with name '" + name + "'."));
+        return assignByUUID(userGroup.getId(), usersUUIDs, assignedBy);
+    }
+
+
     public UserGroupDTO assignByUUID(Long userGroupId, Collection<UUID> usersUUIDs, String assignedBy) {
         return assign(userGroupId, userConverter.convertAll(userProvider.findByUuids(usersUUIDs).stream().map(UserConverterRequest::new).toList()), assignedBy);
     }
 
+
+    public UserGroupDTO assign(String name, Collection<UserDTO> users, String assignedBy) {
+        final UserGroup userGroup = getProvider().findByName(name).orElseThrow(()
+                -> new UserGroupNotFoundException(this.getClass(), "No userGroup exists with name '" + name + "'."));
+
+        return assign(userGroup.getId(), users, assignedBy);
+    }
 
     public UserGroupDTO assign(Long userGroupId, Collection<UserDTO> users, String assignedBy) {
         final UserGroup userGroup = getProvider().findById(userGroupId).orElseThrow(()

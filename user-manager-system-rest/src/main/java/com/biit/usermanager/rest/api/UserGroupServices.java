@@ -205,6 +205,22 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
 
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds Users to the UserGroup by group name.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/name/{name}/users",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO addUsers(
+            @Parameter(description = "Name of an existing UserGroup", required = true)
+            @PathVariable("name") String name,
+            @RequestBody Collection<UserDTO> users,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().assign(name, users, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Adds Users to the UserGroup.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users/uuids",
@@ -223,6 +239,22 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Adds Users to the UserGroup.",
             security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/name/{name}/users/uuids",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO addUsersByUuids(
+            @Parameter(description = "Name of an existing UserGroup", required = true)
+            @PathVariable("name") String name,
+            @RequestBody Collection<UUID> usersUUIDs,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().assignByUUID(name, usersUUIDs, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds Users to the UserGroup.",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users/usernames",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -233,6 +265,22 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             Authentication authentication,
             HttpServletRequest request) {
         return getController().assignByUsernames(id, usernames, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds Users to the UserGroup.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/name/{name}/users/usernames",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserGroupDTO addUsersByUsernamesAndGroupName(
+            @Parameter(description = "Name an existing User Group", required = true)
+            @PathVariable("name") String name,
+            @RequestBody Collection<String> usernames,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().assignByUsernames(name, usernames, authentication.getName());
     }
 
 
