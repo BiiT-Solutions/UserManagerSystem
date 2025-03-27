@@ -357,10 +357,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
         final UserDTO userDTO = super.create(dto, creatorName);
         if (userDTO != null) {
+            final User user = reverse(userDTO);
+            userGroupUserProvider.assignToDefaultGroup(user);
             try {
-                final User user = reverse(userDTO);
                 emailService.sendUserCreationEmail(user);
-                userGroupUserProvider.assignToDefaultGroup(user);
             } catch (EmailNotSentException | InvalidEmailAddressException | FileNotFoundException e) {
                 UserManagerLogger.severe(this.getClass(), e.getMessage());
             }
