@@ -205,9 +205,16 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
             );
             if (!alreadyAssignedPermissions.contains(userGroupApplicationBackendServiceRole)) {
                 rolesToAdd.add(userGroupApplicationBackendServiceRole);
+            } else {
+                UserManagerLogger.debug(this.getClass(), "Permission '{}' already assigned!", userGroupApplicationBackendServiceRole);
             }
         });
-        userGroupApplicationBackendServiceRoleProvider.saveAll(rolesToAdd);
+        if (rolesToAdd.isEmpty()) {
+            UserManagerLogger.debug(this.getClass(), "No new permissions found!");
+        } else {
+            UserManagerLogger.debug(this.getClass(), "adding '{}' group permissions!", rolesToAdd);
+            userGroupApplicationBackendServiceRoleProvider.saveAll(rolesToAdd);
+        }
         return setGrantedAuthorities(convert(userGroup), null, null);
     }
 
