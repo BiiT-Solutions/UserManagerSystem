@@ -25,8 +25,12 @@ public class TeamUrlConstructor {
         return "/teams";
     }
 
-    public String getTeamByUser(UUID userUuid) {
+    public String getTeamsByUser(UUID userUuid) {
         return getTeams() + "/users/" + URLEncoder.encode(String.valueOf(userUuid), StandardCharsets.UTF_8);
+    }
+
+    public String getTeamsByOrganization(String organizationName) {
+        return getTeams() + "/organizations/" + URLEncoder.encode(String.valueOf(organizationName), StandardCharsets.UTF_8);
     }
 
     public String addUsersByUsername(String teamName, String organizationName) {

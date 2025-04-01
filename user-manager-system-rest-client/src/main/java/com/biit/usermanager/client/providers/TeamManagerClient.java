@@ -38,9 +38,28 @@ public class TeamManagerClient {
     public Collection<TeamDTO> findByUser(UUID userUuid) {
         try {
             try (Response response = securityClient.get(teamUrlConstructor.getUserManagerServerUrl(),
-                    teamUrlConstructor.getTeamByUser(userUuid))) {
+                    teamUrlConstructor.getTeamsByUser(userUuid))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        teamUrlConstructor.getUserManagerServerUrl() + teamUrlConstructor.getTeamByUser(userUuid), response.getStatus());
+                        teamUrlConstructor.getUserManagerServerUrl() + teamUrlConstructor.getTeamsByUser(userUuid), response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), TeamDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
+        }
+    }
+
+
+    public Collection<TeamDTO> findByOrganization(String organizationName) {
+        try {
+            try (Response response = securityClient.get(teamUrlConstructor.getUserManagerServerUrl(),
+                    teamUrlConstructor.getTeamsByOrganization(organizationName))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        teamUrlConstructor.getUserManagerServerUrl() + teamUrlConstructor.getTeamsByOrganization(organizationName), response.getStatus());
                 return Arrays.asList(mapper.readValue(response.readEntity(String.class), TeamDTO[].class));
             }
         } catch (JsonProcessingException e) {
