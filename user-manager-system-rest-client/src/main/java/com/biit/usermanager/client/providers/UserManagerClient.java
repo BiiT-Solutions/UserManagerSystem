@@ -7,6 +7,7 @@ import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.model.UpdatePasswordRequest;
+import com.biit.usermanager.client.exceptions.ElementNotFoundException;
 import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import com.biit.usermanager.client.providers.converters.UserDTOConverter;
 import com.biit.usermanager.client.providers.models.Email;
@@ -65,6 +66,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     userUrlConstructor.getUserByName(username))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByName(username), response.getStatus());
+                if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with username '" + username + "' found.");
+                }
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
@@ -85,6 +89,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByNameAndBackendService(username, backendService),
                         response.getStatus());
+                if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with username '" + username + "' found.");
+                }
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
@@ -105,6 +112,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     userUrlConstructor.getUserByEmail(email))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmail(email), response.getStatus());
+                if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with email '" + email + "' found.");
+                }
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
@@ -123,6 +133,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     userUrlConstructor.getUserByEmail(email.getEmail()))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmail(email.getEmail()), response.getStatus());
+                if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with username '" + email + "' found.");
+                }
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
@@ -143,6 +156,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmailAndApplication(email, applicationName),
                         response.getStatus());
+                if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with email '" + email + "' found.");
+                }
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
@@ -162,6 +178,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByEmailAndApplication(email.getEmail(), applicationName),
                         response.getStatus());
+                if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with email '" + email + "' found.");
+                }
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
@@ -182,6 +201,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     userUrlConstructor.getUserByUid(id))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserByUid(id), response.getStatus());
+                if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with id '" + id + "' found.");
+                }
                 return Optional.of(mapper.readValue(response.readEntity(String.class), UserDTO.class));
             }
         } catch (JsonProcessingException e) {
@@ -222,6 +244,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     mapper.writeValueAsString(new UpdatePasswordRequest(oldPassword, newPassword)))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.updateUserPassword(username), result.getStatus());
+                if (Objects.equals(result.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with username '" + username + "' found.");
+                }
                 return mapper.readValue(result.readEntity(String.class), UserDTO.class);
             }
         } catch (JsonProcessingException e) {
@@ -241,6 +266,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     username), MediaType.TEXT_PLAIN)) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserPassword(username), result.getStatus());
+                if (Objects.equals(result.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with username '" + username + "' found.");
+                }
                 return result.readEntity(String.class);
             }
         } catch (EmptyResultException e) {
@@ -258,6 +286,9 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                     uid), MediaType.TEXT_PLAIN)) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUserPasswordByUid(uid), result.getStatus());
+                if (Objects.equals(result.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
+                    throw new ElementNotFoundException(this.getClass(), "No user with uid '" + uid + "' found.");
+                }
                 return result.readEntity(String.class);
             }
         } catch (EmptyResultException e) {
