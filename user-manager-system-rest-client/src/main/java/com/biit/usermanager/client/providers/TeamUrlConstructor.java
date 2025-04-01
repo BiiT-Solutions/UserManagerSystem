@@ -30,12 +30,12 @@ public class TeamUrlConstructor {
     }
 
     public String getTeamsByOrganization(String organizationName) {
-        return getTeams() + "/organizations/" + UriUtils.encode(String.valueOf(organizationName), StandardCharsets.UTF_8);
+        return getTeams() + "/organizations/" + UriUtils.encode(organizationName, StandardCharsets.UTF_8);
     }
 
     public String addUsersByUsername(String teamName, String organizationName) {
-        return getTeams() + "/names/" + UriUtils.encode(teamName, StandardCharsets.UTF_8).replace("+", "%20")
-                + "/organizations/" + UriUtils.encode(organizationName, StandardCharsets.UTF_8).replace("+", "%20")
+        return getTeams() + "/names/" + UriUtils.encode(teamName, StandardCharsets.UTF_8)
+                + "/organizations/" + UriUtils.encode(organizationName, StandardCharsets.UTF_8)
                 + "/usernames";
     }
 
