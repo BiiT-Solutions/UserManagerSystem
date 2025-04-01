@@ -4,7 +4,9 @@ package com.biit.usermanager.core.controller;
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.TeamConverter;
+import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.TeamConverterRequest;
+import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
@@ -42,16 +44,18 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     private final UserProvider userProvider;
 
     private final TeamMemberProvider teamMemberProvider;
+    private final UserConverter userConverter;
 
     @Autowired
     protected TeamController(TeamProvider provider, TeamConverter converter, OrganizationConverter organizationConverter,
                              OrganizationProvider organizationProvider, TeamEventSender eventSender, UserProvider userProvider,
-                             TeamMemberProvider teamMemberProvider) {
+                             TeamMemberProvider teamMemberProvider, UserConverter userConverter) {
         super(provider, converter, eventSender);
         this.organizationConverter = organizationConverter;
         this.organizationProvider = organizationProvider;
         this.userProvider = userProvider;
         this.teamMemberProvider = teamMemberProvider;
+        this.userConverter = userConverter;
     }
 
     @Override
@@ -142,6 +146,12 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     }
 
 
+    public TeamDTO assignByUserName(String organizationName, String name, Collection<String> usernames, String assignedBy) {
+        return assign(organizationName, name, userConverter.convertAll(userProvider.findByUsernames(usernames).stream()
+                .map(UserConverterRequest::new).toList()), assignedBy);
+    }
+
+
     public TeamDTO assign(String organizationName, String name, Collection<UserDTO> users, String assignedBy) {
         final Team team = find(organizationName, name);
         return assign(team.getId(), users, assignedBy);
@@ -164,6 +174,11 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
         team.setUpdatedBy(assignedBy);
 
         return convert(getProvider().save(team));
+    }
+
+    public TeamDTO unAssignByUserName(String organizationName, String name, Collection<String> usernames, String assignedBy) {
+        return unAssign(organizationName, name, userConverter.convertAll(userProvider.findByUsernames(usernames).stream()
+                .map(UserConverterRequest::new).toList()), assignedBy);
     }
 
 

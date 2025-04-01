@@ -163,6 +163,23 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds members to a team using only the username.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/usernames",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public TeamDTO addUsersByUsername(
+            @Parameter(description = "Organization of the Team", required = true)
+            @PathVariable("organizationName") String organization,
+            @Parameter(description = "Name of the Team", required = true)
+            @PathVariable("teamName") String name,
+            @RequestBody Collection<String> usernames,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().assignByUserName(organization, name, usernames, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Removes members from a Team.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users/remove",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -189,6 +206,22 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
             Authentication authentication,
             HttpServletRequest request) {
         return getController().unAssign(organization, name, users, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Removes members from a Team using only the username.", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/usernames/remove",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public TeamDTO removeUsersByUsername(
+            @Parameter(description = "Organization of the Team", required = true)
+            @PathVariable("organizationName") String organization,
+            @Parameter(description = "Name of the Team", required = true)
+            @PathVariable("teamName") String name,
+            @RequestBody Collection<String> usernames,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().unAssignByUserName(organization, name, usernames, authentication.getName());
     }
 
 
