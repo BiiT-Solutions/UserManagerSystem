@@ -134,6 +134,19 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
         return getProvider().deleteByName(name, organization);
     }
 
+    private Team find(String organizationName, String name) {
+        final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() ->
+                new OrganizationNotFoundException(this.getClass(), "Organization with name '" + organizationName + "' not found."));
+        return getProvider().findByNameAndOrganization(name, organization).orElseThrow(() ->
+                new TeamNotFoundException(this.getClass(), "Team with name '" + name + "' not found."));
+    }
+
+
+    public TeamDTO assign(String organizationName, String name, Collection<UserDTO> users, String assignedBy) {
+        final Team team = find(organizationName, name);
+        return assign(team.getId(), users, assignedBy);
+    }
+
 
     public TeamDTO assign(Long teamId, Collection<UserDTO> users, String assignedBy) {
         final Team team = getProvider().findById(teamId).orElseThrow(()
@@ -151,6 +164,12 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
         team.setUpdatedBy(assignedBy);
 
         return convert(getProvider().save(team));
+    }
+
+
+    public TeamDTO unAssign(String organizationName, String name, Collection<UserDTO> users, String assignedBy) {
+        final Team team = find(organizationName, name);
+        return unAssign(team.getId(), users, assignedBy);
     }
 
     public TeamDTO unAssign(Long teamId, Collection<UserDTO> users, String assignedBy) {

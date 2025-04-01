@@ -48,7 +48,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Gets a team by name.", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping(value = "/{teamName}/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/names/{teamName}/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public TeamDTO get(@Parameter(description = "Name of an existing team", required = true)
                        @PathVariable("teamName") String teamName,
                        @Parameter(description = "Organization name")
@@ -80,7 +80,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
 
     @Operation(summary = "Checks if a teamName is already taken or not.")
-    @GetMapping(path = "/{teamName}/organizations/{organizationName}/check")
+    @GetMapping(path = "/names/{teamName}/organizations/{organizationName}/check")
     @ResponseStatus(value = HttpStatus.OK)
     public void checkTeamNameExists(@Parameter(description = "Name of an existing team", required = true)
                                     @PathVariable("teamName") String teamName,
@@ -94,7 +94,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Deletes a team by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(value = "/{teamName}/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/names/{teamName}/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void delete(@Parameter(description = "Name of an existing team", required = true)
                        @PathVariable("teamName") String teamName,
                        @Parameter(description = "Organization name")
@@ -146,6 +146,23 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
 
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Adds members to a team.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/users",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public TeamDTO addUsers(
+            @Parameter(description = "Organization of the Team", required = true)
+            @PathVariable("organizationName") String organization,
+            @Parameter(description = "Name of the Team", required = true)
+            @PathVariable("teamName") String name,
+            @RequestBody Collection<UserDTO> users,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().assign(organization, name, users, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
     @Operation(summary = "Removes members from a Team.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users/remove",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -156,6 +173,22 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
             Authentication authentication,
             HttpServletRequest request) {
         return getController().unAssign(id, users, authentication.getName());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @Operation(summary = "Removes members from a Team.", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/users/remove",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public TeamDTO removeUsers(
+            @Parameter(description = "Organization of the Team", required = true)
+            @PathVariable("organizationName") String organization,
+            @Parameter(description = "Name of the Team", required = true)
+            @PathVariable("teamName") String name,
+            @RequestBody Collection<UserDTO> users,
+            Authentication authentication,
+            HttpServletRequest request) {
+        return getController().unAssign(organization, name, users, authentication.getName());
     }
 
 
