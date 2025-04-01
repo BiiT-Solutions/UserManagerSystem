@@ -73,7 +73,7 @@ public class TeamManagerClient {
     }
 
 
-    public TeamDTO assign(String teamName, String organizationName, Collection<String> userNames) {
+    public TeamDTO assign(String teamName, String organizationName, String... userNames) {
         try {
             try (Response response = securityClient.post(teamUrlConstructor.getUserManagerServerUrl(),
                     teamUrlConstructor.addUsersByUsername(teamName, organizationName), mapper.writeValueAsString(userNames))) {
