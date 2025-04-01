@@ -52,4 +52,24 @@ public class TeamManagerClient {
             return null;
         }
     }
+
+
+    public TeamDTO assign(String teamName, String organizationName, Collection<String> userNames) {
+        try {
+            try (Response response = securityClient.post(teamUrlConstructor.getUserManagerServerUrl(),
+                    teamUrlConstructor.addUsersByUsername(teamName, organizationName), mapper.writeValueAsString(userNames))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        teamUrlConstructor.getUserManagerServerUrl()
+                                + teamUrlConstructor.addUsersByUsername(teamName, organizationName), response.getStatus());
+                return mapper.readValue(response.readEntity(String.class), TeamDTO.class);
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
+        }
+    }
 }
