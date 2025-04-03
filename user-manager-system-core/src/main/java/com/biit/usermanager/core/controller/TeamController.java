@@ -10,7 +10,6 @@ import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
-import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.TeamEventSender;
 import com.biit.usermanager.core.providers.OrganizationProvider;
@@ -101,11 +100,12 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     }
 
 
-    public void checkNameExists(String teamName, String organizationName) throws UserGroupNotFoundException {
+    public void checkNameExists(String teamName, String organizationName) throws TeamNotFoundException {
         final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() ->
                 new OrganizationNotFoundException(this.getClass(), "Organization with name '" + organizationName + "' not found."));
-        getProvider().findByNameAndOrganization(teamName, organization).orElseThrow(()
-                -> new UserGroupNotFoundException(this.getClass(), "No team exists with name '" + teamName + "'."));
+        if (!getProvider().findByNameAndOrganization(teamName, organization).isPresent()) {
+            throw new TeamNotFoundException(this.getClass(), "No team exists with name '" + teamName + "'.");
+        }
     }
 
 

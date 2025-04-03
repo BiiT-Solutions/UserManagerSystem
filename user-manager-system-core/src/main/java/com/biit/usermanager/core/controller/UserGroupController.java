@@ -92,8 +92,9 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
     }
 
     public void checkNameExists(String name) {
-        getProvider().findByName(name).orElseThrow(()
-                -> new UserGroupNotFoundException(this.getClass(), "No user group exists with name '" + name + "'."));
+        if (getProvider().findByName(name).isEmpty()) {
+            throw new UserGroupNotFoundException(this.getClass(), "No user group exists with name '" + name + "'.");
+        }
     }
 
     @Transactional

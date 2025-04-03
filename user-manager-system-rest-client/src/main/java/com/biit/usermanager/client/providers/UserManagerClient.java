@@ -149,7 +149,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
+    public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) throws EmptyResultException {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmailAndApplication(EmailValidator.validate(email), applicationName))) {
@@ -163,8 +163,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();

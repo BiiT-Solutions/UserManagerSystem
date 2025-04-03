@@ -726,8 +726,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     public void checkUsernameExists(String username) {
-        getProvider().findByUsername(username).orElseThrow(()
-                -> new UserNotFoundException(this.getClass(), "No uses exists with username '" + username + "'."));
+        if (getProvider().findByUsername(username).isEmpty()) {
+            throw new UserNotFoundException(this.getClass(), "No uses exists with username '" + username + "'.");
+        }
     }
 
 
@@ -913,8 +914,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     public List<UserDTO> getByTeam(Long teamId) {
-        teamProvider.findById(teamId).orElseThrow(()
-                -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
+        if (teamProvider.findById(teamId).isEmpty()) {
+            throw new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'.");
+        }
 
         final List<Long> userIds = new ArrayList<>();
         final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId);
@@ -924,8 +926,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     public List<UserDTO> getByOrganization(String organizationName) {
-        organizationProvider.findByName(organizationName).orElseThrow(()
-                -> new TeamNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'."));
+        if (organizationProvider.findByName(organizationName).isEmpty()) {
+            throw new TeamNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
+        }
 
         final List<Long> userIds = new ArrayList<>();
         final Set<TeamMember> members = teamMemberProvider.findByOrganizationName(organizationName);

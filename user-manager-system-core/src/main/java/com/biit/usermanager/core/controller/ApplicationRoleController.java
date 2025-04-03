@@ -138,8 +138,9 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
     }
 
     public Set<ApplicationRoleDTO> getByUserGroup(Long id) {
-        userGroupProvider.findById(id).orElseThrow(() ->
-                new UserGroupNotFoundException(this.getClass(), "No User Group with id '" + id + "' found on the system."));
+        if (userGroupProvider.findById(id).isEmpty()) {
+            throw new UserGroupNotFoundException(this.getClass(), "No User Group with id '" + id + "' found on the system.");
+        }
 
         final Set<UserGroupApplicationBackendServiceRole> userGroupApplicationBackendServiceRoles = userGroupApplicationBackendServiceRoleProvider
                 .findByUserGroupId(id);
