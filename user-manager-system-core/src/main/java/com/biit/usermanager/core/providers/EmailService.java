@@ -23,7 +23,7 @@ import java.util.UUID;
 public class EmailService extends ServerEmailService {
 
     //Templates are stored on BiiTRestServer project.
-    private static final String PASSWORD_RECOVERY_EMAIL_TEMPLATE = "email-templates/key.html";
+    private static final String RECOVERY_EMAIL_TEMPLATE = "email-templates/key.html";
     private static final String USER_CREATION_EMAIL_TEMPLATE = "email-templates/key-holder.html";
     private static final String USER_UPDATE_EMAIL_TEMPLATE = "email-templates/cauldron.html";
 
@@ -64,7 +64,7 @@ public class EmailService extends ServerEmailService {
             final String token = generateToken(user).getToken();
             final Locale locale = getUserLocale(user);
             final Object[] args = emailArgs(user);
-            final String emailTemplate = populatePasswordRecoveryEmailFields(FileReader.getResource(PASSWORD_RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
+            final String emailTemplate = populatePasswordRecoveryEmailFields(FileReader.getResource(RECOVERY_EMAIL_TEMPLATE, StandardCharsets.UTF_8),
                     forgetPasswordEmailLink, token, args, locale);
             sendTemplate(user.getEmail(),
                     getMessage("forgotten.password.mail.subject", args, locale), emailTemplate,

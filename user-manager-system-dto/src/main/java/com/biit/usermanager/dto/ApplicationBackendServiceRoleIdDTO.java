@@ -1,8 +1,14 @@
 package com.biit.usermanager.dto;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ApplicationBackendServiceRoleIdDTO {
+public class ApplicationBackendServiceRoleIdDTO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -820077018138711651L;
+
 
     private ApplicationRoleDTO applicationRole;
 

@@ -199,7 +199,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             }
         }
         final UserDTO userDTO = setGrantedAuthorities(getConverter().convert(new UserConverterRequest(user)), null, null);
-        UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", userDTO.getGrantedAuthorities());
+        UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", userDTO != null ? userDTO.getGrantedAuthorities() : "");
         return userDTO;
     }
 
@@ -210,7 +210,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                     new UserNotFoundException(this.getClass(),
                             "No User with email '" + email + "' found on the system."))));
             final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
-            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO != null ? grantedUserDTO.getGrantedAuthorities() : "");
             return grantedUserDTO;
         } catch (Exception e) {
             UserManagerLogger.warning(this.getClass(), "No User with email '" + email + "' found on the system.");
@@ -253,7 +253,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             final BackendService backendService = backendServiceProvider.findByName(backendServiceName).orElseThrow(() ->
                     new BackendServiceNotFoundException(this.getClass(), "Service with name '" + backendServiceName + "' not found."));
             final UserDTO grantedUser = setGrantedAuthorities(userDTO, null, backendService);
-            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser.getGrantedAuthorities());
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser != null ? grantedUser.getGrantedAuthorities() : "");
             return Optional.of(grantedUser);
         } catch (Exception e) {
             UserManagerLogger.warning(this.getClass(), "No User with username '" + username + "' found on the system.");
@@ -272,7 +272,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             final Application application = applicationProvider.findByName(applicationName).orElseThrow(() ->
                     new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
             final UserDTO grantedUser = setGrantedAuthorities(userDTO, application, null);
-            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser.getGrantedAuthorities());
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUser != null ? grantedUser.getGrantedAuthorities() : "");
             return Optional.of(grantedUser);
         } catch (Exception e) {
             UserManagerLogger.warning(this.getClass(), "No User with username '" + username + "' found on the system.");
@@ -306,8 +306,11 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                     new ApplicationNotFoundException(this.getClass(), "Application with name '" + applicationName + "' not found."));
             try {
                 final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, application, null);
-                UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
-                return Optional.of(grantedUserDTO);
+                UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO != null ? grantedUserDTO.getGrantedAuthorities() : "");
+                if (grantedUserDTO != null) {
+                    return Optional.of(grantedUserDTO);
+                }
+                return Optional.empty();
             } catch (ApplicationNotFoundException e) {
                 UserManagerLogger.warning(this.getClass(), "No application '" + applicationName + "' exists.");
                 throw e;
@@ -325,7 +328,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUuid(UUID.fromString(uid)).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
             final UserDTO grantedUserDTO = setGrantedAuthorities(userDTO, null, null);
-            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO.getGrantedAuthorities());
+            UserManagerLogger.debug(this.getClass(), "Granted authorities are '{}'.", grantedUserDTO != null ? grantedUserDTO.getGrantedAuthorities() : "");
             return Optional.of(grantedUserDTO);
         } catch (IllegalArgumentException e) {
             UserManagerLogger.warning(this.getClass(), "Invalid uid '" + uid + "'!.");
@@ -613,6 +616,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         super.delete(entity, deletedBy);
     }
 
+    @Override
     @Transactional
     public UserDTO update(UserDTO dto, String updaterName) {
         final User user = getProvider().findByUuid(dto.getUUID()).orElse(null);
@@ -689,6 +693,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     private UserDTO setGrantedAuthoritiesByGroups(UserDTO userDTO, Application application, BackendService backendService) {
+        if (userDTO == null) {
+            return null;
+        }
         final List<UserGroup> userGroups = userGroupProvider.getByUser(userDTO.getId());
         return setGrantedAuthorities(userDTO, userGroups, application, backendService);
     }

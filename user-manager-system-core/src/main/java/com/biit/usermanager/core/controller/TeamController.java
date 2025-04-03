@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller
 public class TeamController extends KafkaElementController<Team, Long, TeamDTO, TeamRepository,
@@ -102,7 +101,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     }
 
 
-    public void checkNameExists(String teamName, String organizationName) {
+    public void checkNameExists(String teamName, String organizationName) throws UserGroupNotFoundException {
         final Organization organization = organizationProvider.findByName(organizationName).orElseThrow(() ->
                 new OrganizationNotFoundException(this.getClass(), "Organization with name '" + organizationName + "' not found."));
         getProvider().findByNameAndOrganization(teamName, organization).orElseThrow(()
@@ -111,24 +110,24 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
 
     public List<TeamDTO> getTeamsWithoutParent() {
-        return getConverter().convertAll(getProvider().findByParentIsNull().stream().map(this::createConverterRequest).sorted().collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParentIsNull().stream().map(this::createConverterRequest).sorted().toList());
     }
 
 
     public List<TeamDTO> getTeamsWithParent() {
-        return getConverter().convertAll(getProvider().findByParentIsNotNull().stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParentIsNotNull().stream().map(this::createConverterRequest).toList());
     }
 
 
     public List<TeamDTO> getTeamsWithParent(Long parentId) {
         final Team team = getProvider().findById(parentId).orElseThrow(()
                 -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + parentId + "'."));
-        return getConverter().convertAll(getProvider().findByParent(team).stream().map(this::createConverterRequest).sorted().collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParent(team).stream().map(this::createConverterRequest).sorted().toList());
     }
 
 
     public List<TeamDTO> getTeamsWithParent(TeamDTO parent) {
-        return getConverter().convertAll(getProvider().findByParent(reverse(parent)).stream().map(this::createConverterRequest).collect(Collectors.toList()));
+        return getConverter().convertAll(getProvider().findByParent(reverse(parent)).stream().map(this::createConverterRequest).toList());
     }
 
 
@@ -208,6 +207,6 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
     public List<TeamDTO> getFromUser(User user) {
         final Set<TeamMember> teamMembers = teamMemberProvider.findByIdUserId(user.getId());
-        return get(teamMembers.stream().map(teamMember -> teamMember.getId().getTeamId()).sorted().collect(Collectors.toList()));
+        return get(teamMembers.stream().map(teamMember -> teamMember.getId().getTeamId()).sorted().toList());
     }
 }

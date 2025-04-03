@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -56,7 +57,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     private static final int MAX_WAITING_SECONDS = 10;
     private static final long MILLIS = 1000L;
 
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     private final NetworkController networkController;
     private final BruteForceService bruteForceService;
@@ -224,11 +225,15 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             try {
                 Thread.sleep(random.nextInt(MAX_WAITING_SECONDS) * MILLIS);
             } catch (InterruptedException e) {
-                RestServerLogger.warning(this.getClass(), "Too many attempts from IP '" + ip + "'.");
-                final HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.RETRY_AFTER, String.valueOf(bruteForceService.getElementsTime().get(ip)
-                        + bruteForceService.getExpirationTime()));
-                return new ResponseEntity<>(headers, HttpStatus.LOCKED);
+                try {
+                    RestServerLogger.warning(this.getClass(), "Too many attempts from IP '" + ip + "'.");
+                    final HttpHeaders headers = new HttpHeaders();
+                    headers.add(HttpHeaders.RETRY_AFTER, String.valueOf(bruteForceService.getElementsTime().get(ip)
+                            + bruteForceService.getExpirationTime()));
+                    return new ResponseEntity<>(headers, HttpStatus.LOCKED);
+                } finally {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
         UserManagerLogger.warning(this.getClass(), "Checking if a user exists from ip '" + ip + "'.");
