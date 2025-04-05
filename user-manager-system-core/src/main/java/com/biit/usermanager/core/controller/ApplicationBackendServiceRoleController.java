@@ -79,6 +79,7 @@ public class ApplicationBackendServiceRoleController extends KafkaCreatedElement
                 new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application '" + applicationName + "' with role '"
                         + applicationRoleName + "' and backend service '" + backendServiceName + "' role '" + backendServiceRoleName + "'"));
         DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationBackendServiceRole, deletedBy);
+        super.delete(convert(applicationBackendServiceRole), deletedBy);
     }
 
     @Override
