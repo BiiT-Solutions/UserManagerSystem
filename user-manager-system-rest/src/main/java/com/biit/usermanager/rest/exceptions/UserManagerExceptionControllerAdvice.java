@@ -17,6 +17,7 @@ import com.biit.usermanager.core.exceptions.TemporalTokenDoesNotExistsException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserDoesNotExistsException;
+import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.security.exceptions.OrganizationDoesNotExistException;
 import org.apache.kafka.common.errors.InvalidRequestException;
@@ -132,6 +133,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> teamNotFoundException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "team_not_found", ex), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserGroupNotFoundException.class)
+    public ResponseEntity<Object> userGroupNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "group_not_found", ex), HttpStatus.NOT_FOUND);
     }
 
 
