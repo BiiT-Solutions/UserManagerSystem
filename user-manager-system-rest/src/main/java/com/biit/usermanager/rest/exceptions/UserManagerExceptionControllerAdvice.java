@@ -6,10 +6,16 @@ import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
 import com.biit.server.logger.RestServerExceptionLogger;
 import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundException;
+import com.biit.usermanager.core.exceptions.ApplicationBackendServiceNotFoundException;
+import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
+import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.EmailAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.EmailNotFoundException;
+import com.biit.usermanager.core.exceptions.ExternalReferenceAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
 import com.biit.usermanager.core.exceptions.TeamAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
@@ -74,6 +80,13 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(OrganizationNotFoundException.class)
+    public ResponseEntity<Object> organizationNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse("Organization not found.", "organization_not_found", ex),
+                HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(TeamAlreadyExistsException.class)
     public ResponseEntity<Object> teamAlreadyExistsException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
@@ -91,6 +104,24 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> applicationBackendRoleNotFoundException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "application_backend_role_not_found"), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ApplicationBackendServiceNotFoundException.class)
+    public ResponseEntity<Object> applicationBackendServiceNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "application_backend_service_not_found"), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ApplicationNotFoundException.class)
+    public ResponseEntity<Object> applicationNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "application_not_found"), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BackendServiceRoleNotFoundException.class)
+    public ResponseEntity<Object> backendServiceRoleNotFoundException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "backend_service_role_not_found"), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmailNotSentException.class)
@@ -114,7 +145,7 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     @ExceptionHandler(EmailNotFoundException.class)
     public ResponseEntity<Object> emailNotFoundException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "not_found", ex), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "email_not_found", ex), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(OrganizationDoesNotExistException.class)
@@ -139,6 +170,18 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> userGroupNotFoundException(Exception ex) {
         RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "group_not_found", ex), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ExternalReferenceAlreadyExistsException.class)
+    public ResponseEntity<Object> externalReferenceAlreadyExistsException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "external_reference_already_exists", ex), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidParameterException.class)
+    public ResponseEntity<Object> invalidParameterException(Exception ex) {
+        RestServerExceptionLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "invalid_parameter", ex), HttpStatus.BAD_REQUEST);
     }
 
 
