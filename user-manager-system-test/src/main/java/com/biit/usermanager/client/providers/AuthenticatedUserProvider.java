@@ -208,6 +208,10 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
                 .findAny();
     }
 
+    public void setRoles(IAuthenticatedUser user, String... roles) {
+        setRoles(user, Set.of(roles));
+    }
+
     public void setRoles(IAuthenticatedUser user, Set<String> roles) {
         userRoles.put(user, roles);
     }
