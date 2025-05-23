@@ -165,6 +165,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
     public UserDTO getByUsername(String username) {
+        if (username == null) {
+            return null;
+        }
         final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUsername(username).orElseThrow(() ->
                 new UserDoesNotExistsException(this.getClass(), "No user with username '" + username + "' found on the system."))));
         return setGrantedAuthorities(userDTO, null, null);
@@ -610,12 +613,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Override
     @Transactional
     public void delete(UserDTO entity, String deletedBy) {
-        if (Objects.equals(entity.getUsername(), deletedBy)) {
+        if (deletedBy != null && Objects.equals(entity.getUsername(), deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
         }
         final UserDTO deleter = getByUsername(deletedBy);
         setGrantedAuthorities(entity, null, null);
-        if (entity.getGrantedAuthorities().contains(ADMIN_AUTHORITY) && !deleter.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
+        if (deleter != null && entity.getGrantedAuthorities().contains(ADMIN_AUTHORITY) && !deleter.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
             throw new ActionNotAllowedException(this.getClass(), "You cannot delete an admin user.");
         }
         super.delete(entity, deletedBy);
