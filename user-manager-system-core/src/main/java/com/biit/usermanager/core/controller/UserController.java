@@ -63,7 +63,6 @@ import com.biit.usermanager.persistence.entities.UserGroupUser;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import com.biit.usermanager.security.exceptions.OrganizationDoesNotExistException;
 import jakarta.transaction.Transactional;
-import org.apache.kafka.common.errors.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,6 +90,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
 
     public static final String ROLE_PREFIX = "ROLE_";
+    public static final String ADMIN_AUTHORITY = "USERMANAGERSYSTEM_ADMIN";
 
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
@@ -613,6 +613,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         if (Objects.equals(entity.getUsername(), deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
         }
+        setGrantedAuthorities(entity, null, null);
+        if (entity.getGrantedAuthorities().contains("ADMIN_AUTHORITY")) {
+            throw new ActionNotAllowedException(this.getClass(), "You cannot delete an admin user. Remove admin privileges first.");
+        }
         super.delete(entity, deletedBy);
     }
 
@@ -660,7 +664,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     @Transactional
     public void delete(String username, String deletedBy) {
-        delete(getByUsername(username), deletedBy);
+        //You cannot delete an admin user if you are not admin.
+        final UserDTO userToBeDeleted = getByUsername(username);
+        if (userToBeDeleted == null) {
+            throw new UserNotFoundException(this.getClass(), "No uses exists with username '" + username + "'.");
+        }
+        delete(userToBeDeleted, deletedBy);
     }
 
 
@@ -894,10 +903,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         try {
             emailService.sendPasswordRecoveryEmail(user);
         } catch (FileNotFoundException e) {
-            throw new InvalidRequestException("Cannot sent confirmation email!", e);
+            UserManagerLogger.errorMessage(this.getClass(), e);
+            throw new InvalidParameterException(this.getClass(), "Cannot sent confirmation email!");
         } catch (InvalidEmailAddressException e) {
+            UserManagerLogger.errorMessage(this.getClass(), e);
             //Email must be already validated.
-            throw new RuntimeException(e);
+            throw new EmailNotSentException(this.getClass(), "Invalid email address", e);
         }
     }
 
@@ -945,7 +956,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     @Override
     public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
         final Optional<User> user = getProvider().findByExternalReference(externalReference);
-        return user.map(value -> (IAuthenticatedUser) value);
+        return user.map(IAuthenticatedUser.class::cast);
     }
 
     public UserDTO getByExternalReference(String externalReference) {
