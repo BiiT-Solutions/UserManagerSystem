@@ -613,9 +613,10 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         if (Objects.equals(entity.getUsername(), deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
         }
+        final UserDTO deleter = getByUsername(deletedBy);
         setGrantedAuthorities(entity, null, null);
-        if (entity.getGrantedAuthorities().contains("ADMIN_AUTHORITY")) {
-            throw new ActionNotAllowedException(this.getClass(), "You cannot delete an admin user. Remove admin privileges first.");
+        if (entity.getGrantedAuthorities().contains(ADMIN_AUTHORITY) && !deleter.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
+            throw new ActionNotAllowedException(this.getClass(), "You cannot delete an admin user.");
         }
         super.delete(entity, deletedBy);
     }
@@ -816,9 +817,6 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
         final User user = getProvider().findByUsername(username).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with username '" + username + "'."));
-
-        final List<ApplicationBackendServiceRole> availableRoles = applicationBackendServiceRoleProvider
-                .findByApplicationNameAndApplicationRole(applicationName, applicationRoleName);
 
         //Add any missing permission.
         final List<UserApplicationBackendServiceRole> assignedPermissions = userApplicationBackendServiceRoleProvider
