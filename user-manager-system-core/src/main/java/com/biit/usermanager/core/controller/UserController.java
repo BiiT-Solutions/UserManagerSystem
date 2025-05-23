@@ -504,6 +504,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     public IAuthenticatedUser updatePassword(String username, String newPassword, String updatedBy) {
         final User user = getProvider().findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+        final UserDTO updater = getByUsername(updatedBy);
+        final UserDTO userDTO = setGrantedAuthorities(convert(user), null, null);
+        if (updater != null && userDTO.getGrantedAuthorities().contains(ADMIN_AUTHORITY) && !updater.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
+            throw new ActionNotAllowedException(this.getClass(), "You cannot change an admin's password.");
+        }
+
+
         user.setPassword(bcryptSalt + newPassword);
         user.setUpdatedBy(updatedBy);
         UserManagerLogger.info(this.getClass(), "Password updated!.");

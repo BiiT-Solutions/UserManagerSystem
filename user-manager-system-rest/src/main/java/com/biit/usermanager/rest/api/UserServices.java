@@ -187,7 +187,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
     @Operation(summary = "Updates a password by an admin user. Does not require to know the old password.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(path = "/{username}/passwords", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -277,7 +277,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
     @Operation(summary = "Deletes a user by username.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/usernames/{username}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)

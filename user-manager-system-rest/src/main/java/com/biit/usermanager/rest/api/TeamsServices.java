@@ -58,7 +58,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
     @Operation(summary = "Gets all teams from an organization.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TeamDTO> get(@Parameter(description = "Organization name")
@@ -91,7 +91,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Deletes a team by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/names/{teamName}/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,7 +104,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets all teams that does not have a parent.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/no-parent", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TeamDTO> getWithoutParent(HttpServletRequest request) {
@@ -112,7 +112,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets all teams that has parent.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/has-parent", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TeamDTO> getWithParent(HttpServletRequest request) {
@@ -120,7 +120,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Gets all teams that has parent.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/parent/{parentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TeamDTO> getWithParent(@Parameter(description = "Id of a parent Team", required = true)
@@ -130,7 +130,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Adds members to a team.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users",
@@ -145,7 +145,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Adds members to a team.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/users",
@@ -162,7 +162,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Adds members to a team using only the username.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/usernames",
@@ -179,7 +179,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Removes members from a Team.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users/remove",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -193,7 +193,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Removes members from a Team.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/users/remove",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -209,7 +209,7 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
     @Operation(summary = "Removes members from a Team using only the username.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/names/{teamName}/organizations/{organizationName}/usernames/remove",
             produces = MediaType.APPLICATION_JSON_VALUE)
