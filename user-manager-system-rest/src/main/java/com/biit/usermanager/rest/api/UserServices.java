@@ -3,6 +3,7 @@ package com.biit.usermanager.rest.api;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.logger.RestServerLogger;
+import com.biit.server.providers.StorableObjectProvider;
 import com.biit.server.rest.ElementServices;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUser;
@@ -46,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -364,10 +366,17 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/teams/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> getUsersByTeam(@Parameter(description = "Id of an existing team", required = true) @PathVariable("teamId") Long teamId,
-                                        HttpServletRequest request) {
+    public List<UserDTO> getUsersByTeam(
+            @Parameter(description = "Id of an existing team", required = true) @PathVariable("teamId") Long teamId,
+            @RequestParam(name = "page", defaultValue = "0") Optional<Integer> page,
+            @RequestParam(name = "size", defaultValue = StorableObjectProvider.MAX_PAGE_SIZE + "") Optional<Integer> size,
+            HttpServletRequest request) {
+        if (size.isPresent()) {
+            return getController().getByTeam(teamId, page.orElse(0), size.get());
+        }
         return getController().getByTeam(teamId);
     }
+
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get users from team", security = @SecurityRequirement(name = "bearerAuth"))
@@ -375,7 +384,12 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public List<UserDTO> getUsersByTeam(
             @Parameter(description = "Name of an existing organization", required = true) @PathVariable("organizationName") String organizationName,
             @Parameter(description = "Name of an existing team", required = true) @PathVariable("teamName") String teamName,
-                                        HttpServletRequest request) {
+            @RequestParam(name = "page", defaultValue = "0") Optional<Integer> page,
+            @RequestParam(name = "size", defaultValue = StorableObjectProvider.MAX_PAGE_SIZE + "") Optional<Integer> size,
+            HttpServletRequest request) {
+        if (size.isPresent()) {
+            return getController().getByTeam(organizationName, teamName, page.orElse(0), size.get());
+        }
         return getController().getByTeam(organizationName, teamName);
     }
 

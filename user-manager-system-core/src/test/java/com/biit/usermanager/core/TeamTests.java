@@ -187,7 +187,7 @@ public class TeamTests extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = {"assignUser"})
     public void getByTeamMembers() {
-        Assert.assertEquals(userController.getByTeam(teamDTO.getId()).size(), 1);
+        Assert.assertEquals(userController.getByTeam(teamDTO.getId()).size(), 1, 0);
     }
 
 

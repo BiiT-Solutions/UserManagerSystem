@@ -84,6 +84,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.biit.server.providers.StorableObjectProvider.DEFAULT_PAGE_SIZE;
+
 @Controller
 @Order(1)
 @Qualifier("userController")
@@ -937,19 +939,27 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return passwordResetToken;
     }
 
-
     public List<UserDTO> getByTeam(Long teamId) {
+        return getByTeam(teamId, 0, DEFAULT_PAGE_SIZE);
+    }
+
+
+    public List<UserDTO> getByTeam(Long teamId, int page, int size) {
         if (teamProvider.findById(teamId).isEmpty()) {
             throw new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'.");
         }
 
         final List<Long> userIds = new ArrayList<>();
-        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId);
+        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId, page, size);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }
 
     public List<UserDTO> getByTeam(String organizationName, String teamName) {
+        return getByTeam(organizationName, teamName, 0, DEFAULT_PAGE_SIZE);
+    }
+
+    public List<UserDTO> getByTeam(String organizationName, String teamName, int page, int size) {
         final Optional<Organization> organization = organizationProvider.findByName(organizationName);
         if (organization.isEmpty()) {
             throw new OrganizationNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
@@ -960,7 +970,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
 
         final List<Long> userIds = new ArrayList<>();
-        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(team.get().getId());
+        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(team.get().getId(), page, size);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }

@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 
+import com.biit.server.exceptions.InvalidPageSizeException;
 import com.biit.server.providers.ElementProvider;
 import com.biit.usermanager.core.exceptions.ExternalReferenceAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
@@ -13,6 +14,8 @@ import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -162,7 +165,16 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     }
 
     public List<User> getByTeam(Long teamId) {
-        return findByIdIn(teamMemberRepository.findByIdTeamId(teamId).stream()
+        return getByTeam(teamId, 0, DEFAULT_PAGE_SIZE);
+    }
+
+    public List<User> getByTeam(Long teamId, int page, int size) {
+        if (size > MAX_PAGE_SIZE) {
+            throw new InvalidPageSizeException(this.getClass(), "Page size is too large. Máx allowed page size is '"
+                    + MAX_PAGE_SIZE + "'.");
+        }
+        final Pageable pageable = PageRequest.of(page, size);
+        return findByIdIn(teamMemberRepository.findByIdTeamId(teamId, pageable).stream()
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
     }
 

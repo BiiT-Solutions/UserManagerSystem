@@ -448,7 +448,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         return roles;
     }
 
-
     public Collection<IAuthenticatedUser> findByTeam(Long teamId) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
@@ -469,10 +468,55 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
 
+    public Collection<IAuthenticatedUser> findByTeam(Long teamId, int page, int size) {
+        try {
+            final Map<String, Object> parameters = new HashMap<>();
+            parameters.put(PAGE_PARAMETER, page);
+            parameters.put(PAGE_SIZE_PARAMETER, size);
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByTeam(teamId), parameters, null)) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByTeam(teamId),
+                        response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
     public Collection<IAuthenticatedUser> findByTeam(String organization, String team) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUsersByTeam(organization, team))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByTeam(organization, team),
+                        response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public Collection<IAuthenticatedUser> findByTeam(String organization, String team, int page, int size) {
+        try {
+            final Map<String, Object> parameters = new HashMap<>();
+            parameters.put(PAGE_PARAMETER, page);
+            parameters.put(PAGE_SIZE_PARAMETER, size);
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByTeam(organization, team), parameters, null)) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByTeam(organization, team),
                         response.getStatus());

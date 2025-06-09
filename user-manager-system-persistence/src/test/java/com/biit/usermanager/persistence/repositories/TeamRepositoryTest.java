@@ -8,6 +8,8 @@ import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -183,13 +185,14 @@ public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = "addTeamMembers")
     public void getUsersByTeam() {
-        Set<TeamMember> members = teamMemberRepository.findByIdTeamId(team.getId());
+        final Pageable pageable = PageRequest.of(0, 100);
+        Set<TeamMember> members = teamMemberRepository.findByIdTeamId(team.getId(), pageable);
         Assert.assertEquals(members.size(), 1);
 
-        Set<TeamMember> members2 = teamMemberRepository.findByIdTeamId(team2.getId());
+        Set<TeamMember> members2 = teamMemberRepository.findByIdTeamId(team2.getId(), pageable);
         Assert.assertEquals(members2.size(), 2);
 
-        Set<TeamMember> members3 = teamMemberRepository.findByIdTeamId(team3.getId());
+        Set<TeamMember> members3 = teamMemberRepository.findByIdTeamId(team3.getId(), pageable);
         Assert.assertEquals(members3.size(), 1);
     }
 
