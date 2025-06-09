@@ -156,11 +156,6 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         return getRepository().findAllByAccountBlocked(accountBlocked);
     }
 
-    @Override
-    public List<User> findAll() {
-        return getRepository().findAll();
-    }
-
     public List<User> getByUserGroup(Long userGroupId) {
         return findByIdIn(userGroupUserRepository.findByIdUserGroupId(userGroupId).stream()
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());

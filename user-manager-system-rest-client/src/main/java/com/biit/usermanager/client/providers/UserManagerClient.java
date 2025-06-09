@@ -43,6 +43,8 @@ import java.util.Set;
 public class UserManagerClient implements IAuthenticatedUserProvider {
 
     private static final String EXTERNAL_REFERENCE_PARAMETER = "references";
+    private static final String PAGE_PARAMETER = "page";
+    private static final String PAGE_SIZE_PARAMETER = "size";
     private static final int CONFLICT_CODE = 409;
 
     private final UserUrlConstructor userUrlConstructor;
@@ -343,6 +345,28 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getAll())) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getAll(), response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public Collection<IAuthenticatedUser> findAll(int page, int size) {
+        try {
+            final Map<String, Object> parameters = new HashMap<>();
+            parameters.put(PAGE_PARAMETER, page);
+            parameters.put(PAGE_SIZE_PARAMETER, size);
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getAll(), parameters, null)) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getAll(), response.getStatus());
                 return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));

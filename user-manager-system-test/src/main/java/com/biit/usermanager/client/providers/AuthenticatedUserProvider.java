@@ -41,7 +41,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Value("${bcrypt.salt:}")
     private String bcryptSalt;
 
-    private final Collection<IAuthenticatedUser> usersOnMemory = new ArrayList<>();
+    private final List<IAuthenticatedUser> usersOnMemory = new ArrayList<>();
     private final Map<IAuthenticatedUser, Set<String>> userRoles = new HashMap<>();
 
 
@@ -96,7 +96,7 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
         applicationAuthorities.addAll(authorities.stream().map(s -> s.replace(" ", "")).collect(Collectors.toSet()));
 
         authenticatedUser.setAuthorities(applicationAuthorities.stream()
-                .map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+                .map(SimpleGrantedAuthority::new).toList());
         authenticatedUser.setUID(uuid);
         authenticatedUser.setName(name);
         authenticatedUser.setLastname(lastName);
@@ -145,12 +145,12 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
                 .findAny().orElseThrow(() ->
                         new RuntimeException("User with username '" + username + "' does not exists"));
 
-        //Check old password.
+        //Check the old password.
         if (!BCrypt.checkpw(bcryptSalt + oldPassword, user.getPassword())) {
             throw new RuntimeException("Provided password is incorrect!");
         }
 
-        //Update new password.
+        //Update the new password.
         user.setPassword(newPassword);
         return user;
     }
@@ -175,6 +175,11 @@ public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
     @Override
     public Collection<IAuthenticatedUser> findAll() {
         return usersOnMemory;
+    }
+
+    @Override
+    public Collection<IAuthenticatedUser> findAll(int page, int size) {
+        return usersOnMemory.subList(page * size, (page * size) + size);
     }
 
     @Override

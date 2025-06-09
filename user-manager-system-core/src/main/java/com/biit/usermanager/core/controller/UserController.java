@@ -579,6 +579,11 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return getProvider().findAll().parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());
     }
 
+    @Override
+    public Collection<IAuthenticatedUser> findAll(int page, int size) {
+        return getProvider().findAll(page, size).parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());
+    }
+
 
     @Transactional
     @Override
