@@ -490,6 +490,25 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         }
     }
 
+    public long countByTeam(String organization, String team) {
+        try {
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.countUsersByTeam(organization, team))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.countUsersByTeam(organization, team),
+                        response.getStatus());
+                return mapper.readValue(response.readEntity(String.class), Long.class);
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return 0;
+        }
+    }
+
 
     public Collection<IAuthenticatedUser> findByTeam(String organization, String team) {
         try {
@@ -532,12 +551,31 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         }
     }
 
+    public long countByOrganization(String organization) {
+        try {
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.countUsersByOrganization(organization))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.countUsersByOrganization(organization),
+                        response.getStatus());
+                return mapper.readValue(response.readEntity(String.class), Long.class);
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return 0;
+        }
+    }
+
     public Collection<IAuthenticatedUser> findByOrganization(String organizationName) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUsersByOrganization(organizationName))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        userUrlConstructor.getUserManagerServerUrl() +  userUrlConstructor.getUsersByOrganization(organizationName),
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByOrganization(organizationName),
                         response.getStatus());
                 return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
             }
@@ -560,7 +598,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUsersByOrganization(organizationName), parameters, null)) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
-                        userUrlConstructor.getUserManagerServerUrl() +  userUrlConstructor.getUsersByOrganization(organizationName),
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByOrganization(organizationName),
                         response.getStatus());
                 return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
             }

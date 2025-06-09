@@ -48,4 +48,12 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
         UserManagerLogger.debug(this.getClass(), "Assigning team '{}' to user '{}'", teamId, userId);
         return save(new TeamMember(teamId, userId));
     }
+
+    public long countByIdUserGroupId(Long teamId) {
+        return getRepository().countByIdTeamId(teamId);
+    }
+
+    public long countByOrganization(String organization) {
+        return getRepository().countByOrganizationName(organization);
+    }
 }

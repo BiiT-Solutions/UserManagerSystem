@@ -115,8 +115,17 @@ public class UserUrlConstructor {
         return getUsers() + "/teams/" + teamId;
     }
 
+    public String countUsersByOrganization(String organization) {
+        return getUsers() + "/organizations/" + organization + "/count";
+    }
+
+
     public String getUsersByOrganization(String organizationName) {
         return getUsers() + "/organizations/" + organizationName;
+    }
+
+    public String countUsersByTeam(String organization, String team) {
+        return getUsers() + "/organizations/" + organization + "/teams/" + team + "/count";
     }
 
     public String getUsersByTeam(String organization, String team) {

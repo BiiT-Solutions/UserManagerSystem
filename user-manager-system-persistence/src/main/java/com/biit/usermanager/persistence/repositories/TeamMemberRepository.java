@@ -18,6 +18,8 @@ public interface TeamMemberRepository extends StorableObjectRepository<TeamMembe
 
     Page<TeamMember> findByIdTeamId(Long teamId, Pageable pageable);
 
+    long countByIdTeamId(Long teamId);
+
     Set<TeamMember> findByIdUserId(Long userId);
 
     @Query("""
@@ -25,4 +27,10 @@ public interface TeamMemberRepository extends StorableObjectRepository<TeamMembe
             (SELECT t.id FROM Team t WHERE lower(t.organization.name) = lower(:organizationName))
             """)
     Set<TeamMember> findByOrganizationName(String organizationName);
+
+    @Query("""
+            SELECT COUNT(tm) FROM TeamMember tm WHERE tm.id.teamId IN
+            (SELECT t.id FROM Team t WHERE lower(t.organization.name) = lower(:organizationName))
+            """)
+    long countByOrganizationName(String organizationName);
 }

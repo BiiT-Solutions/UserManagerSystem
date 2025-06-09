@@ -955,9 +955,29 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return convertAll(getProvider().findByIdIn(userIds));
     }
 
+
+    public long countByTeam(String organizationName, String teamName) {
+        final Optional<Organization> organization = organizationProvider.findByName(organizationName);
+        if (organization.isEmpty()) {
+            throw new OrganizationNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
+        }
+        final Optional<Team> team = teamProvider.findByNameAndOrganization(teamName, organization.get());
+        if (team.isEmpty()) {
+            throw new TeamNotFoundException(this.getClass(), "No Team exists with name '" + teamName + "' at organization '" + organizationName + "'.");
+        }
+        return countByTeam(team.get().getId());
+    }
+
+
+    public long countByTeam(Long teamId) {
+        return teamMemberProvider.countByIdUserGroupId(teamId);
+    }
+
+
     public List<UserDTO> getByTeam(String organizationName, String teamName) {
         return getByTeam(organizationName, teamName, 0, DEFAULT_PAGE_SIZE);
     }
+
 
     public List<UserDTO> getByTeam(String organizationName, String teamName, int page, int size) {
         final Optional<Organization> organization = organizationProvider.findByName(organizationName);
@@ -985,6 +1005,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final Set<TeamMember> members = teamMemberProvider.findByOrganizationName(organizationName);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
+    }
+
+    public long countByOrganization(String organizationName) {
+        if (organizationProvider.findByName(organizationName).isEmpty()) {
+            throw new OrganizationNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
+        }
+        return teamMemberProvider.countByOrganization(organizationName);
     }
 
 
