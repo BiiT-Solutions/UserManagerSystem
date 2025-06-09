@@ -469,6 +469,26 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
 
+    public Collection<IAuthenticatedUser> findByTeam(String organization, String team) {
+        try {
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByTeam(organization, team))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.getUsersByTeam(organization, team),
+                        response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
     @Override
     public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
         try {

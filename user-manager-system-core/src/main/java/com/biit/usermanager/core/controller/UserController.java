@@ -19,6 +19,7 @@ import com.biit.usermanager.core.exceptions.EmailNotFoundException;
 import com.biit.usermanager.core.exceptions.ExternalReferenceAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
+import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
@@ -948,10 +949,26 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return convertAll(getProvider().findByIdIn(userIds));
     }
 
+    public List<UserDTO> getByTeam(String organizationName, String teamName) {
+        final Optional<Organization> organization = organizationProvider.findByName(organizationName);
+        if (organization.isEmpty()) {
+            throw new OrganizationNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
+        }
+        final Optional<Team> team = teamProvider.findByNameAndOrganization(teamName, organization.get());
+        if (team.isEmpty()) {
+            throw new TeamNotFoundException(this.getClass(), "No Team exists with name '" + teamName + "' at organization '" + organizationName + "'.");
+        }
+
+        final List<Long> userIds = new ArrayList<>();
+        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(team.get().getId());
+        members.forEach(member -> userIds.add(member.getId().getUserId()));
+        return convertAll(getProvider().findByIdIn(userIds));
+    }
+
 
     public List<UserDTO> getByOrganization(String organizationName) {
         if (organizationProvider.findByName(organizationName).isEmpty()) {
-            throw new TeamNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
+            throw new OrganizationNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
         }
 
         final List<Long> userIds = new ArrayList<>();
