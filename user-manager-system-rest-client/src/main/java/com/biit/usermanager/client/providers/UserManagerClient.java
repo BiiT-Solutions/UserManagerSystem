@@ -532,6 +532,48 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         }
     }
 
+    public Collection<IAuthenticatedUser> findByOrganization(String organizationName) {
+        try {
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByOrganization(organizationName))) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() +  userUrlConstructor.getUsersByOrganization(organizationName),
+                        response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
+    public Collection<IAuthenticatedUser> findByOrganization(String organizationName, int page, int size) {
+        try {
+            final Map<String, Object> parameters = new HashMap<>();
+            parameters.put(PAGE_PARAMETER, page);
+            parameters.put(PAGE_SIZE_PARAMETER, size);
+            try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
+                    userUrlConstructor.getUsersByOrganization(organizationName), parameters, null)) {
+                UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
+                        userUrlConstructor.getUserManagerServerUrl() +  userUrlConstructor.getUsersByOrganization(organizationName),
+                        response.getStatus());
+                return Arrays.asList(mapper.readValue(response.readEntity(String.class), UserDTO[].class));
+            }
+        } catch (JsonProcessingException e) {
+            throw new InvalidResponseException(e);
+        } catch (EmptyResultException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidConfigurationException e) {
+            UserManagerClientLogger.warning(this.getClass(), e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
 
     @Override
     public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
