@@ -950,7 +950,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
 
         final List<Long> userIds = new ArrayList<>();
-        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId, page, size);
+        final List<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId, page, size);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }
@@ -970,7 +970,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
 
         final List<Long> userIds = new ArrayList<>();
-        final Set<TeamMember> members = teamMemberProvider.findByIdUserGroupId(team.get().getId(), page, size);
+        final List<TeamMember> members = teamMemberProvider.findByIdUserGroupId(team.get().getId(), page, size);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -26,17 +27,17 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
         return getRepository().findByIdUserId(userId);
     }
 
-    public Set<TeamMember> findByIdUserGroupId(Long teamId) {
+    public List<TeamMember> findByIdUserGroupId(Long teamId) {
         return findByIdUserGroupId(teamId, 0, DEFAULT_PAGE_SIZE);
     }
 
-    public Set<TeamMember> findByIdUserGroupId(Long teamId, int page, int size) {
+    public List<TeamMember> findByIdUserGroupId(Long teamId, int page, int size) {
         if (size > MAX_PAGE_SIZE) {
             throw new InvalidPageSizeException(this.getClass(), "Page size is too large. Máx allowed page size is '"
                     + MAX_PAGE_SIZE + "'.");
         }
         final Pageable pageable = PageRequest.of(page, size);
-        return getRepository().findByIdTeamId(teamId, pageable);
+        return getRepository().findByIdTeamId(teamId, pageable).getContent();
     }
 
     public Set<TeamMember> findByOrganizationName(String organizationName) {

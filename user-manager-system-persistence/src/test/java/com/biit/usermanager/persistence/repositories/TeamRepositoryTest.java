@@ -16,6 +16,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -186,13 +187,13 @@ public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
     @Test(dependsOnMethods = "addTeamMembers")
     public void getUsersByTeam() {
         final Pageable pageable = PageRequest.of(0, 100);
-        Set<TeamMember> members = teamMemberRepository.findByIdTeamId(team.getId(), pageable);
+        List<TeamMember> members = teamMemberRepository.findByIdTeamId(team.getId(), pageable).getContent();
         Assert.assertEquals(members.size(), 1);
 
-        Set<TeamMember> members2 = teamMemberRepository.findByIdTeamId(team2.getId(), pageable);
+        List<TeamMember> members2 = teamMemberRepository.findByIdTeamId(team2.getId(), pageable).getContent();
         Assert.assertEquals(members2.size(), 2);
 
-        Set<TeamMember> members3 = teamMemberRepository.findByIdTeamId(team3.getId(), pageable);
+        List<TeamMember> members3 = teamMemberRepository.findByIdTeamId(team3.getId(), pageable).getContent();
         Assert.assertEquals(members3.size(), 1);
     }
 
