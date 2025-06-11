@@ -76,7 +76,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
+            throw new ElementNotFoundException(this.getClass(), "No user with username '" + username + "' found.", e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();

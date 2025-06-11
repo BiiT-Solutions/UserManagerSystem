@@ -17,4 +17,8 @@ public class ElementNotFoundException extends LoggedException {
     public ElementNotFoundException(Class<?> clazz, String message, ExceptionType type) {
         super(clazz, message, type, null);
     }
+
+    public ElementNotFoundException(Class<?> clazz, String message, Throwable e) {
+        super(clazz, message, e, ExceptionType.SEVERE, null);
+    }
 }
