@@ -13,6 +13,7 @@ import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Test(groups = "organizationTests")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest
 public class OrganizationTests extends AbstractTestNGSpringContextTests {
 
