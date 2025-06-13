@@ -8,6 +8,7 @@ import com.biit.usermanager.core.controller.BackendServiceRoleController;
 import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
+import com.biit.usermanager.core.exceptions.RoleAlreadyExistsException;
 import com.biit.usermanager.core.providers.BackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
@@ -21,7 +22,6 @@ import com.biit.usermanager.persistence.entities.BackendServiceRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -133,6 +133,12 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
         for (final String roleName : BACKEND_ROLES) {
             backendRoles.add(backendServiceRoleController.create(new BackendServiceRoleDTO(backendServiceDTO, roleName), null));
         }
+    }
+
+
+    @Test(expectedExceptions = RoleAlreadyExistsException.class)
+    public void addDuplicatedBackendServiceRole() {
+        backendServiceRoleController.create(new BackendServiceRoleDTO(backendServiceDTO, BACKEND_ROLES[0]), null);
     }
 
     @Test

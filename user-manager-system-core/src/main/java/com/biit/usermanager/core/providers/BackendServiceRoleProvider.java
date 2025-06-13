@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.CreatedElementProvider;
+import com.biit.usermanager.core.exceptions.RoleAlreadyExistsException;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.BackendService;
 import com.biit.usermanager.persistence.entities.BackendServiceRole;
@@ -47,6 +48,19 @@ public class BackendServiceRoleProvider extends CreatedElementProvider<BackendSe
     @Cacheable(value = "backend_service_roles", key = "T(java.util.Objects).hash(#backendServiceName,#roleName)")
     public Optional<BackendServiceRole> findByBackendServiceAndName(String backendServiceName, String roleName) {
         return getRepository().findByIdBackendServiceIdAndIdName(backendServiceName, roleName);
+    }
+
+    @Override
+    public BackendServiceRole save(BackendServiceRole entity) {
+        if (entity == null) {
+            return null;
+        }
+        //Check if exists.
+        if (getRepository().findById(entity.getId()).isPresent()) {
+            throw new RoleAlreadyExistsException(this.getClass(), "The service '" + entity.getId().getBackendService().getName()
+                    + "' already has role '" + entity.getId().getName() + "'.");
+        }
+        return super.save(entity);
     }
 
     @Override

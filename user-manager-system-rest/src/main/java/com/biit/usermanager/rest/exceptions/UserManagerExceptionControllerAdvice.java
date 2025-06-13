@@ -16,6 +16,7 @@ import com.biit.usermanager.core.exceptions.InvalidParameterException;
 import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
+import com.biit.usermanager.core.exceptions.RoleAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.RoleWithoutBackendServiceRoleException;
 import com.biit.usermanager.core.exceptions.TeamAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
@@ -189,6 +190,13 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> invalidEventException(Exception ex) {
         UserManagerLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "cannot_connect_to_kafka", ex), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(RoleAlreadyExistsException.class)
+    public ResponseEntity<Object> roleAlreadyExistsException(Exception ex) {
+        UserManagerLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse("Role already exists.", "role_already_exists", ex),
+                HttpStatus.BAD_REQUEST);
     }
 
 
