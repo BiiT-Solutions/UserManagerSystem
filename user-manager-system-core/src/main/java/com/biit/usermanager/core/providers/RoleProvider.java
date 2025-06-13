@@ -1,6 +1,7 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
+import com.biit.usermanager.core.exceptions.RoleAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.RoleNotFoundException;
 import com.biit.usermanager.logger.UserManagerLogger;
 import com.biit.usermanager.persistence.entities.Application;
@@ -61,6 +62,18 @@ public class RoleProvider extends ElementProvider<Role, String, RoleRepository> 
 
     public Optional<Role> findByName(String name) {
         return getRepository().findById(name);
+    }
+
+    @Override
+    public Role save(Role entity) {
+        if (entity == null) {
+            return null;
+        }
+        //Check if exists.
+        if (getRepository().findById(entity.getId()).isPresent()) {
+            throw new RoleAlreadyExistsException(this.getClass(), "The role '" + entity.getName() + "' already exists");
+        }
+        return super.save(entity);
     }
 
     @Override

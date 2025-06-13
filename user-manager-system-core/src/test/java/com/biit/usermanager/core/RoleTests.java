@@ -135,6 +135,11 @@ public class RoleTests extends AbstractTestNGSpringContextTests {
         }
     }
 
+    @Test(expectedExceptions = RoleAlreadyExistsException.class)
+    public void addDuplicatedRole() {
+        roleController.create(new RoleDTO(APPLICATION_ROLES[0], null), null);
+    }
+
 
     @Test(expectedExceptions = RoleAlreadyExistsException.class)
     public void addDuplicatedBackendServiceRole() {
