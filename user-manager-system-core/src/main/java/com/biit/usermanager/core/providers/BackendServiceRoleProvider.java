@@ -58,7 +58,7 @@ public class BackendServiceRoleProvider extends CreatedElementProvider<BackendSe
         //Check if exists.
         if (getRepository().findById(entity.getId()).isPresent()) {
             throw new RoleAlreadyExistsException(this.getClass(), "The service '" + entity.getId().getBackendService().getName()
-                    + "' already has role '" + entity.getId().getName() + "'.");
+                    + "' already has role '" + entity.getId().getName() + "'!");
         }
         return super.save(entity);
     }

@@ -71,7 +71,7 @@ public class RoleProvider extends ElementProvider<Role, String, RoleRepository> 
         }
         //Check if exists.
         if (getRepository().findById(entity.getId()).isPresent()) {
-            throw new RoleAlreadyExistsException(this.getClass(), "The role '" + entity.getName() + "' already exists");
+            throw new RoleAlreadyExistsException(this.getClass(), "The role '" + entity.getName() + "' already exists!");
         }
         return super.save(entity);
     }

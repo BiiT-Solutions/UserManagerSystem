@@ -24,6 +24,7 @@ import com.biit.usermanager.core.exceptions.TemporalTokenDoesNotExistsException;
 import com.biit.usermanager.core.exceptions.TokenExpiredException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserDoesNotExistsException;
+import com.biit.usermanager.core.exceptions.UserGroupAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.logger.UserManagerLogger;
@@ -196,6 +197,13 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
     public ResponseEntity<Object> roleAlreadyExistsException(Exception ex) {
         UserManagerLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse("Role already exists.", "role_already_exists", ex),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserGroupAlreadyExistsException.class)
+    public ResponseEntity<Object> userGroupAlreadyExistsException(Exception ex) {
+        UserManagerLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse("Group already exists.", "user_group_already_exists", ex),
                 HttpStatus.BAD_REQUEST);
     }
 

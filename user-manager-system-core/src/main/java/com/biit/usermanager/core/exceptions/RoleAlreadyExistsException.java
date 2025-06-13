@@ -10,8 +10,9 @@ import java.io.Serial;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class RoleAlreadyExistsException extends LoggedException {
 
+
     @Serial
-    private static final long serialVersionUID = -3507272771195819297L;
+    private static final long serialVersionUID = -3097428695193709389L;
 
     public RoleAlreadyExistsException(Class<?> clazz, String message, ExceptionType type) {
         super(clazz, message, type);
@@ -22,7 +23,7 @@ public class RoleAlreadyExistsException extends LoggedException {
     }
 
     public RoleAlreadyExistsException(Class<?> clazz) {
-        this(clazz, "User already exists!");
+        this(clazz, "Role already exists!");
     }
 
     public RoleAlreadyExistsException(Class<?> clazz, Throwable e) {

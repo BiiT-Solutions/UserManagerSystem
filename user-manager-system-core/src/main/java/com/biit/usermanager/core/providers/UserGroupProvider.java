@@ -1,6 +1,8 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
+import com.biit.usermanager.core.exceptions.RoleAlreadyExistsException;
+import com.biit.usermanager.core.exceptions.UserGroupAlreadyExistsException;
 import com.biit.usermanager.persistence.entities.UserGroup;
 import com.biit.usermanager.persistence.repositories.UserGroupRepository;
 import com.biit.usermanager.persistence.repositories.UserGroupUserRepository;
@@ -19,6 +21,18 @@ public class UserGroupProvider extends ElementProvider<UserGroup, Long, UserGrou
     public UserGroupProvider(UserGroupRepository repository, UserGroupUserRepository userGroupUserRepository) {
         super(repository);
         this.userGroupUserRepository = userGroupUserRepository;
+    }
+
+    @Override
+    public UserGroup save(UserGroup entity) {
+        if (entity == null) {
+            return null;
+        }
+        //Check if exists.
+        if (getRepository().findById(entity.getId()).isPresent()) {
+            throw new UserGroupAlreadyExistsException(this.getClass(), "The group '" + entity.getName() + "' already exists!");
+        }
+        return super.save(entity);
     }
 
     public Optional<UserGroup> findByName(String name) {
