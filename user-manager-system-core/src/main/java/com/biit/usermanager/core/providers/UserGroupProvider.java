@@ -1,7 +1,6 @@
 package com.biit.usermanager.core.providers;
 
 import com.biit.server.providers.ElementProvider;
-import com.biit.usermanager.core.exceptions.RoleAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserGroupAlreadyExistsException;
 import com.biit.usermanager.persistence.entities.UserGroup;
 import com.biit.usermanager.persistence.repositories.UserGroupRepository;
