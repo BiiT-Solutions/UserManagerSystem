@@ -12,6 +12,7 @@ import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundExcept
 import com.biit.usermanager.core.exceptions.ApplicationRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.BackendServiceRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.InvalidParameterException;
+import com.biit.usermanager.core.exceptions.UserGroupAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserGroupNotFoundException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.kafka.UserEventSender;
@@ -95,6 +96,15 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
         if (getProvider().findByName(name).isEmpty()) {
             throw new UserGroupNotFoundException(this.getClass(), "No user group exists with name '" + name + "'.");
         }
+    }
+
+    @Transactional
+    public UserGroupDTO create(UserGroupDTO dto, String creatorName) {
+        //Check if exists.
+        if (getProvider().findByName(dto.getName()).isPresent()) {
+            throw new UserGroupAlreadyExistsException(this.getClass(), "The group '" + dto.getName() + "' already exists!");
+        }
+        return super.create(dto, creatorName);
     }
 
     @Transactional

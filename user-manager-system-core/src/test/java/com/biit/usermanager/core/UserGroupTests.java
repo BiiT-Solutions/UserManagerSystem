@@ -22,6 +22,7 @@ import com.biit.usermanager.dto.UserGroupDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Test(groups = "userGroupTests")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest
 public class UserGroupTests extends AbstractTestNGSpringContextTests {
 
