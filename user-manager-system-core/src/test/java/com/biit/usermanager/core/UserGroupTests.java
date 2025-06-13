@@ -9,6 +9,7 @@ import com.biit.usermanager.core.controller.RoleController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.controller.UserGroupController;
 import com.biit.usermanager.core.converters.ApplicationBackendServiceRoleConverter;
+import com.biit.usermanager.core.exceptions.UserGroupAlreadyExistsException;
 import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.dto.ApplicationDTO;
@@ -114,7 +115,7 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
 
     @BeforeClass
     public void createUserGroups() {
-        userGroup = userGroupController.create(new UserGroupDTO(), null);
+        userGroup = userGroupController.create(new UserGroupDTO(USER_GROUP_NAME, USER_GROUP_DESCRIPTION), null);
     }
 
     @BeforeClass
@@ -156,6 +157,11 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
             }
         }
         Assert.assertTrue(userGroupApplicationBackendServiceRoleProvider.findAll().isEmpty());
+    }
+
+    @Test(expectedExceptions = UserGroupAlreadyExistsException.class)
+    public void addDuplicatedUserGroup() {
+        userGroupController.create(new UserGroupDTO(USER_GROUP_NAME, USER_GROUP_DESCRIPTION), null);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class UserGroupProvider extends ElementProvider<UserGroup, Long, UserGrou
             return null;
         }
         //Check if exists.
-        if (getRepository().findById(entity.getId()).isPresent()) {
+        if (getRepository().findByNameIgnoreCase(entity.getName()).isPresent()) {
             throw new UserGroupAlreadyExistsException(this.getClass(), "The group '" + entity.getName() + "' already exists!");
         }
         return super.save(entity);
