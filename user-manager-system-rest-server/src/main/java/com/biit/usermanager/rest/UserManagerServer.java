@@ -13,6 +13,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.web.servlet.DispatcherServlet;
 
 //Avoid Swagger redirecting https to http
@@ -38,6 +40,12 @@ public class UserManagerServer {
     @Bean
     public ApplicationListener<ContextRefreshedEvent> startupLoggingListener() {
         return event -> UserManagerLogger.info(UserManagerServer.class, "### Server started ###");
+    }
+
+    //For allowing properties as list in @Values
+    @Bean
+    public ConversionService conversionService() {
+        return new DefaultConversionService();
     }
 
 }
