@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class PasswordChangeRequest {
 
-    @NotBlank(message = "Password is not set correctly.")
+    @NotBlank
     private String newPassword;
 
     public PasswordChangeRequest() {

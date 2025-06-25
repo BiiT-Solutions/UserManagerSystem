@@ -4,6 +4,9 @@ import com.biit.server.controllers.models.ElementDTO;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serial;
@@ -21,10 +24,16 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
 
     private UUID uuid;
 
+    @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+    @NotBlank
     private String username = "";
 
+    @Size(min = 1, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+    @NotNull
     private String name = "";
 
+    @Size(min = 1, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+    @NotNull
     private String lastname = "";
 
     private String externalReference;

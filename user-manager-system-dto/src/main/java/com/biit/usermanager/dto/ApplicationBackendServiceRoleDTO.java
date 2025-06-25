@@ -1,9 +1,13 @@
 package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 public class ApplicationBackendServiceRoleDTO extends ElementDTO<ApplicationBackendServiceRoleIdDTO> {
 
+    @Valid
+    @NotNull
     private ApplicationBackendServiceRoleIdDTO id;
 
     public ApplicationBackendServiceRoleDTO() {

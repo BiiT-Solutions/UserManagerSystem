@@ -1,6 +1,5 @@
 package com.biit.usermanager.persistence.repositories;
 
-import com.biit.database.encryption.SHA512HashGenerator;
 import com.biit.usermanager.persistence.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

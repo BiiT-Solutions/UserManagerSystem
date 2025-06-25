@@ -1,5 +1,8 @@
 package com.biit.usermanager.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,9 +12,12 @@ public class ApplicationBackendServiceRoleIdDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = -820077018138711651L;
 
-
+    @Valid
+    @NotNull
     private ApplicationRoleDTO applicationRole;
 
+    @Valid
+    @NotNull
     private BackendServiceRoleDTO serviceRole;
 
     public ApplicationBackendServiceRoleIdDTO() {

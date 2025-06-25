@@ -1,11 +1,14 @@
 package com.biit.usermanager.rest.api.models;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class CheckCredentialsRequest {
 
     private String email;
 
     private String username;
 
+    @NotBlank
     private String password;
 
     public CheckCredentialsRequest() {
@@ -16,6 +19,7 @@ public class CheckCredentialsRequest {
         this.username = username;
         this.password = password;
     }
+
     public String getPassword() {
         return password;
     }

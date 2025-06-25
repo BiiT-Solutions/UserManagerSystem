@@ -1,11 +1,16 @@
 package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class OrganizationDTO extends ElementDTO<String> {
 
+    @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+    @NotBlank
     private String name = "";
 
+    @Size(max = ElementDTO.MAX_BIG_FIELD_LENGTH)
     private String description = "";
 
     public OrganizationDTO() {

@@ -313,4 +313,20 @@ public class UserTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(authenticatedUser.getAccountExpirationTime().withNano(0), expirationTime.withNano(0));
     }
 
+    @Test(dependsOnMethods = "login")
+    public void invalidUser() throws Exception {
+
+        //Has no mandatory fields.
+        final UserDTO userDTO = new UserDTO();
+
+        this.mockMvc
+                .perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .content(toJson(userDTO))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+    }
+
 }

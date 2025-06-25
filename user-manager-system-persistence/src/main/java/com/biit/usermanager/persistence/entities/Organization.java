@@ -18,7 +18,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public class Organization extends Element<String> {
 
     @Id
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name = "";
 
     @Column(name = "description")

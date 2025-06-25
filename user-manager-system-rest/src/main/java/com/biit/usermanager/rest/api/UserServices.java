@@ -1,6 +1,7 @@
 package com.biit.usermanager.rest.api;
 
 import com.biit.logger.mail.exceptions.EmailNotSentException;
+import com.biit.server.controllers.models.ElementDTO;
 import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.logger.RestServerLogger;
 import com.biit.server.providers.StorableObjectProvider;
@@ -27,12 +28,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +54,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/users")
 public class UserServices extends ElementServices<User, Long, UserDTO, UserRepository,
@@ -69,12 +74,14 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         this.bruteForceService = bruteForceService;
     }
 
-
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getByUsername(@Parameter(description = "Username of an existing user", required = true) @PathVariable("username") String username,
-                                 HttpServletRequest request) {
+    public UserDTO getByUsername(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Parameter(description = "Username of an existing user", required = true)
+            @PathVariable("username") String username,
+            HttpServletRequest request) {
         return getController().getByUsername(username);
     }
 
@@ -82,7 +89,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get user by email", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/emails/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @PathVariable("email") String email,
+    public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @Email @PathVariable("email") String email,
                               HttpServletRequest request) {
         return (UserDTO) getController().findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with email '" + email + "' found on the system."));
@@ -92,7 +99,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Check user and password", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/credentials", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO checkCredentials(@RequestBody CheckCredentialsRequest credentialsRequest,
+    public UserDTO checkCredentials(@Valid @RequestBody CheckCredentialsRequest credentialsRequest,
                                     HttpServletRequest request) {
         return getController().checkCredentials(credentialsRequest.getUsername(), credentialsRequest.getEmail(), credentialsRequest.getPassword());
     }
@@ -102,11 +109,14 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Get user by username and application. The granted authorities are filtered by the application name.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getByUsernameAndApplication(@Parameter(description = "Username of an existing user", required = true)
-                                               @PathVariable("username") String username,
-                                               @Parameter(description = "Name of an existing application", required = true)
-                                               @PathVariable("applicationName") String applicationName,
-                                               HttpServletRequest request) {
+    public UserDTO getByUsernameAndApplication(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Parameter(description = "Username of an existing user", required = true)
+            @PathVariable("username") String username,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing application", required = true)
+            @PathVariable("applicationName") String applicationName,
+            HttpServletRequest request) {
         return (UserDTO) getController().findByUsernameAndApplication(username, applicationName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
@@ -116,11 +126,14 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Get user by username and backend service. The granted authorities are filtered by the selected service name.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/service/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getByUsernameAndBackendService(@Parameter(description = "Username of an existing user", required = true)
-                                                  @PathVariable("username") String username,
-                                                  @Parameter(description = "Name of an existing service", required = true)
-                                                  @PathVariable("backendServiceName") String backendServiceName,
-                                                  HttpServletRequest request) {
+    public UserDTO getByUsernameAndBackendService(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Parameter(description = "Username of an existing user", required = true)
+            @PathVariable("username") String username,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing service", required = true)
+            @PathVariable("backendServiceName") String backendServiceName,
+            HttpServletRequest request) {
         return (UserDTO) getController().findByUsername(username, backendServiceName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
     }
@@ -130,7 +143,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Get user by email and application", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/emails/{email}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmailAndApplication(@Parameter(description = "Email of an existing user", required = true)
-                                            @PathVariable("email") String email,
+                                            @Email @PathVariable("email") String email,
+                                            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
                                             @Parameter(description = "Name of an existing application", required = true)
                                             @PathVariable("applicationName") String applicationName,
                                             HttpServletRequest request) {
@@ -194,7 +208,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(path = "/{username}/passwords", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public UserDTO updateUserPassword(@Parameter(description = "username", required = true)
+    public UserDTO updateUserPassword(@Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+                                      @Parameter(description = "username", required = true)
                                       @PathVariable("username") String username,
                                       @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         try {
@@ -218,9 +233,11 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Checks if a username is available or not.")
     @GetMapping(path = "/public/{username}/available")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<Void> checkUsernameExists(@Parameter(description = "username", required = true)
-                                                    @PathVariable("username") String username,
-                                                    HttpServletRequest httpRequest) {
+    public ResponseEntity<Void> checkUsernameExists(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Parameter(description = "username", required = true)
+            @PathVariable("username") String username,
+            HttpServletRequest httpRequest) {
         final String ip = networkController.getClientIP(httpRequest);
         if (bruteForceService.isBlocked(ip)) {
             try {
@@ -253,8 +270,11 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Gets an encrypted password hash.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
     @GetMapping(path = "/{username}/passwords", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public String getsUserPassword(@Parameter(description = "username", required = true) @PathVariable("username") String username,
-                                   Authentication authentication, HttpServletRequest httpRequest) {
+    public String getsUserPassword(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Parameter(description = "username", required = true)
+            @PathVariable("username") String username,
+            Authentication authentication, HttpServletRequest httpRequest) {
         try {
             return getController().getPassword(username);
         } catch (Exception e) {
@@ -283,8 +303,10 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Deletes a user by username.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/usernames/{username}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public void deleteUser(@Parameter(description = "username", required = true)
-                           @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
+    public void deleteUser(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Parameter(description = "username", required = true)
+            @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(username, authentication.getName());
     }
 
@@ -316,10 +338,13 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO setRolesFromApplicationAndRoles(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
             HttpServletRequest request) {
@@ -332,10 +357,13 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @DeleteMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO deleteRolesFromApplicationAndRoles(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
             Authentication authentication,
@@ -356,9 +384,11 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/user-groups/names/{groupName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> getUsersByUserGroup(@Parameter(description = "Name of an existing user group", required = true)
-                                             @PathVariable("groupName") String groupName,
-                                             HttpServletRequest request) {
+    public List<UserDTO> getUsersByUserGroup(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing user group", required = true)
+            @PathVariable("groupName") String groupName,
+            HttpServletRequest request) {
         return getController().getByUserGroup(groupName);
     }
 
@@ -382,8 +412,12 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Get users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}/teams/{teamName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsersByTeam(
-            @Parameter(description = "Name of an existing organization", required = true) @PathVariable("organizationName") String organizationName,
-            @Parameter(description = "Name of an existing team", required = true) @PathVariable("teamName") String teamName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing organization", required = true)
+            @PathVariable("organizationName") String organizationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing team", required = true)
+            @PathVariable("teamName") String teamName,
             @RequestParam(name = "page", defaultValue = "0") Optional<Integer> page,
             @RequestParam(name = "size", defaultValue = StorableObjectProvider.MAX_PAGE_SIZE + "") Optional<Integer> size,
             HttpServletRequest request) {
@@ -398,7 +432,9 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Count users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}/teams/{teamName}/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public long countUsersByTeam(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing organization", required = true) @PathVariable("organizationName") String organizationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing team", required = true) @PathVariable("teamName") String teamName,
             HttpServletRequest request) {
         return getController().countByTeam(organizationName, teamName);
@@ -408,9 +444,12 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get Organization's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> getUsersByOrganization(@Parameter(description = "Name of an existing organization", required = true) @PathVariable("organizationName")
-                                                String organizationName,
-                                                HttpServletRequest request) {
+    public List<UserDTO> getUsersByOrganization(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing organization", required = true)
+            @PathVariable("organizationName")
+            String organizationName,
+            HttpServletRequest request) {
         return getController().getByOrganization(organizationName);
     }
 
@@ -418,7 +457,9 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Count users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public long countUsersByOrganization(
-            @Parameter(description = "Name of an existing organization", required = true) @PathVariable("organizationName") String organizationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing organization", required = true)
+            @PathVariable("organizationName") String organizationName,
             HttpServletRequest request) {
         return getController().countByOrganization(organizationName);
     }
@@ -426,7 +467,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     @Operation(summary = "Generates a token for reseting the password")
     @GetMapping(value = "/public/emails/{email}/reset-password")
-    public void createResetPasswordToken(@Parameter(description = "Email from an existing user", required = true) @PathVariable("email") String email,
+    public void createResetPasswordToken(@Parameter(description = "Email from an existing user", required = true)
+                                         @Email @PathVariable("email") String email,
                                          HttpServletRequest request) throws EmailNotSentException {
         UserManagerLogger.warning(this.getClass(), "Requesting to rest a password from ip '" + networkController.getClientIP(request) + "'.");
         getController().resetPassword(email);
@@ -436,6 +478,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Checks the validity of a token")
     @GetMapping(value = "/public/tokens")
     public void checkToken(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Token to check", required = true) @RequestParam("token") String token,
             HttpServletRequest request) {
         UserManagerLogger.warning(this.getClass(), "Checking the validity of a token from ip '" + networkController.getClientIP(request) + "'.");
@@ -460,9 +503,11 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Gets a user by its external reference.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
     @GetMapping(path = "/references/{externalReference}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
-    public UserDTO getsUserByExternalReference(@Parameter(description = "Reference from a 3rd party application.", required = true)
-                                               @PathVariable("externalReference") String externalReference,
-                                               Authentication authentication, HttpServletRequest httpRequest) {
+    public UserDTO getsUserByExternalReference(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Reference from a 3rd party application.", required = true)
+            @PathVariable("externalReference") String externalReference,
+            Authentication authentication, HttpServletRequest httpRequest) {
         return getController().getByExternalReference(externalReference);
     }
 

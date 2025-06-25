@@ -1,5 +1,6 @@
 package com.biit.usermanager.rest.api;
 
+import com.biit.server.controllers.models.ElementDTO;
 import com.biit.server.rest.ElementServices;
 import com.biit.usermanager.core.controller.UserGroupController;
 import com.biit.usermanager.core.converters.UserGroupConverter;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,8 +44,11 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get UserGroup by name", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/name/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserGroupDTO getByGroupName(@Parameter(description = "Name of an existing group", required = true) @PathVariable("name") String name,
-                                       HttpServletRequest request) {
+    public UserGroupDTO getByGroupName(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "Name of an existing group", required = true)
+            @PathVariable("name") String name,
+            HttpServletRequest request) {
         return getController().getByName(name);
     }
 
@@ -51,9 +56,11 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @Operation(summary = "Checks if a group name is already taken or not.")
     @GetMapping(path = "/public/{name}/check")
     @ResponseStatus(value = HttpStatus.OK)
-    public void checkGroupNameExists(@Parameter(description = "name", required = true)
-                                     @PathVariable("name") String name,
-                                     HttpServletRequest httpRequest) {
+    public void checkGroupNameExists(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "name", required = true)
+            @PathVariable("name") String name,
+            HttpServletRequest httpRequest) {
         getController().checkNameExists(name);
     }
 
@@ -62,8 +69,10 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @Operation(summary = "Deletes a UserGroup by name.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/name/{name}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public void deleteGroup(@Parameter(description = "name", required = true)
-                            @PathVariable("name") String name, Authentication authentication, HttpServletRequest httpRequest) {
+    public void deleteGroup(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+            @Parameter(description = "name", required = true)
+            @PathVariable("name") String name, Authentication authentication, HttpServletRequest httpRequest) {
         getController().delete(name, authentication.getName());
     }
 
@@ -84,15 +93,20 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             + "/backend-services/{backendServiceName}/backend-service-roles/{backendServiceRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO getRolesFromApplicationAndBackendServices(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing UserGroup", required = true)
             @PathVariable("name") String name,
             @Parameter(description = "Application name", required = true)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @PathVariable("applicationName") String applicationName,
             @Parameter(description = "Application Role name", required = true)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @PathVariable("applicationRoleName") String applicationRoleName,
             @Parameter(description = "Backend Service name", required = true)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @PathVariable("backendServiceName") String backendServiceName,
             @Parameter(description = "Backend Role name", required = true)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @PathVariable("backendServiceRoleName") String backendServiceRoleName,
             HttpServletRequest request) {
         return getController().assign(name, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
@@ -107,12 +121,16 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     public UserGroupDTO getRolesFromApplicationAndBackendServices(
             @Parameter(description = "Id of an existing UserGroup", required = true)
             @PathVariable("id") Long id,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Backend Service name", required = true)
             @PathVariable("backendServiceName") String backendServiceName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Backend Role name", required = true)
             @PathVariable("backendServiceRoleName") String backendServiceRoleName,
             HttpServletRequest request) {
@@ -126,10 +144,13 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @PostMapping(value = "/name/{name}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO setRolesFromApplicationAndRoles(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing User Group", required = true)
             @PathVariable("name") String name,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
             HttpServletRequest request) {
@@ -145,8 +166,10 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     public UserGroupDTO setRolesFromApplicationAndRoles(
             @Parameter(description = "Id of an existing User Group", required = true)
             @PathVariable("id") Long id,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
             HttpServletRequest request) {
@@ -159,10 +182,13 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @DeleteMapping(value = "/name/{name}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO deleteRolesFromApplicationAndRoles(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing User Group", required = true)
             @PathVariable("name") String name,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
             Authentication authentication,
@@ -178,8 +204,10 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     public UserGroupDTO deleteRolesFromApplicationAndRoles(
             @Parameter(description = "Id of an existing User Group", required = true)
             @PathVariable("id") Long id,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application name", required = true)
             @PathVariable("applicationName") String applicationName,
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
             Authentication authentication,
@@ -211,6 +239,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO addUsers(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing UserGroup", required = true)
             @PathVariable("name") String name,
             @RequestBody Collection<UserDTO> users,
@@ -243,6 +272,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO addUsersByUuids(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing UserGroup", required = true)
             @PathVariable("name") String name,
             @RequestBody Collection<UUID> usersUUIDs,
@@ -275,6 +305,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserGroupDTO addUsersByUsernamesAndGroupName(
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name an existing User Group", required = true)
             @PathVariable("name") String name,
             @RequestBody Collection<String> usernames,
@@ -302,7 +333,9 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get all groups from a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserGroupDTO> getByUsername(@Parameter(description = "Name of an existing user", required = true) @PathVariable("username") String username,
+    public List<UserGroupDTO> getByUsername(@Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+                                            @Parameter(description = "Name of an existing user", required = true)
+                                            @PathVariable("username") String username,
                                             HttpServletRequest request) {
         return getController().getFromUser(username);
     }

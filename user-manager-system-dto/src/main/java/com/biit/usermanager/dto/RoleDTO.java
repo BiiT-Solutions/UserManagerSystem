@@ -3,6 +3,8 @@ package com.biit.usermanager.dto;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.usermanager.entity.IRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serial;
 
@@ -11,8 +13,11 @@ public class RoleDTO extends ElementDTO<String> implements IRole<String> {
     @Serial
     private static final long serialVersionUID = -1038904769010325039L;
 
+    @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
+    @NotBlank(message = "Name is mandatory.")
     private String name;
 
+    @Size(max = ElementDTO.MAX_BIG_FIELD_LENGTH)
     private String description = "";
 
     public RoleDTO() {

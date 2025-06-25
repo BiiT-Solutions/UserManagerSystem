@@ -1,11 +1,18 @@
 package com.biit.usermanager.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Objects;
 
 public class ApplicationRoleIdDTO {
 
+    @Valid
+    @NotNull
     private ApplicationDTO application;
 
+    @Valid
+    @NotNull
     private RoleDTO role;
 
     public ApplicationRoleIdDTO() {

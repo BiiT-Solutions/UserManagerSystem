@@ -1,11 +1,19 @@
 package com.biit.usermanager.dto;
 
+import com.biit.server.controllers.models.ElementDTO;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.Objects;
 
 public class BackendServiceRoleIdDTO {
 
+    @NotNull
     private BackendServiceDTO backendService;
 
+    @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+    @NotBlank
     private String name;
 
     public BackendServiceRoleIdDTO() {

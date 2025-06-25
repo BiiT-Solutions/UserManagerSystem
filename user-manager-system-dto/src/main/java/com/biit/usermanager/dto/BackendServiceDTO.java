@@ -2,11 +2,16 @@ package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class BackendServiceDTO extends ElementDTO<String> {
 
+    @Size(max = ElementDTO.MAX_NORMAL_FIELD_LENGTH, min = ElementDTO.MIN_FIELD_LENGTH)
+    @NotNull
     private String name;
 
+    @Size(max = ElementDTO.MAX_BIG_FIELD_LENGTH)
     private String description = "";
 
     public BackendServiceDTO() {

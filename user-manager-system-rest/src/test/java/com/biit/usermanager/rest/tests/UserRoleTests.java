@@ -467,4 +467,18 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
 
         Assert.assertEquals(applicationBackendServiceRoleDTOS.size(), 5);
     }
+
+    @Test(dependsOnMethods = "login")
+    public void createInvalidRoles() throws Exception {
+        Assert.assertNotNull(jwtToken);
+
+        this.mockMvc
+                .perform(post("/roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .content(toJson(new RoleDTO()))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+    }
 }
