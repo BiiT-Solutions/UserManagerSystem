@@ -1,5 +1,6 @@
 package com.biit.usermanager.dto;
 
+import com.biit.server.controllers.models.ElementDTO;
 import com.biit.server.security.IAuthenticatedUser;
 import com.biit.usermanager.entity.IUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -26,22 +28,29 @@ public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticated
     private String idCard;
 
     @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Size(max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
     @NotBlank
     private String email = "";
 
+    @Size(max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
     private String phone = "";
 
+    @Size(max = ElementDTO.MAX_BIG_FIELD_LENGTH)
     private String address;
 
+    @Size(max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
     private String postalCode;
 
+    @Size(max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
     private String city;
 
+    @Size(max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
     private String country;
 
     private Locale locale;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Size(max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
     private String password = "";
 
     private LocalDateTime passwordModifiedDate;
