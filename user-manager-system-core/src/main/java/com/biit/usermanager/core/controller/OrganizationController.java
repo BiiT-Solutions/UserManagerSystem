@@ -90,6 +90,7 @@ public class OrganizationController extends KafkaElementController<Organization,
         getProvider().deleteById(entity.getName());
     }
 
+
     @Transactional
     @Override
     public void deleteAll(String deletedBy) {
@@ -98,6 +99,7 @@ public class OrganizationController extends KafkaElementController<Organization,
         organizations.forEach(organization ->
                 delete(organization, deletedBy));
     }
+
 
     @Transactional
     @Override

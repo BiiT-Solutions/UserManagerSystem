@@ -6,6 +6,7 @@ import com.biit.usermanager.persistence.entities.TeamMemberId;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +36,7 @@ public interface TeamMemberRepository extends StorableObjectRepository<TeamMembe
     long countByOrganizationName(String organizationName);
 
 
+    @Modifying
     @Query("""
             DELETE FROM TeamMember tm WHERE tm.id.teamId IN
             (SELECT t.id FROM Team t WHERE lower(t.organization.name) = lower(:organizationName))
