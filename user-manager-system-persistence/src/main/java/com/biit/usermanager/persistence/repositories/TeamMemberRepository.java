@@ -19,6 +19,8 @@ public interface TeamMemberRepository extends StorableObjectRepository<TeamMembe
 
     Page<TeamMember> findByIdTeamId(Long teamId, Pageable pageable);
 
+    void deleteByIdTeamId(Long teamId);
+
     long countByIdTeamId(Long teamId);
 
     Set<TeamMember> findByIdUserId(Long userId);

@@ -2,6 +2,7 @@ package com.biit.usermanager.core.controller;
 
 
 import com.biit.kafka.controllers.KafkaElementController;
+import com.biit.server.logger.DtoControllerLogger;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.TeamConverter;
 import com.biit.usermanager.core.converters.UserConverter;
@@ -24,12 +25,14 @@ import com.biit.usermanager.persistence.entities.Team;
 import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.TeamRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -208,5 +211,35 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     public List<TeamDTO> getFromUser(User user) {
         final Set<TeamMember> teamMembers = teamMemberProvider.findByIdUserId(user.getId());
         return get(teamMembers.stream().map(teamMember -> teamMember.getId().getTeamId()).sorted().toList());
+    }
+
+
+    @Transactional
+    @Override
+    public void delete(TeamDTO entity, String deletedBy) {
+        DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", entity, deletedBy);
+        teamMemberProvider.deleteByTeam(entity.getId());
+        getProvider().delete(this.getConverter().reverse(entity));
+    }
+
+
+    @Transactional
+    @Override
+    public void deleteAll(String deletedBy) {
+        DtoControllerLogger.info(this.getClass(), "All Entities deleted by '{}'.", deletedBy);
+        final List<TeamDTO> teams = get();
+        teams.forEach(team -> delete(team, deletedBy));
+    }
+
+
+    @Transactional
+    @Override
+    public void deleteById(Long id, String deletedBy) {
+        DtoControllerLogger.warning(this.getClass(), "Deleting entity with id '{}' by '{}'.", id, deletedBy);
+        final Optional<Team> team = getProvider().get(id);
+        if (team.isEmpty()) {
+            throw new TeamNotFoundException(this.getClass(), "No Teams exists with id '" + id + "'.");
+        }
+        delete(convert(team.get()), deletedBy);
     }
 }

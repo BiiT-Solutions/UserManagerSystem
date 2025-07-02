@@ -60,4 +60,8 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
     public void deleteByOrganizationName(String organizationName) {
         getRepository().deleteByOrganizationName(organizationName);
     }
+
+    public void deleteByTeam(Long teamId) {
+        getRepository().deleteByIdTeamId(teamId);
+    }
 }
