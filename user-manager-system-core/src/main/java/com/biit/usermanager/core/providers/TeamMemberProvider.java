@@ -56,4 +56,8 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
     public long countByOrganization(String organization) {
         return getRepository().countByOrganizationName(organization);
     }
+
+    public void deleteByOrganizationName(String organizationName) {
+        getRepository().deleteByOrganizationName(organizationName);
+    }
 }

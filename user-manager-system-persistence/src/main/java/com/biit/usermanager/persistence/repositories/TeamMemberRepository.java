@@ -33,4 +33,11 @@ public interface TeamMemberRepository extends StorableObjectRepository<TeamMembe
             (SELECT t.id FROM Team t WHERE lower(t.organization.name) = lower(:organizationName))
             """)
     long countByOrganizationName(String organizationName);
+
+
+    @Query("""
+            DELETE FROM TeamMember tm WHERE tm.id.teamId IN
+            (SELECT t.id FROM Team t WHERE lower(t.organization.name) = lower(:organizationName))
+            """)
+    void deleteByOrganizationName(String organizationName);
 }

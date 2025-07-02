@@ -41,4 +41,8 @@ public class TeamProvider extends ElementProvider<Team, Long, TeamRepository> {
     public int deleteByName(String name, Organization organization) {
         return getRepository().deleteByNameIgnoreCaseAndOrganization(name, organization);
     }
+
+    public void deleteByOrganization(Organization organization) {
+        getRepository().deleteByOrganization(organization);
+    }
 }
