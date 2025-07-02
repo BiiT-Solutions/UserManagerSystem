@@ -84,10 +84,9 @@ public class OrganizationController extends KafkaElementController<Organization,
     @Override
     public void delete(OrganizationDTO entity, String deletedBy) {
         DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", entity, deletedBy);
-        getProvider().delete(this.getConverter().reverse(entity));
         teamMemberProvider.deleteByOrganizationName(entity.getName());
         teamProvider.deleteByOrganization(reverse(entity));
-        getProvider().deleteById(entity.getName());
+        getProvider().delete(this.getConverter().reverse(entity));
     }
 
 
