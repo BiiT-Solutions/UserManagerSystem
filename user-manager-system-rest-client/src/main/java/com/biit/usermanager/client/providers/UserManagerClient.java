@@ -4,7 +4,6 @@ import com.biit.rest.exceptions.EmptyResultException;
 import com.biit.rest.exceptions.InvalidResponseException;
 import com.biit.server.client.SecurityClient;
 import com.biit.server.security.CreateUserRequest;
-import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.client.exceptions.ElementNotFoundException;
@@ -40,7 +39,7 @@ import java.util.Set;
 @Service
 @Order(2)
 @Qualifier("userManagerClient")
-public class UserManagerClient implements IAuthenticatedUserProvider {
+public class UserManagerClient implements IAuthenticatedUserProvider<UserDTO> {
 
     private static final String EXTERNAL_REFERENCE_PARAMETER = "references";
     private static final String PAGE_PARAMETER = "page";
@@ -62,7 +61,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByUsername(String username) {
+    public Optional<UserDTO> findByUsername(String username) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByName(username))) {
@@ -86,7 +85,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Optional<IAuthenticatedUser> findByUsername(String username, String backendService) {
+    public Optional<UserDTO> findByUsername(String username, String backendService) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByNameAndBackendService(username, backendService))) {
@@ -112,7 +111,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
+    public Optional<UserDTO> findByEmailAddress(String email) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmail(email))) {
@@ -128,14 +127,14 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             UserManagerClientLogger.warning(this.getClass(), "User with email '{}' not found.", email);
-            throw new RuntimeException(e);
+            throw e;
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();
         }
     }
 
-    public Optional<IAuthenticatedUser> findByEmailAddress(Email email) {
+    public Optional<UserDTO> findByEmailAddress(Email email) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmail(email.getEmail()))) {
@@ -151,7 +150,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             UserManagerClientLogger.warning(this.getClass(), "User with email '{}' not found.", email);
-            throw new RuntimeException(e);
+            throw e;
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();
@@ -159,7 +158,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) throws EmptyResultException {
+    public Optional<UserDTO> findByEmailAddress(String email, String applicationName) throws EmptyResultException {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmailAndApplication(EmailValidator.validate(email), applicationName))) {
@@ -180,7 +179,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         }
     }
 
-    public Optional<IAuthenticatedUser> findByEmailAddress(Email email, String applicationName) {
+    public Optional<UserDTO> findByEmailAddress(Email email, String applicationName) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByEmailAndApplication(email.getEmail(), applicationName))) {
@@ -197,7 +196,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             UserManagerClientLogger.warning(this.getClass(), "User with email '{}' not found.", email);
-            throw new RuntimeException(e);
+            throw e;
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();
@@ -206,7 +205,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByUID(String id) {
+    public Optional<UserDTO> findByUID(String id) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUserByUid(id))) {
@@ -222,7 +221,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             throw new InvalidResponseException(e);
         } catch (EmptyResultException e) {
             UserManagerClientLogger.warning(this.getClass(), "User with id '{}' not found.", id);
-            throw new RuntimeException(e);
+            throw e;
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();
@@ -231,7 +230,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
+    public UserDTO create(CreateUserRequest createUserRequest, String createdBy) {
         try {
             try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
                     mapper.writeValueAsString(UserDTOConverter.convert(createUserRequest)))) {
@@ -241,8 +240,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
@@ -251,7 +248,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
+    public UserDTO updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
         try {
             try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.updateUserPassword(username),
                     mapper.writeValueAsString(new UpdatePasswordRequest(oldPassword, newPassword)))) {
@@ -264,8 +261,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
@@ -284,8 +279,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                 }
                 return result.readEntity(String.class);
             }
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
@@ -304,8 +297,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                 }
                 return result.readEntity(String.class);
             }
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
@@ -314,7 +305,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
+    public UserDTO updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         try {
             try (Response result = securityClient.put(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.getUsers(),
                     mapper.writeValueAsString(UserDTOConverter.convert(createUserRequest)))) {
@@ -324,8 +315,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
@@ -344,8 +333,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return -1;
@@ -354,7 +341,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public Collection<IAuthenticatedUser> findAll() {
+    public Collection<UserDTO> findAll() {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getAll())) {
@@ -364,8 +351,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
@@ -373,7 +358,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
     @Override
-    public Collection<IAuthenticatedUser> findAll(int page, int size) {
+    public Collection<UserDTO> findAll(int page, int size) {
         try {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put(PAGE_PARAMETER, page);
@@ -386,8 +371,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
@@ -406,8 +389,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
                         userUrlConstructor.getUserManagerServerUrl() + userUrlConstructor.deleteByUsername(username), result.getStatus());
                 return true;
             }
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return false;
@@ -416,7 +397,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public boolean delete(IAuthenticatedUser authenticatedUser) {
+    public boolean delete(UserDTO authenticatedUser) {
         try {
             try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.delete(),
                     mapper.writeValueAsString(authenticatedUser))) {
@@ -426,8 +407,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return false;
@@ -452,8 +431,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new HashSet<>();
@@ -461,7 +438,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
         return roles;
     }
 
-    public Collection<IAuthenticatedUser> findByTeam(Long teamId) {
+    public Collection<UserDTO> findByTeam(Long teamId) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUsersByTeam(teamId))) {
@@ -472,8 +449,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();
@@ -481,7 +456,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
 
-    public Collection<IAuthenticatedUser> findByTeam(Long teamId, int page, int size) {
+    public Collection<UserDTO> findByTeam(Long teamId, int page, int size) {
         try {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put(PAGE_PARAMETER, page);
@@ -495,8 +470,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();
@@ -514,8 +487,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return 0;
@@ -523,7 +494,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
 
-    public Collection<IAuthenticatedUser> findByTeam(String organization, String team) {
+    public Collection<UserDTO> findByTeam(String organization, String team) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUsersByTeam(organization, team))) {
@@ -534,15 +505,13 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();
         }
     }
 
-    public Collection<IAuthenticatedUser> findByTeam(String organization, String team, int page, int size) {
+    public Collection<UserDTO> findByTeam(String organization, String team, int page, int size) {
         try {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put(PAGE_PARAMETER, page);
@@ -556,8 +525,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();
@@ -575,15 +542,13 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return 0;
         }
     }
 
-    public Collection<IAuthenticatedUser> findByOrganization(String organizationName) {
+    public Collection<UserDTO> findByOrganization(String organizationName) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUsersByOrganization(organizationName))) {
@@ -594,8 +559,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();
@@ -603,7 +566,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
 
-    public Collection<IAuthenticatedUser> findByOrganization(String organizationName, int page, int size) {
+    public Collection<UserDTO> findByOrganization(String organizationName, int page, int size) {
         try {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put(PAGE_PARAMETER, page);
@@ -617,8 +580,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();
@@ -627,7 +588,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
+    public Optional<UserDTO> findByExternalReference(String externalReference) {
         try {
             try (Response response = securityClient.get(userUrlConstructor.getUserManagerServerUrl(),
                     userUrlConstructor.getUsersByExternalReference(externalReference))) {
@@ -638,8 +599,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return Optional.empty();
@@ -647,7 +606,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
     }
 
 
-    public Collection<IAuthenticatedUser> findByExternalReferences(List<String> externalReferences) {
+    public Collection<UserDTO> findByExternalReferences(List<String> externalReferences) {
         try {
             final Map<String, Object> parameters = new HashMap<>();
             parameters.put(EXTERNAL_REFERENCE_PARAMETER, externalReferences);
@@ -660,8 +619,6 @@ public class UserManagerClient implements IAuthenticatedUserProvider {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return new ArrayList<>();

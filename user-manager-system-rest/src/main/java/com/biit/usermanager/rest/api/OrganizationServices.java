@@ -41,6 +41,16 @@ public class OrganizationServices extends ElementServices<Organization, String, 
     }
 
 
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
+    @Operation(summary = "Get all user's organizations.", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "/users/names/{userName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<OrganizationDTO> getOrganizationsByUser(@Parameter(description = "User Name", required = true)
+                                                              @PathVariable("userName") String userName,
+                                                              HttpServletRequest request) {
+        return getController().getByUser(userName);
+    }
+
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get current user's organizations.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)

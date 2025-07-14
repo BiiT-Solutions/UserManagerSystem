@@ -1,12 +1,13 @@
 package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
+import com.biit.server.security.model.IUserTeam;
 import com.biit.usermanager.entity.IGroup;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class TeamDTO extends ElementDTO<Long> implements IGroup<Long>, Comparable<TeamDTO> {
+public class TeamDTO extends ElementDTO<Long> implements IGroup<Long>, Comparable<TeamDTO>, IUserTeam {
 
     private Long id;
 

@@ -5,7 +5,7 @@ import com.biit.kafka.events.EventSubject;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 import com.biit.server.security.CreateUserRequest;
-import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
 import com.biit.usermanager.core.converters.UserConverter;

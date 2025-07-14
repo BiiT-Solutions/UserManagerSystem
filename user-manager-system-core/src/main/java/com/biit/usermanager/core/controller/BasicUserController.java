@@ -1,7 +1,7 @@
 package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaElementController;
-import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.usermanager.core.converters.BasicUserConverter;
 import com.biit.usermanager.core.converters.models.BasicUserConverterRequest;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;

@@ -8,7 +8,7 @@ import org.springframework.web.util.UriUtils;
 import java.nio.charset.StandardCharsets;
 
 @Component
-public class TeamUrlConstructor {
+public class OrganizationUrlConstructor {
 
     @Value("${usermanager.server.url:#{null}}")
     private String userManagerServerUrl;
@@ -20,23 +20,19 @@ public class TeamUrlConstructor {
         return userManagerServerUrl;
     }
 
-    public String getTeams() {
-        return "/teams";
+    public String getOrganizations() {
+        return "/organizations";
     }
 
-    public String getTeamsByUser(String userUuid) {
-        return getTeams() + "/users/" + UriUtils.encode(userUuid, StandardCharsets.UTF_8);
+    public String getOrganizationsByUser(String userUuid) {
+        return getOrganizations() + "/users/" + UriUtils.encode(userUuid, StandardCharsets.UTF_8);
     }
 
-    public String getTeamsByOrganization(String organizationName) {
-        return getTeams() + "/organizations/" + UriUtils.encode(organizationName, StandardCharsets.UTF_8);
+    public String getOrganizationsByUserName(String username) {
+        return getOrganizations() + "/users/names/" + UriUtils.encode(String.valueOf(username), StandardCharsets.UTF_8);
     }
 
-    public String addUsersByUsername(String teamName, String organizationName) {
-        return getTeams() + "/names/" + UriUtils.encode(teamName, StandardCharsets.UTF_8)
-                + "/organizations/" + UriUtils.encode(organizationName, StandardCharsets.UTF_8)
-                + "/usernames";
+    public String getOrganization(String name) {
+        return getOrganizations() + "/" + UriUtils.encode(name, StandardCharsets.UTF_8);
     }
-
-
 }

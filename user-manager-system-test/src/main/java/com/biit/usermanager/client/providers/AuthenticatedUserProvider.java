@@ -2,8 +2,8 @@ package com.biit.usermanager.client.providers;
 
 import com.biit.server.client.user.AuthenticatedUser;
 import com.biit.server.security.CreateUserRequest;
-import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
+import com.biit.server.security.model.IAuthenticatedUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;

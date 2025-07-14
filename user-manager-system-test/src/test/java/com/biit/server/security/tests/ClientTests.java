@@ -4,9 +4,10 @@ package com.biit.server.security.tests;
 import com.biit.rest.exceptions.UnprocessableEntityException;
 import com.biit.server.client.SecurityClient;
 import com.biit.usermanager.client.providers.AuthenticatedUserProvider;
-import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.server.security.UserManagerServer;
 import com.biit.usermanager.client.providers.UserManagerClient;
+import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,7 +84,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void checkClientWithSecurity() throws UnprocessableEntityException {
-        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
+        Optional<UserDTO> user = userManagerClient.findByUsername(USER_NAME);
         Assert.assertTrue(user.isPresent());
     }
 }

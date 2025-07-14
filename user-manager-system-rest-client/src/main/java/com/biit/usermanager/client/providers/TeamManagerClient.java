@@ -1,8 +1,8 @@
 package com.biit.usermanager.client.providers;
 
-import com.biit.rest.exceptions.EmptyResultException;
 import com.biit.rest.exceptions.InvalidResponseException;
 import com.biit.server.client.SecurityClient;
+import com.biit.server.security.IUserTeamProvider;
 import com.biit.usermanager.client.exceptions.ElementNotFoundException;
 import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import com.biit.usermanager.dto.TeamDTO;
@@ -16,13 +16,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Service
 @Order(2)
 @Qualifier("teamManagerClient")
-public class TeamManagerClient {
+public class TeamManagerClient implements IUserTeamProvider<TeamDTO> {
 
     private final TeamUrlConstructor teamUrlConstructor;
 
@@ -38,6 +39,15 @@ public class TeamManagerClient {
 
 
     public Collection<TeamDTO> findByUser(UUID userUuid) {
+        if (userUuid == null) {
+            return List.of();
+        }
+        return findByUser(userUuid.toString());
+    }
+
+
+    @Override
+    public Collection<TeamDTO> findByUser(String userUuid) {
         try {
             try (Response response = securityClient.get(teamUrlConstructor.getUserManagerServerUrl(),
                     teamUrlConstructor.getTeamsByUser(userUuid))) {
@@ -50,15 +60,13 @@ public class TeamManagerClient {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
         }
     }
 
-
+    @Override
     public Collection<TeamDTO> findByOrganization(String organizationName) throws ElementNotFoundException {
         try {
             try (Response response = securityClient.get(teamUrlConstructor.getUserManagerServerUrl(),
@@ -72,15 +80,13 @@ public class TeamManagerClient {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;
         }
     }
 
-
+    @Override
     public TeamDTO assign(String teamName, String organizationName, String... userNames) throws ElementNotFoundException {
         try {
             try (Response response = securityClient.post(teamUrlConstructor.getUserManagerServerUrl(),
@@ -96,8 +102,6 @@ public class TeamManagerClient {
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
-        } catch (EmptyResultException e) {
-            throw new RuntimeException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
             return null;

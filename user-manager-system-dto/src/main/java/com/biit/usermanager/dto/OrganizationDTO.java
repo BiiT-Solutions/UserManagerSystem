@@ -1,10 +1,11 @@
 package com.biit.usermanager.dto;
 
 import com.biit.server.controllers.models.ElementDTO;
+import com.biit.server.security.model.IUserOrganization;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class OrganizationDTO extends ElementDTO<String> {
+public class OrganizationDTO extends ElementDTO<String> implements IUserOrganization {
 
     @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
     @NotBlank
@@ -30,6 +31,7 @@ public class OrganizationDTO extends ElementDTO<String> {
         this.name = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }

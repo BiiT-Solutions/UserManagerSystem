@@ -7,7 +7,7 @@ import com.biit.server.logger.RestServerLogger;
 import com.biit.server.providers.StorableObjectProvider;
 import com.biit.server.rest.ElementServices;
 import com.biit.server.security.CreateUserRequest;
-import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.server.security.rest.BruteForceService;
 import com.biit.server.security.rest.NetworkController;

@@ -1,6 +1,6 @@
 package com.biit.usermanager.client;
 
-import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.usermanager.client.providers.UserManagerClient;
 import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
@@ -147,7 +147,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void findUserByName() {
-        final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
+        final Optional<UserDTO> user = userManagerClient.findByUsername(USER_NAME);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
     }
@@ -155,7 +155,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
     @Test
     public void findUserByNameAndService() {
         //Application + default authorities.
-        Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME, backendService);
+        Optional<UserDTO> user = userManagerClient.findByUsername(USER_NAME, backendService);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
         Assert.assertEquals(user.get().getAuthorities().size(), 2);
@@ -177,7 +177,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void findUserFromExternalReference() {
-        Optional<IAuthenticatedUser> user = userManagerClient.findByExternalReference(USER_EXTERNAL_REFERENCE);
+        Optional<UserDTO> user = userManagerClient.findByExternalReference(USER_EXTERNAL_REFERENCE);
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(user.get().getUsername(), USER_NAME);
     }
@@ -189,7 +189,7 @@ public class ClientTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void getPasswordByUID() {
-        final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(USER_NAME);
+        final Optional<UserDTO> user = userManagerClient.findByUsername(USER_NAME);
         Assert.assertTrue(user.isPresent());
         Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, userManagerClient.getPasswordByUid(user.get().getUID())));
     }

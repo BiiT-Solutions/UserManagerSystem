@@ -1,9 +1,9 @@
 package com.biit.usermanager.client.security;
 
-import com.biit.server.security.IAuthenticatedUser;
 import com.biit.server.security.ISecurityController;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
 import com.biit.usermanager.client.providers.UserManagerClient;
+import com.biit.usermanager.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
@@ -59,7 +59,7 @@ public class UserClientSecurityController implements ISecurityController {
     }
 
     private void checkIfCanSeeUserData(String jwtUserName, UUID userToCheck, Set<String> userRoles, String... requiredRoles) {
-        final Optional<IAuthenticatedUser> user = userManagerClient.findByUsername(jwtUserName);
+        final Optional<UserDTO> user = userManagerClient.findByUsername(jwtUserName);
         if (user.isEmpty()) {
             throw new ActionNotAllowedException(this.getClass(), "No user exists with username '" + jwtUserName + "'.");
         }

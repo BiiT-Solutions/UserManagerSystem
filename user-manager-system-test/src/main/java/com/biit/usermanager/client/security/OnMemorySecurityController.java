@@ -1,6 +1,6 @@
 package com.biit.usermanager.client.security;
 
-import com.biit.server.security.IAuthenticatedUser;
+import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
 import com.biit.server.security.ISecurityController;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
