@@ -24,8 +24,12 @@ public class OrganizationUrlConstructor {
         return "/organizations";
     }
 
+    public String getOrganizationsByUserId(Long userId) {
+        return getOrganizations() + "/users/" + userId;
+    }
+
     public String getOrganizationsByUser(String userUuid) {
-        return getOrganizations() + "/users/" + UriUtils.encode(userUuid, StandardCharsets.UTF_8);
+        return getOrganizations() + "/users/uuids/" + UriUtils.encode(userUuid, StandardCharsets.UTF_8);
     }
 
     public String getOrganizationsByUserName(String username) {

@@ -3,6 +3,8 @@ package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.server.logger.DtoControllerLogger;
+import com.biit.server.security.IUserOrganizationProvider;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.TeamConverter;
 import com.biit.usermanager.core.converters.UserConverter;
@@ -50,8 +52,9 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     @Autowired
     protected TeamController(TeamProvider provider, TeamConverter converter, OrganizationConverter organizationConverter,
                              OrganizationProvider organizationProvider, TeamEventSender eventSender, UserProvider userProvider,
-                             TeamMemberProvider teamMemberProvider, UserConverter userConverter) {
-        super(provider, converter, eventSender);
+                             TeamMemberProvider teamMemberProvider, UserConverter userConverter,
+                             List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+        super(provider, converter, eventSender, userOrganizationProvider);
         this.organizationConverter = organizationConverter;
         this.organizationProvider = organizationProvider;
         this.userProvider = userProvider;

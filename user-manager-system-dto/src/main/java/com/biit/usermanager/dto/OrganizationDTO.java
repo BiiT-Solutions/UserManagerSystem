@@ -5,7 +5,12 @@ import com.biit.server.security.model.IUserOrganization;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.io.Serial;
+
 public class OrganizationDTO extends ElementDTO<String> implements IUserOrganization {
+
+    @Serial
+    private static final long serialVersionUID = -5404731170811261650L;
 
     @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
     @NotBlank

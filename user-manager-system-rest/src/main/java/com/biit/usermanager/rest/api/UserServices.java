@@ -1,13 +1,17 @@
 package com.biit.usermanager.rest.api;
 
+import com.biit.database.encryption.SHA512HashGenerator;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.controllers.models.ElementDTO;
 import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.logger.RestServerLogger;
 import com.biit.server.providers.StorableObjectProvider;
 import com.biit.server.rest.ElementServices;
+import com.biit.server.rest.SecurityService;
 import com.biit.server.security.CreateUserRequest;
+import com.biit.server.security.IUserOrganizationProvider;
 import com.biit.server.security.model.IAuthenticatedUser;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.server.security.rest.BruteForceService;
 import com.biit.server.security.rest.NetworkController;
@@ -36,6 +40,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,36 +72,48 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     private final NetworkController networkController;
     private final BruteForceService bruteForceService;
+    private final SecurityService securityService;
+    private final List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider;
 
-    public UserServices(UserController userController, NetworkController networkController, BruteForceService bruteForceService) {
+    public UserServices(UserController userController, NetworkController networkController, BruteForceService bruteForceService,
+                        SecurityService securityService, List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
         super(userController);
         this.networkController = networkController;
         this.bruteForceService = bruteForceService;
+        this.securityService = securityService;
+        this.userOrganizationProvider = userOrganizationProvider;
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsername(
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
-            HttpServletRequest request) {
+            HttpServletRequest request, Authentication authentication) {
+        canBeDoneByDifferentUsers(username, authentication);
         return getController().getByUsername(username);
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
     @Operation(summary = "Get user by email", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/emails/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @Email @PathVariable("email") String email,
-                              HttpServletRequest request) {
-        return (UserDTO) getController().findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                              HttpServletRequest request, Authentication authentication) {
+
+        final UserDTO user = (UserDTO) getController().findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with email '" + email + "' found on the system."));
+        canBeDoneByDifferentUsers(user.getUsername(), authentication);
+        return user;
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Check user and password", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/credentials", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO checkCredentials(@Valid @RequestBody CheckCredentialsRequest credentialsRequest,
@@ -105,7 +122,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get user by username and application. The granted authorities are filtered by the application name.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -116,13 +134,16 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing application", required = true)
             @PathVariable("applicationName") String applicationName,
-            HttpServletRequest request) {
-        return (UserDTO) getController().findByUsernameAndApplication(username, applicationName).orElseThrow(() ->
+            HttpServletRequest request, Authentication authentication) {
+        final UserDTO user = (UserDTO) getController().findByUsernameAndApplication(username, applicationName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+        canBeDoneByDifferentUsers(user.getUsername(), authentication);
+        return user;
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get user by username and backend service. The granted authorities are filtered by the selected service name.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/service/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -133,13 +154,16 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing service", required = true)
             @PathVariable("backendServiceName") String backendServiceName,
-            HttpServletRequest request) {
-        return (UserDTO) getController().findByUsername(username, backendServiceName).orElseThrow(() ->
+            HttpServletRequest request, Authentication authentication) {
+        final UserDTO user = (UserDTO) getController().findByUsername(username, backendServiceName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
+        canBeDoneByDifferentUsers(user.getUsername(), authentication);
+        return user;
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get user by email and application", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/emails/{email}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByEmailAndApplication(@Parameter(description = "Email of an existing user", required = true)
@@ -147,36 +171,53 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
                                             @Parameter(description = "Name of an existing application", required = true)
                                             @PathVariable("applicationName") String applicationName,
-                                            HttpServletRequest request) {
-        return (UserDTO) getController().findByEmailAddress(email, applicationName).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                                            HttpServletRequest request, Authentication authentication) {
+        final UserDTO user = (UserDTO) getController().findByEmailAddress(email, applicationName).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with email '" + email + "' found on the system."));
+        canBeDoneByDifferentUsers(user.getUsername(), authentication);
+        return user;
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/uuids/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("uuid") String uuid,
-                             HttpServletRequest request) {
-        return (UserDTO) getController().findByUID(uuid).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+                             HttpServletRequest request, Authentication authentication) {
+        final UserDTO user = (UserDTO) getController().findByUID(uuid).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with uuid '" + uuid + "' found on the system."));
+        canBeDoneByDifferentUsers(user.getUsername(), authentication);
+        return user;
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.viewerPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Gets all entities that have these uuids", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/uuids", produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<UserDTO> getAllByUUIDs(@Parameter(description = "List of users' uuids.")
-                                             @RequestParam Collection<UUID> uuids, HttpServletRequest request) {
+                                             @RequestParam Collection<UUID> uuids,
+                                             Authentication authentication, HttpServletRequest request) {
+        final List<String> grantedAuthorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        if (!grantedAuthorities.contains(securityService.getAdminPrivilege()) && !grantedAuthorities.contains(securityService.getEditorPrivilege())) {
+            return getController().findByUIDsInUserOrganizations(uuids, authentication.getName());
+        }
         return getController().findByUIDs(uuids);
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.viewerPrivilege, @securityService.editorPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Gets all entities that have these uuids", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/uuids", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Collection<UserDTO> getAllByUUIDsInBody(@Parameter(description = "List of users' uuids.")
-                                                   @RequestBody Collection<UUID> uuids, HttpServletRequest request) {
+                                                   @RequestBody Collection<UUID> uuids,
+                                                   Authentication authentication, HttpServletRequest request) {
+        final List<String> grantedAuthorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        if (!grantedAuthorities.contains(securityService.getAdminPrivilege()) && !grantedAuthorities.contains(securityService.getEditorPrivilege())) {
+            return getController().findByUIDsInUserOrganizations(uuids, authentication.getName());
+        }
         return getController().findByUIDs(uuids);
     }
 
@@ -203,7 +244,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Updates a password by an admin user. Does not require to know the old password.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(path = "/{username}/passwords", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -212,6 +254,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                       @Parameter(description = "username", required = true)
                                       @PathVariable("username") String username,
                                       @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
+        canBeDoneByDifferentUsers(username, authentication);
         try {
             return (UserDTO) getController().updatePassword(username, request.getNewPassword(), authentication.getName());
         } catch (Exception e) {
@@ -299,19 +342,23 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Deletes a user by username.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(path = "/usernames/{username}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void deleteUser(
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
             @Parameter(description = "username", required = true)
-            @PathVariable("username") String username, Authentication authentication, HttpServletRequest httpRequest) {
+            @PathVariable("username") String username,
+            Authentication authentication, HttpServletRequest httpRequest) {
+        canBeDoneByDifferentUsers(username, authentication);
         getController().delete(username, authentication.getName());
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Assign roles to a user. Generates the intermediate structure if needed.", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}"
             + "/backend-services/{backendServiceName}/backend-service-roles/{backendServiceRoleName}",
@@ -327,12 +374,14 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @PathVariable("backendServiceName") String backendServiceName,
             @Parameter(description = "Backend Role name", required = true)
             @PathVariable("backendServiceRoleName") String backendServiceRoleName,
-            HttpServletRequest request) {
+            Authentication authentication, HttpServletRequest request) {
+        canBeDoneByDifferentUsers(username, authentication);
         return getController().assign(username, applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Assign application roles to a user. Assigns all related backend services that are defined.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
@@ -347,12 +396,14 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
-            HttpServletRequest request) {
+            Authentication authentication, HttpServletRequest request) {
+        canBeDoneByDifferentUsers(username, authentication);
         return getController().assign(username, applicationName, applicationRoleName);
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Deletes application roles from a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -366,22 +417,32 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Application Role name", required = true)
             @PathVariable("applicationRoleName") String applicationRoleName,
-            Authentication authentication,
-            HttpServletRequest request) {
+            Authentication authentication, HttpServletRequest request) {
+        canBeDoneByDifferentUsers(username, authentication);
         return getController().unAssign(username, applicationName, applicationRoleName, authentication.getName());
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/user-groups/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsers(@Parameter(description = "Id of an existing user group", required = true) @PathVariable("id") Long id,
-                                  HttpServletRequest request) {
-        return getController().getByUserGroup(id);
+                                  Authentication authentication, HttpServletRequest request) {
+        final List<UserDTO> users = getController().getByUserGroup(id);
+        final List<String> grantedAuthorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        if (!grantedAuthorities.contains(securityService.getAdminPrivilege()) && !grantedAuthorities.contains(securityService.getEditorPrivilege())) {
+            final Collection<? extends IUserOrganization> editorOrganizations = userOrganizationProvider.get(0).findByUsername(authentication.getName());
+            final Collection<String> organizationHashes = editorOrganizations.stream().map(o ->
+                    SHA512HashGenerator.createHash(o.getName())).toList();
+            return users.stream().filter(user -> organizationHashes.contains(user.getCreatedOn())).toList();
+        }
+        return users;
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get UserGroup's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/user-groups/names/{groupName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsersByUserGroup(
@@ -393,7 +454,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/teams/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsersByTeam(
@@ -408,7 +470,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}/teams/{teamName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsersByTeam(
@@ -420,7 +483,9 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @PathVariable("teamName") String teamName,
             @RequestParam(name = "page", defaultValue = "0") Optional<Integer> page,
             @RequestParam(name = "size", defaultValue = StorableObjectProvider.MAX_PAGE_SIZE + "") Optional<Integer> size,
-            HttpServletRequest request) {
+            Authentication authentication, HttpServletRequest request) {
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         if (size.isPresent()) {
             return getController().getByTeam(organizationName, teamName, page.orElse(0), size.get());
         }
@@ -428,7 +493,8 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Count users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}/teams/{teamName}/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public long countUsersByTeam(
@@ -436,12 +502,15 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Parameter(description = "Name of an existing organization", required = true) @PathVariable("organizationName") String organizationName,
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing team", required = true) @PathVariable("teamName") String teamName,
-            HttpServletRequest request) {
+            Authentication authentication, HttpServletRequest request) {
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().countByTeam(organizationName, teamName);
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get Organization's users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUsersByOrganization(
@@ -449,18 +518,23 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Parameter(description = "Name of an existing organization", required = true)
             @PathVariable("organizationName")
             String organizationName,
-            HttpServletRequest request) {
+            Authentication authentication, HttpServletRequest request) {
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().getByOrganization(organizationName);
     }
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
+
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege)")
     @Operation(summary = "Count users from team", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/organizations/{organizationName}/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public long countUsersByOrganization(
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing organization", required = true)
             @PathVariable("organizationName") String organizationName,
-            HttpServletRequest request) {
+            Authentication authentication, HttpServletRequest request) {
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().countByOrganization(organizationName);
     }
 

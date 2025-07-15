@@ -5,9 +5,11 @@ import com.biit.kafka.events.EventSubject;
 import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.logger.mail.exceptions.InvalidEmailAddressException;
 import com.biit.server.security.CreateUserRequest;
-import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.server.security.IAuthenticatedUserProvider;
+import com.biit.server.security.IUserOrganizationProvider;
 import com.biit.server.security.exceptions.ActionNotAllowedException;
+import com.biit.server.security.model.IAuthenticatedUser;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
@@ -74,7 +76,6 @@ import org.springframework.stereotype.Controller;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -90,7 +91,7 @@ import static com.biit.server.providers.StorableObjectProvider.DEFAULT_PAGE_SIZE
 @Order(1)
 @Qualifier("userController")
 public class UserController extends KafkaElementController<User, Long, UserDTO, UserRepository,
-        UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider {
+        UserProvider, UserConverterRequest, UserConverter> implements IAuthenticatedUserProvider<UserDTO> {
 
     public static final String ROLE_PREFIX = "ROLE_";
     public static final String ADMIN_AUTHORITY = "USERMANAGERSYSTEM_ADMIN";
@@ -132,6 +133,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     private final RoleProvider roleProvider;
 
+    private final List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider;
+
     @Autowired
     protected UserController(UserProvider provider, UserConverter converter,
                              ApplicationProvider applicationProvider, BackendServiceProvider backendServiceProvider,
@@ -142,8 +145,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                              UserEventSender userEventSender, UserGroupProvider userGroupProvider,
                              TeamProvider teamProvider, OrganizationProvider organizationProvider, UserGroupUserProvider userGroupUserRepository,
                              TeamMemberProvider teamMemberProvider, PasswordResetTokenProvider passwordResetTokenProvider,
-                             EmailService emailService, RoleProvider roleProvider) {
-        super(provider, converter, userEventSender);
+                             EmailService emailService, RoleProvider roleProvider,
+                             List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+        super(provider, converter, userEventSender, userOrganizationProvider);
         this.applicationProvider = applicationProvider;
         this.backendServiceProvider = backendServiceProvider;
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
@@ -159,6 +163,14 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         this.passwordResetTokenProvider = passwordResetTokenProvider;
         this.emailService = emailService;
         this.roleProvider = roleProvider;
+        this.userOrganizationProvider = userOrganizationProvider;
+    }
+
+    private Collection<? extends IUserOrganization> sharedOrganizations(String username1, String username2) {
+        final Collection<? extends IUserOrganization> userOrganizations = userOrganizationProvider.get(0).findByUsername(username1);
+        final Collection<? extends IUserOrganization> editorOrganizations = userOrganizationProvider.get(0).findByUsername(username2);
+        userOrganizations.retainAll(editorOrganizations);
+        return userOrganizations;
     }
 
 
@@ -232,7 +244,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByUsername(String username) {
+    public Optional<UserDTO> findByUsername(String username) {
         try {
             return Optional.of(getByUsername(username));
         } catch (UserNotFoundException e) {
@@ -249,7 +261,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByUsername(String username, String backendServiceName) {
+    public Optional<UserDTO> findByUsername(String username, String backendServiceName) {
         if (backendServiceName == null) {
             return findByUsername(username);
         }
@@ -268,7 +280,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
-    public Optional<IAuthenticatedUser> findByUsernameAndApplication(String username, String applicationName) {
+    public Optional<UserDTO> findByUsernameAndApplication(String username, String applicationName) {
         if (applicationName == null) {
             return findByUsername(username);
         }
@@ -288,7 +300,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByEmailAddress(String email) {
+    public Optional<UserDTO> findByEmailAddress(String email) {
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByEmail(email).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with email '" + email + "' found on the system."))));
@@ -301,7 +313,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByEmailAddress(String email, String applicationName) {
+    public Optional<UserDTO> findByEmailAddress(String email, String applicationName) {
         if (applicationName == null) {
             return findByEmailAddress(email);
         }
@@ -329,7 +341,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public Optional<IAuthenticatedUser> findByUID(String uid) {
+    public Optional<UserDTO> findByUID(String uid) {
         try {
             final UserDTO userDTO = getConverter().convert(new UserConverterRequest(getProvider().findByUuid(UUID.fromString(uid)).orElseThrow(() ->
                     new UserNotFoundException(this.getClass(), "No User with uid '" + uid + "' found on the system."))));
@@ -426,7 +438,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public IAuthenticatedUser create(CreateUserRequest createUserRequest, String createdBy) {
+    public UserDTO create(CreateUserRequest createUserRequest, String createdBy) {
         final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
                 createUserRequest.getEmail(), createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(),
                 createUserRequest.getExternalReference(), createdBy);
@@ -442,13 +454,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return authenticatedUser;
     }
 
-    public IAuthenticatedUser createUser(String username, String uniqueId, String name, String lastName, String password, String externalReference,
-                                         String createdBy) {
+    public UserDTO createUser(String username, String uniqueId, String name, String lastName, String password, String externalReference,
+                              String createdBy) {
         return createUser(username, uniqueId, null, name, lastName, password, externalReference, createdBy);
     }
 
-    public IAuthenticatedUser createUser(String username, String uniqueId, String email, String name, String lastName, String password,
-                                         String externalReference, String createdBy) {
+    public UserDTO createUser(String username, String uniqueId, String email, String name, String lastName, String password,
+                              String externalReference, String createdBy) {
         if (findByUsername(username).isPresent()) {
             UserManagerLogger.warning(this.getClass(), "Username '" + username + "' already exists!.");
             throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
@@ -487,7 +499,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public IAuthenticatedUser updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
+    public UserDTO updatePassword(String username, String oldPassword, String newPassword, String updatedBy) {
         final User user = checkPassword(username, oldPassword);
 
         user.setPassword(bcryptSalt + newPassword);
@@ -557,7 +569,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public IAuthenticatedUser updateUser(CreateUserRequest createUserRequest, String updatedBy) {
+    public UserDTO updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         final User user = getProvider().findByUsername(createUserRequest.getUsername()).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + createUserRequest.getUsername() + "' found on the system."));
 
@@ -578,12 +590,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     @Override
-    public Collection<IAuthenticatedUser> findAll() {
+    public Collection<UserDTO> findAll() {
         return getProvider().findAll().parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());
     }
 
     @Override
-    public Collection<IAuthenticatedUser> findAll(int page, int size) {
+    public Collection<UserDTO> findAll(int page, int size) {
         return getProvider().findAll(page, size).parallelStream().map(this::createConverterRequest).map(getConverter()::convert).collect(Collectors.toList());
     }
 
@@ -904,7 +916,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
 
     public List<UserDTO> getByUserGroup(UserGroup userGroup) {
-        final List<Long> userIds = new ArrayList<>();
+        final Set<Long> userIds = new HashSet<>();
         final Set<UserGroupUser> userGroupUsers = userGroupUserProvider.findByIdUserGroupId(userGroup.getId());
         userGroupUsers.forEach(user -> userIds.add(user.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
@@ -949,7 +961,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'.");
         }
 
-        final List<Long> userIds = new ArrayList<>();
+        final Set<Long> userIds = new HashSet<>();
         final List<TeamMember> members = teamMemberProvider.findByIdUserGroupId(teamId, page, size);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
@@ -989,7 +1001,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new TeamNotFoundException(this.getClass(), "No Team exists with name '" + teamName + "' at organization '" + organizationName + "'.");
         }
 
-        final List<Long> userIds = new ArrayList<>();
+        final Set<Long> userIds = new HashSet<>();
         final List<TeamMember> members = teamMemberProvider.findByIdUserGroupId(team.get().getId(), page, size);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
@@ -1001,11 +1013,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
             throw new OrganizationNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
         }
 
-        final List<Long> userIds = new ArrayList<>();
+        final Set<Long> userIds = new HashSet<>();
         final Set<TeamMember> members = teamMemberProvider.findByOrganizationName(organizationName);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
         return convertAll(getProvider().findByIdIn(userIds));
     }
+
 
     public long countByOrganization(String organizationName) {
         if (organizationProvider.findByName(organizationName).isEmpty()) {
@@ -1019,11 +1032,16 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         return convertAll(getProvider().findByUuids(uuids));
     }
 
+    public List<UserDTO> findByUIDsInUserOrganizations(Collection<UUID> uuids, String username) {
+        final Collection<? extends IUserOrganization> organizations = userOrganizationProvider.get(0).findByUsername(username);
+        return convertAll(getProvider().findByUuids(uuids, organizations.stream().map(IUserOrganization::getName).toList()));
+    }
+
 
     @Override
-    public Optional<IAuthenticatedUser> findByExternalReference(String externalReference) {
+    public Optional<UserDTO> findByExternalReference(String externalReference) {
         final Optional<User> user = getProvider().findByExternalReference(externalReference);
-        return user.map(IAuthenticatedUser.class::cast);
+        return user.map(this::convert);
     }
 
     public UserDTO getByExternalReference(String externalReference) {
@@ -1033,5 +1051,24 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     public List<UserDTO> getByExternalReference(List<String> externalReference) {
         return convertAll(getProvider().findByExternalReferences(externalReference));
+    }
+
+
+    /**
+     * Users can be in more than one organization.
+     *
+     * @param page      Starting page.
+     * @param size      Size of page.
+     * @param requester the organization admin that searches the users.
+     * @return a list of users that can pertain to any organization from the organization admin.
+     */
+    @Override
+    public List<UserDTO> getByUserOrganization(int page, int size, String requester) {
+        final Collection<? extends IUserOrganization> organizations = userOrganizationProvider.get(0).findByUsername(requester);
+        final Set<Long> userIds = new HashSet<>();
+        final List<TeamMember> members = teamMemberProvider.findByOrganizationNameIn(organizations.stream().map(IUserOrganization::getName).toList(),
+                page, size);
+        members.forEach(member -> userIds.add(member.getId().getUserId()));
+        return convertAll(getProvider().findByIdIn(userIds));
     }
 }

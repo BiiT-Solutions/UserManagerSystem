@@ -32,6 +32,8 @@ public interface UserRepository extends ElementRepository<User, Long> {
 
     List<User> findByUuidIn(Collection<UUID> uuid);
 
+    List<User> findByUuidInAndCreatedOnHashIn(Collection<UUID> uuid, Collection<String> createdOn);
+
     List<User> findAllByAccountBlocked(boolean accountBlocked);
 
     long deleteByUsernameHash(String username);

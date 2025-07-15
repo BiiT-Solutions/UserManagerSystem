@@ -1,7 +1,9 @@
 package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaElementController;
+import com.biit.server.security.IUserOrganizationProvider;
 import com.biit.server.security.model.IAuthenticatedUser;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.BasicUserConverter;
 import com.biit.usermanager.core.converters.models.BasicUserConverterRequest;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
@@ -27,8 +29,8 @@ public class BasicUserController extends KafkaElementController<User, Long, Basi
 
     @Autowired
     protected BasicUserController(UserProvider provider, BasicUserConverter converter,
-                                  BasicUserEventSender eventSender) {
-        super(provider, converter, eventSender);
+                                  BasicUserEventSender eventSender, List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+        super(provider, converter, eventSender, userOrganizationProvider);
     }
 
     @Override

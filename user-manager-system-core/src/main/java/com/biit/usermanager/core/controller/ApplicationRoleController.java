@@ -3,6 +3,8 @@ package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaCreatedElementController;
 import com.biit.server.logger.DtoControllerLogger;
+import com.biit.server.security.IUserOrganizationProvider;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.ApplicationConverter;
 import com.biit.usermanager.core.converters.ApplicationRoleConverter;
 import com.biit.usermanager.core.converters.RoleConverter;
@@ -67,8 +69,9 @@ public class ApplicationRoleController extends KafkaCreatedElementController<App
                                         ApplicationRolesEventSender eventSender,
                                         UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
                                         UserGroupProvider userGroupProvider,
-                                        UserEventSender userEventSender) {
-        super(provider, converter, eventSender);
+                                        UserEventSender userEventSender,
+                                        List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+        super(provider, converter, eventSender, userOrganizationProvider);
         this.roleConverter = roleConverter;
         this.applicationProvider = applicationProvider;
         this.applicationConverter = applicationConverter;

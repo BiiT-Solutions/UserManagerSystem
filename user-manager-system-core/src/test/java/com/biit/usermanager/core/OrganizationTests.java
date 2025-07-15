@@ -133,9 +133,9 @@ public class OrganizationTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void getOrganizationByNameIgnoreCase() {
-        Assert.assertNotNull(organizationController.getByName(ORGANIZATION_1_NAME.toLowerCase()));
-        Assert.assertNotNull(organizationController.getByName(ORGANIZATION_2_NAME.toLowerCase()));
-        Assert.assertNotNull(organizationController.getByName(ORGANIZATION_3_NAME.toLowerCase()));
+        Assert.assertNotNull(organizationController.findByName(ORGANIZATION_1_NAME.toLowerCase()));
+        Assert.assertNotNull(organizationController.findByName(ORGANIZATION_2_NAME.toLowerCase()));
+        Assert.assertNotNull(organizationController.findByName(ORGANIZATION_3_NAME.toLowerCase()));
     }
 
     @Test
@@ -147,8 +147,8 @@ public class OrganizationTests extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = {"assignUsers"})
     public void getOrganizationsByUsers() {
-        Assert.assertEquals(organizationController.getByUser(user1.getId()).size(), 1);
-        Assert.assertEquals(organizationController.getByUser(user2.getId()).size(), 2);
+        Assert.assertEquals(organizationController.findByUserId(user1.getId()).size(), 1);
+        Assert.assertEquals(organizationController.findByUserId(user2.getId()).size(), 2);
     }
 
     @Test(dependsOnMethods = {"assignUsers"})

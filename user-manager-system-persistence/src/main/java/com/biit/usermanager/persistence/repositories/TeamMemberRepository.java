@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Set;
 
 @Repository
@@ -30,6 +31,12 @@ public interface TeamMemberRepository extends StorableObjectRepository<TeamMembe
             (SELECT t.id FROM Team t WHERE lower(t.organization.name) = lower(:organizationName))
             """)
     Set<TeamMember> findByOrganizationName(String organizationName);
+
+    @Query("""
+            SELECT tm FROM TeamMember tm WHERE tm.id.teamId IN
+            (SELECT t.id FROM Team t WHERE lower(t.organization.name) IN :organizationNames)
+            """)
+    Page<TeamMember> findByOrganizationNameIn(Collection<String> organizationNames, Pageable pageable);
 
     @Query("""
             SELECT COUNT(tm) FROM TeamMember tm WHERE tm.id.teamId IN

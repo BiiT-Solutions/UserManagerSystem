@@ -11,8 +11,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamMemberId, TeamMemberRepository> {
@@ -42,6 +44,11 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
 
     public Set<TeamMember> findByOrganizationName(String organizationName) {
         return getRepository().findByOrganizationName(organizationName);
+    }
+
+    public List<TeamMember> findByOrganizationNameIn(Collection<String> organizationName, int page, int size) {
+        final Pageable pageable = PageRequest.of(page, size);
+        return getRepository().findByOrganizationNameIn(organizationName.stream().map(String::toLowerCase).collect(Collectors.toSet()), pageable).getContent();
     }
 
     public TeamMember assign(Long userId, Long teamId) {

@@ -150,6 +150,10 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         return getRepository().findByUuidIn(uuids);
     }
 
+    public List<User> findByUuids(Collection<UUID> uuids, Collection<String> createdOn) {
+        return getRepository().findByUuidInAndCreatedOnHashIn(uuids, createdOn);
+    }
+
     public Optional<User> getById(Long id) {
         return getRepository().findById(id);
     }

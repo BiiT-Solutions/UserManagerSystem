@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Primary
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class AuthenticatedUserProvider implements IAuthenticatedUserProvider {
+public class AuthenticatedUserProvider implements IAuthenticatedUserProvider<IAuthenticatedUser> {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 

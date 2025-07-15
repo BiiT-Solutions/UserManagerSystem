@@ -29,7 +29,7 @@ public class UserNotDisableTest extends AbstractTestNGSpringContextTests {
     private final static String username3 = "mariano";
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Test
     public void saveUser() {

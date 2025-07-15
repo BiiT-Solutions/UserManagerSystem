@@ -1,6 +1,8 @@
 package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaElementController;
+import com.biit.server.security.IUserOrganizationProvider;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.BackendServiceConverter;
 import com.biit.usermanager.core.converters.models.BackendServiceConverterRequest;
 import com.biit.usermanager.core.exceptions.BackendServiceNotFoundException;
@@ -29,8 +31,8 @@ public class BackendServiceController extends KafkaElementController<BackendServ
     protected BackendServiceController(BackendServiceProvider provider, BackendServiceConverter converter,
                                        BackendServiceEventSender eventSender,
                                        UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
-                                       UserEventSender userEventSender) {
-        super(provider, converter, eventSender);
+                                       UserEventSender userEventSender, List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+        super(provider, converter, eventSender, userOrganizationProvider);
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
         this.userEventSender = userEventSender;
     }

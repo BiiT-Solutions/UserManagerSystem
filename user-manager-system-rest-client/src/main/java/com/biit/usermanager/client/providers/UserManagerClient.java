@@ -5,6 +5,7 @@ import com.biit.rest.exceptions.InvalidResponseException;
 import com.biit.server.client.SecurityClient;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IAuthenticatedUserProvider;
+import com.biit.server.security.model.IAuthenticatedUser;
 import com.biit.server.security.model.UpdatePasswordRequest;
 import com.biit.usermanager.client.exceptions.ElementNotFoundException;
 import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
@@ -397,7 +398,7 @@ public class UserManagerClient implements IAuthenticatedUserProvider<UserDTO> {
 
 
     @Override
-    public boolean delete(UserDTO authenticatedUser) {
+    public boolean delete(IAuthenticatedUser authenticatedUser) {
         try {
             try (Response result = securityClient.post(userUrlConstructor.getUserManagerServerUrl(), userUrlConstructor.delete(),
                     mapper.writeValueAsString(authenticatedUser))) {

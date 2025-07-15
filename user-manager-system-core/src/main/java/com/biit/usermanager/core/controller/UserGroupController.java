@@ -4,6 +4,8 @@ package com.biit.usermanager.core.controller;
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.kafka.events.EventSubject;
 import com.biit.kafka.events.IEventSender;
+import com.biit.server.security.IUserOrganizationProvider;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.UserGroupConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
@@ -71,8 +73,9 @@ public class UserGroupController extends KafkaElementController<UserGroup, Long,
                                   UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider,
                                   BackendServiceRoleProvider backendServiceRoleProvider,
                                   ApplicationRoleProvider applicationRoleProvider, UserProvider userProvider,
-                                  UserGroupUserRepository userGroupUserRepository, UserConverter userConverter) {
-        super(provider, converter, eventSender);
+                                  UserGroupUserRepository userGroupUserRepository, UserConverter userConverter,
+                                  List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+        super(provider, converter, eventSender, userOrganizationProvider);
         this.applicationBackendServiceRoleProvider = applicationBackendServiceRoleProvider;
         this.userGroupApplicationBackendServiceRoleProvider = userGroupApplicationBackendServiceRoleProvider;
         this.backendServiceRoleProvider = backendServiceRoleProvider;

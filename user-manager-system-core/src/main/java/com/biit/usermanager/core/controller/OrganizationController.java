@@ -3,6 +3,7 @@ package com.biit.usermanager.core.controller;
 
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.server.logger.DtoControllerLogger;
+import com.biit.server.security.IUserOrganizationProvider;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.models.OrganizationConverterRequest;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
@@ -17,17 +18,25 @@ import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.User;
 import com.biit.usermanager.persistence.repositories.OrganizationRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
+@Order(1)
+@Qualifier("organizationController")
 public class OrganizationController extends KafkaElementController<Organization, String, OrganizationDTO, OrganizationRepository,
-        OrganizationProvider, OrganizationConverterRequest, OrganizationConverter> {
+        OrganizationProvider, OrganizationConverterRequest, OrganizationConverter> implements IUserOrganizationProvider<OrganizationDTO> {
 
     private final UserProvider userProvider;
     private final TeamProvider teamProvider;
@@ -36,10 +45,16 @@ public class OrganizationController extends KafkaElementController<Organization,
     @Autowired
     protected OrganizationController(OrganizationProvider provider, OrganizationConverter converter, OrganizationEventSender eventSender,
                                      UserProvider userProvider, TeamProvider teamProvider, TeamMemberProvider teamMemberProvider) {
-        super(provider, converter, eventSender);
+        //I cannot add myself, so I add it on the @PostConstruct
+        super(provider, converter, eventSender, new ArrayList<>());
         this.userProvider = userProvider;
         this.teamProvider = teamProvider;
         this.teamMemberProvider = teamMemberProvider;
+    }
+
+    @PostConstruct
+    public void init() {
+        setUserOrganizationProvider(this);
     }
 
     @Override
@@ -55,26 +70,28 @@ public class OrganizationController extends KafkaElementController<Organization,
         return super.create(dto, creatorName);
     }
 
-    public OrganizationDTO getByName(String name) {
+    @Override
+    public OrganizationDTO findByName(String name) {
         return getConverter().convert(new OrganizationConverterRequest(getProvider().findByName(name).orElseThrow(
                 () -> new OrganizationNotFoundException(this.getClass(), "No Organization with name '" + name + "' found on the system."))));
     }
 
-    public List<OrganizationDTO> getByUser(Long userId) {
+    public List<OrganizationDTO> findByUserId(Long userId) {
         final User user = userProvider.findById(userId).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with id '" + userId + "'."));
 
-        return getByUser(user);
+        return findByUser(user);
     }
 
-    public List<OrganizationDTO> getByUser(String username) {
+    @Override
+    public List<OrganizationDTO> findByUsername(String username) {
         final User user = userProvider.findByUsername(username).orElseThrow(()
                 -> new UserNotFoundException(this.getClass(), "No user exists with username '" + username + "'."));
 
-        return getByUser(user);
+        return findByUser(user);
     }
 
-    public List<OrganizationDTO> getByUser(User user) {
+    public List<OrganizationDTO> findByUser(User user) {
         return getConverter().convertAll(getProvider().findByUser(user).stream()
                 .map(this::createConverterRequest).collect(Collectors.toSet()));
     }
@@ -109,5 +126,13 @@ public class OrganizationController extends KafkaElementController<Organization,
             throw new OrganizationNotFoundException(this.getClass(), "No Organization exists with name '" + organizationName + "'.");
         }
         delete(convert(organization.get()), deletedBy);
+    }
+
+
+    @Override
+    public Collection<OrganizationDTO> findByUserUID(String uid) {
+        final User user = userProvider.findByUuid(UUID.fromString(uid)).orElseThrow(()
+                -> new UserNotFoundException(this.getClass(), "No user exists with id '" + uid + "'."));
+        return findByUser(user);
     }
 }
