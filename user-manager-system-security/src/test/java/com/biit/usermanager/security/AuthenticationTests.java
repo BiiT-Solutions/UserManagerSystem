@@ -22,8 +22,6 @@ import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.TeamDTO;
 import com.biit.usermanager.dto.UserDTO;
 import com.biit.usermanager.persistence.entities.User;
-import com.biit.usermanager.security.activities.ActivityManager;
-import com.biit.usermanager.security.activities.RoleActivities;
 import com.biit.usermanager.security.exceptions.InvalidCredentialsException;
 import com.biit.usermanager.security.exceptions.UserDoesNotExistException;
 import com.biit.usermanager.security.exceptions.UserManagementException;
@@ -36,6 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -59,6 +58,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Test(groups = {"authenticationTests"})
 public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
@@ -118,10 +118,8 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     @Autowired
     private ApplicationController applicationController;
 
-
     @Autowired
     private AuthenticationService authenticationService;
-
 
     @Autowired
     private BackendServiceRoleController backendServiceRoleController;
@@ -131,12 +129,6 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private ApplicationBackendServiceRoleConverter applicationBackendServiceRoleConverter;
-
-    @Autowired
-    private RoleActivities roleActivities;
-
-    @Autowired
-    private ActivityManager activityManager;
 
     @Autowired
     private ApplicationRoleController applicationRoleController;
@@ -162,8 +154,6 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private ApplicationDTO applicationDTO;
 
     private OrganizationDTO organizationDTO;
-
-    private TeamDTO teamDTO;
 
     private Map<String, RoleDTO> roles;
 
@@ -233,7 +223,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @BeforeClass(dependsOnMethods = {"createOrganization"})
     private void createTeams() {
-        this.teamDTO = teamController.create(new TeamDTO(GROUP_NAME, organizationDTO), null);
+        teamController.create(new TeamDTO(GROUP_NAME, organizationDTO), null);
     }
 
     @BeforeClass(dependsOnMethods = {"createApplication", "createRoles", "createTeams"})
@@ -322,13 +312,13 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test
     public void getById() throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
-        final UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        final UserDTO userDTO = userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         Assert.assertEquals(authenticationService.getUserById(userDTO.getId()).getUniqueName(), USER_NAME);
     }
 
     @Test
     public void updatePassword() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
-        UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        UserDTO userDTO = userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         User databaseUser = userProvider.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         Assert.assertTrue(BCrypt.checkpw(bcryptSalt + USER_PASSWORD, databaseUser.getPassword()));
         Assert.assertFalse(BCrypt.checkpw(bcryptSalt + USER_NEW_PASSWORD, databaseUser.getPassword()));
@@ -360,7 +350,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = {"addUser"})
     public void updateUser() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
-        UserDTO userDTO = (UserDTO) userController.findByUsername(NEW_USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        UserDTO userDTO = userController.findByUsername(NEW_USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         userDTO.setUsername(NEW_USER_NAME_UPDATED);
 
         authenticationService.updateUser(userDTO);
@@ -375,7 +365,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = {"updateUser"})
     public void deleteUser() throws UserDoesNotExistException, UserManagementException, InvalidCredentialsException {
-        UserDTO userDTO = (UserDTO) userController.findByUsername(NEW_USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        UserDTO userDTO = userController.findByUsername(NEW_USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         authenticationService.deleteUser(userDTO);
         Assert.assertNull(userController.findByUsername(NEW_USER_NAME).orElse(null));
     }
@@ -394,7 +384,7 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     @Test(enabled = false)
     public void getDefaultGroup() throws UserManagementException, InvalidCredentialsException, UserDoesNotExistException {
-        UserDTO userDTO = (UserDTO) userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
+        UserDTO userDTO = userController.findByUsername(USER_NAME).orElseThrow(() -> new UserDoesNotExistException(""));
         TeamDTO teamDTO = (TeamDTO) authenticationService.getDefaultGroup(userDTO);
         Assert.assertNotNull(teamDTO);
     }

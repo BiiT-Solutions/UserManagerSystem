@@ -35,9 +35,6 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
 
     private final ObjectMapper mapper;
 
-    @Value("${spring.application.name}")
-    private String applicationName;
-
     public AuthenticationService(AuthenticationUrlConstructor authenticationUrlConstructor, SecurityClient securityClient, ObjectMapper mapper) {
         this.authenticationUrlConstructor = authenticationUrlConstructor;
         this.securityClient = securityClient;
@@ -75,7 +72,7 @@ public class AuthenticationService implements IAuthenticationService<Long, Long>
     }
 
     @Override
-    public IGroup<Long> getDefaultGroup(IUser<Long> user) throws UserManagementException, UserDoesNotExistException, InvalidCredentialsException {
+    public IGroup<Long> getDefaultGroup(IUser<Long> user) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

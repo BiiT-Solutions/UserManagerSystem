@@ -73,7 +73,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         if (getEncryptionKey() != null && !getEncryptionKey().isBlank()) {
             final Optional<User> authenticatedUser = findByUsernameHash(username);
             if (authenticatedUser.isPresent()) {
-                authenticatedUser.get().setUsernameHash(authenticatedUser.get().getUsername().toLowerCase());
+                authenticatedUser.get().setUsernameHash(authenticatedUser.get().getUsername());
                 return authenticatedUser;
             }
             return Optional.empty();
@@ -87,7 +87,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         //If encryption is enabled, use hash.
         if (getEncryptionKey() != null && !getEncryptionKey().isBlank()) {
             final List<User> authenticatedUser = findByUsernameHash(usernames);
-            authenticatedUser.forEach(u -> u.setUsernameHash(u.getUsername().toLowerCase()));
+            authenticatedUser.forEach(u -> u.setUsernameHash(u.getUsername()));
             return authenticatedUser;
         } else {
             return getRepository().findByUsernameIn(usernames);
