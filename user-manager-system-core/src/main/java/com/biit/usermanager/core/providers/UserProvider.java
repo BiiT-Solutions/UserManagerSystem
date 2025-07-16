@@ -127,6 +127,9 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     }
 
     public Optional<User> findByUsernameHash(String username) {
+        if (username == null) {
+            return Optional.empty();
+        }
         return getRepository().findByUsernameHash(username.toLowerCase());
     }
 

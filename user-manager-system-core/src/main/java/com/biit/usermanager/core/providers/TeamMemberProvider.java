@@ -51,9 +51,9 @@ public class TeamMemberProvider extends StorableObjectProvider<TeamMember, TeamM
         return getRepository().findByOrganizationNameIn(organizationName.stream().map(String::toLowerCase).collect(Collectors.toSet()), pageable).getContent();
     }
 
-    public TeamMember assign(Long userId, Long teamId, String assignedBy) {
+    public TeamMember assign(Long userId, Long teamId, String organizationName, String assignedBy) {
         UserManagerLogger.debug(this.getClass(), "Assigning team '{}' to user '{}'", teamId, userId);
-        return save(new TeamMember(teamId, userId, assignedBy));
+        return save(new TeamMember(teamId, userId, organizationName, assignedBy));
     }
 
     public long countByIdUserGroupId(Long teamId) {

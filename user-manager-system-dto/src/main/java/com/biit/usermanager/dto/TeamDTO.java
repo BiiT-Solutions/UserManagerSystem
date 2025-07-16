@@ -90,6 +90,7 @@ public class TeamDTO extends ElementDTO<Long> implements IGroup<Long>, Comparabl
 
     public void setOrganization(OrganizationDTO organization) {
         this.organization = organization;
+        setCreatedOn(organization.getName());
     }
 
     @Override

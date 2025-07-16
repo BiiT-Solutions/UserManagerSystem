@@ -163,6 +163,11 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
     }
 
 
+    public TeamDTO assign(Long teamId, UserDTO user, String assignedBy) {
+        return assign(teamId, List.of(user), assignedBy);
+    }
+
+
     public TeamDTO assign(Long teamId, Collection<UserDTO> users, String assignedBy) {
         final Team team = getProvider().findById(teamId).orElseThrow(()
                 -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
@@ -173,7 +178,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
         //Store into the team
         final List<TeamMember> teamMembers = new ArrayList<>();
-        users.forEach(userDTO -> teamMembers.add(new TeamMember(teamId, userDTO.getId(), assignedBy)));
+        users.forEach(userDTO -> teamMembers.add(new TeamMember(team.getId(), userDTO.getId(), team.getOrganization().getName(), assignedBy)));
         teamMemberProvider.saveAll(teamMembers);
 
         team.setUpdatedBy(assignedBy);
@@ -192,13 +197,17 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
         return unAssign(team.getId(), users, assignedBy);
     }
 
+    public TeamDTO unAssign(Long teamId, UserDTO user, String assignedBy) {
+        return unAssign(teamId, List.of(user), assignedBy);
+    }
+
     public TeamDTO unAssign(Long teamId, Collection<UserDTO> users, String assignedBy) {
         final Team team = getProvider().findById(teamId).orElseThrow(()
                 -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
 
 
         final List<TeamMember> userGroupUserToDelete = new ArrayList<>();
-        users.forEach(userDTO -> userGroupUserToDelete.add(new TeamMember(teamId, userDTO.getId(), null)));
+        users.forEach(userDTO -> userGroupUserToDelete.add(new TeamMember(team.getId(), userDTO.getId(), team.getOrganization().getName(), null)));
         teamMemberProvider.deleteAll(userGroupUserToDelete);
 
         team.setUpdatedBy(assignedBy);

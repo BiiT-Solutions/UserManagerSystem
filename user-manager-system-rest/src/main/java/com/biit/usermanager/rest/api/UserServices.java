@@ -105,7 +105,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public UserDTO getByEmail(@Parameter(description = "Email of an existing user", required = true) @Email @PathVariable("email") String email,
                               HttpServletRequest request, Authentication authentication) {
 
-        final UserDTO user = (UserDTO) getController().findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        final UserDTO user = getController().findByEmailAddress(email).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with email '" + email + "' found on the system."));
         canBeDoneByDifferentUsers(user.getUsername(), authentication);
         return user;
@@ -135,7 +135,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Parameter(description = "Name of an existing application", required = true)
             @PathVariable("applicationName") String applicationName,
             HttpServletRequest request, Authentication authentication) {
-        final UserDTO user = (UserDTO) getController().findByUsernameAndApplication(username, applicationName).orElseThrow(() ->
+        final UserDTO user = getController().findByUsernameAndApplication(username, applicationName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
         canBeDoneByDifferentUsers(user.getUsername(), authentication);
         return user;
@@ -155,7 +155,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Parameter(description = "Name of an existing service", required = true)
             @PathVariable("backendServiceName") String backendServiceName,
             HttpServletRequest request, Authentication authentication) {
-        final UserDTO user = (UserDTO) getController().findByUsername(username, backendServiceName).orElseThrow(() ->
+        final UserDTO user = getController().findByUsername(username, backendServiceName).orElseThrow(() ->
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
         canBeDoneByDifferentUsers(user.getUsername(), authentication);
         return user;
@@ -172,7 +172,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
                                             @Parameter(description = "Name of an existing application", required = true)
                                             @PathVariable("applicationName") String applicationName,
                                             HttpServletRequest request, Authentication authentication) {
-        final UserDTO user = (UserDTO) getController().findByEmailAddress(email, applicationName).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        final UserDTO user = getController().findByEmailAddress(email, applicationName).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with email '" + email + "' found on the system."));
         canBeDoneByDifferentUsers(user.getUsername(), authentication);
         return user;
@@ -185,7 +185,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @GetMapping(value = "/uuids/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUUID(@Parameter(description = "Name of an existing user", required = true) @PathVariable("uuid") String uuid,
                              HttpServletRequest request, Authentication authentication) {
-        final UserDTO user = (UserDTO) getController().findByUID(uuid).orElseThrow(() -> new UserNotFoundException(this.getClass(),
+        final UserDTO user = getController().findByUID(uuid).orElseThrow(() -> new UserNotFoundException(this.getClass(),
                 "No User with uuid '" + uuid + "' found on the system."));
         canBeDoneByDifferentUsers(user.getUsername(), authentication);
         return user;

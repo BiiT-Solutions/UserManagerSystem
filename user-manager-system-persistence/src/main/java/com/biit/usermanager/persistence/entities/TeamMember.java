@@ -2,6 +2,7 @@ package com.biit.usermanager.persistence.entities;
 
 import com.biit.server.persistence.entities.CreatedElement;
 import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -20,11 +21,14 @@ public class TeamMember extends CreatedElement {
     @EmbeddedId
     private TeamMemberId id;
 
+    @Column(name = "organization_name")
+    private String organizationName;
+
     public TeamMember() {
         super();
     }
 
-    public TeamMember(Long teamId, Long userId, String createdBy) {
+    public TeamMember(Long teamId, Long userId, String organizationName, String createdBy) {
         this();
         setId(new TeamMemberId(teamId, userId));
         setCreatedBy(createdBy);
@@ -36,6 +40,14 @@ public class TeamMember extends CreatedElement {
 
     public void setId(TeamMemberId id) {
         this.id = id;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
     @Override

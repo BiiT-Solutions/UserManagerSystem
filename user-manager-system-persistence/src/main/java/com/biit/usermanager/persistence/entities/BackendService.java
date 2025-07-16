@@ -66,6 +66,11 @@ public class BackendService extends Element<String> implements Serializable {
     }
 
     @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as services are not linked to organization.
+    }
+
+    @Override
     public String toString() {
         return "BackendService{"
                 + "name='" + getName() + '\''

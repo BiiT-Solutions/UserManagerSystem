@@ -93,6 +93,11 @@ public class UserGroup extends Element<Long> {
     }
 
     @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as user groups are not linked to organization.
+    }
+
+    @Override
     public String toString() {
         return "UserGroup{"
                 + "id=" + id

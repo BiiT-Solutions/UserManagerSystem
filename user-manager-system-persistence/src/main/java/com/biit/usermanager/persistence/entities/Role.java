@@ -67,6 +67,11 @@ public class Role extends Element<String> implements Serializable {
     }
 
     @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as roles are not linked to organization.
+    }
+
+    @Override
     public String toString() {
         return "Role{"
                 + "name='" + getName() + '\''

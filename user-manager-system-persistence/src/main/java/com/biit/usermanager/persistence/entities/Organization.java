@@ -59,4 +59,9 @@ public class Organization extends Element<String> {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as organizations are not linked to organization.
+    }
 }

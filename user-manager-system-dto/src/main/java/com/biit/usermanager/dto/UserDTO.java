@@ -22,6 +22,7 @@ import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO extends BasicUserDTO implements IUser<Long>, IAuthenticatedUser {
+
     @Serial
     private static final long serialVersionUID = 6973886025199428759L;
 

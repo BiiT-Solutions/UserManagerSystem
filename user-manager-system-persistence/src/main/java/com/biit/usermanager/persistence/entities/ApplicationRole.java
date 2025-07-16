@@ -64,4 +64,9 @@ public class ApplicationRole extends CreatedElement implements Serializable {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as application roles are not linked to organization.
+    }
 }

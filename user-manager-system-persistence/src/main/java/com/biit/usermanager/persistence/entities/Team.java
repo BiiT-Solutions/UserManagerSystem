@@ -91,6 +91,7 @@ public class Team extends Element<Long> {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
+        setCreatedOn(organization.getName());
     }
 
     @Override

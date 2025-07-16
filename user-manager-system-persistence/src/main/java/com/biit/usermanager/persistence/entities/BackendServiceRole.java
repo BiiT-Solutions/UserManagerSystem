@@ -41,6 +41,11 @@ public class BackendServiceRole extends CreatedElement implements Serializable {
         this.id = id;
     }
 
+    @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as backend service roles are not linked to organization.
+    }
+
     @JsonIgnore
     public String getName() {
         if (id == null) {

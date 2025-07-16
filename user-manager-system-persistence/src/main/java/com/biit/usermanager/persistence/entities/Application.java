@@ -65,6 +65,11 @@ public class Application extends Element<String> implements Serializable {
     }
 
     @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as applications are not linked to organization.
+    }
+
+    @Override
     public String toString() {
         return "Application{"
                 + "name='" + getName() + '\''

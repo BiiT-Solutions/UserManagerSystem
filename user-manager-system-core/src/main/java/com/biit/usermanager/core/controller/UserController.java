@@ -76,6 +76,7 @@ import org.springframework.stereotype.Controller;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -421,7 +422,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                         team = teamsFromOrganization.get(0);
                     }
                     //Assign user to team.
-                    teamMemberProvider.assign(userDTO.getId(), team.getId(), createdBy);
+                    teamMemberProvider.assign(userDTO.getId(), team.getId(), team.getOrganization().getId(), createdBy);
                     UserManagerLogger.info(this.getClass(), "Assigning user '{}' to team '{}'.", userDTO.getUsername(), team.getName());
                 } else {
                     UserManagerLogger.debug(this.getClass(), "No organization provided meanwhile creating a user.");
@@ -439,7 +440,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     @Override
     public UserDTO create(CreateUserRequest createUserRequest, String createdBy) {
-        final UserDTO authenticatedUser = (UserDTO) createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
+        final UserDTO authenticatedUser = createUser(createUserRequest.getUsername(), createUserRequest.getUniqueId(),
                 createUserRequest.getEmail(), createUserRequest.getFirstname(), createUserRequest.getLastname(), createUserRequest.getPassword(),
                 createUserRequest.getExternalReference(), createdBy);
         //Set roles if is the first user on a database.
@@ -1056,6 +1057,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     /**
      * Users can be in more than one organization.
+     * Retrieves all users create by the organization admin plus any user that is assigned to a team from the organization of the org admin.
      *
      * @param page      Starting page.
      * @param size      Size of page.
@@ -1069,6 +1071,12 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final List<TeamMember> members = teamMemberProvider.findByOrganizationNameIn(organizations.stream().map(IUserOrganization::getName).toList(),
                 page, size);
         members.forEach(member -> userIds.add(member.getId().getUserId()));
-        return convertAll(getProvider().findByIdIn(userIds));
+        final Set<UserDTO> users = new HashSet<>();
+        users.addAll(convertAll(getProvider().findByIdIn(userIds)));
+
+        //Get users created by org admin, but are not assigned to a team.
+        users.addAll(super.getByUserOrganization(page, size, requester));
+
+        return new ArrayList<>(users);
     }
 }

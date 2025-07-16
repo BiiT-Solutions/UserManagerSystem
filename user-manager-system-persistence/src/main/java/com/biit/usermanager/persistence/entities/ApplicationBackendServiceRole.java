@@ -35,6 +35,11 @@ public class ApplicationBackendServiceRole extends CreatedElement {
     }
 
     @Override
+    public void setCreatedOn(String createdOn) {
+        //Do nothing, as application backend service roles are not linked to organization.
+    }
+
+    @Override
     public String toString() {
         return "ApplicationBackendServiceRole{"
                 + "id=" + id

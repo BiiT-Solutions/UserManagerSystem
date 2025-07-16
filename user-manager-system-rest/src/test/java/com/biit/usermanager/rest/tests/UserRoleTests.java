@@ -69,10 +69,6 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
     private static final String NEW_BACKEND_NAME = "Armour";
     private static final String NEW_BACKEND_ROLE_NAME = "Owner";
 
-
-    @Value("${bcrypt.salt:}")
-    private String bcryptSalt;
-
     @Autowired
     private UserController userController;
 
@@ -87,6 +83,7 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
 
     @Autowired
     private BackendServiceRoleController backendServiceRoleController;
+
     @Autowired
     private BackendServiceController backendServiceController;
 
@@ -121,7 +118,7 @@ public class UserRoleTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void createAdminUser() {
         //Create the admin user
-        final UserDTO admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
+        final UserDTO admin = userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
 
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);

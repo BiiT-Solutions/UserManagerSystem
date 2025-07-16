@@ -193,7 +193,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
     public void updateUser() throws Exception {
 
         //Create the admin user
-        final UserDTO user2 = (UserDTO) userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null, null);
+        final UserDTO user2 = userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null, null);
 
         //I can log in.
         AuthRequest request = new AuthRequest();
