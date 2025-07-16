@@ -267,9 +267,9 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Adds a new user into the system. For Sign Up")
     @PostMapping(path = "/public/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public IAuthenticatedUser register(@RequestBody CreateUserRequest request, HttpServletRequest httpRequest) {
+    public IAuthenticatedUser register(@RequestBody CreateUserRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         UserManagerLogger.warning(this.getClass(), "Creating a new user from ip '" + networkController.getClientIP(httpRequest) + "'.");
-        return getController().createPublicUser(request);
+        return getController().createPublicUser(request, authentication.getName());
     }
 
 

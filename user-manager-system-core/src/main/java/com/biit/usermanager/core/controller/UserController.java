@@ -390,13 +390,13 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
-    public IAuthenticatedUser createPublicUser(CreateUserRequest createUserRequest) {
+    public IAuthenticatedUser createPublicUser(CreateUserRequest createUserRequest, String createdBy) {
         if (allowPublicRegistration) {
             if (findByUsername(createUserRequest.getUsername()).isPresent()) {
                 UserManagerLogger.warning(this.getClass(), "Username '" + createUserRequest.getUsername() + "' already exists!.");
                 throw new UserAlreadyExistsException(this.getClass(), "Username exists!");
             }
-            final UserDTO userDTO = (UserDTO) create(createUserRequest, createUserRequest.getUsername());
+            final UserDTO userDTO = create(createUserRequest, createUserRequest.getUsername());
             userDTO.setAccountExpirationTime(LocalDateTime.now().plusHours(publicUserExpirationHours));
             getProvider().save(reverse(userDTO));
             userGroupUserProvider.assignToDefaultGroup(reverse(userDTO));
@@ -421,7 +421,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                         team = teamsFromOrganization.get(0);
                     }
                     //Assign user to team.
-                    teamMemberProvider.assign(userDTO.getId(), team.getId());
+                    teamMemberProvider.assign(userDTO.getId(), team.getId(), createdBy);
                     UserManagerLogger.info(this.getClass(), "Assigning user '{}' to team '{}'.", userDTO.getUsername(), team.getName());
                 } else {
                     UserManagerLogger.debug(this.getClass(), "No organization provided meanwhile creating a user.");

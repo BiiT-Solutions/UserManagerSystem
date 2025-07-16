@@ -1,6 +1,6 @@
 package com.biit.usermanager.persistence.entities;
 
-import com.biit.server.persistence.entities.StorableObject;
+import com.biit.server.persistence.entities.CreatedElement;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "team_members", indexes = {
         @Index(name = "ind_team_member", columnList = "team_id"),
 })
-public class TeamMember extends StorableObject {
+public class TeamMember extends CreatedElement {
 
     @EmbeddedId
     private TeamMemberId id;
@@ -24,9 +24,10 @@ public class TeamMember extends StorableObject {
         super();
     }
 
-    public TeamMember(Long teamId, Long userId) {
+    public TeamMember(Long teamId, Long userId, String createdBy) {
         this();
         setId(new TeamMemberId(teamId, userId));
+        setCreatedBy(createdBy);
     }
 
     public TeamMemberId getId() {

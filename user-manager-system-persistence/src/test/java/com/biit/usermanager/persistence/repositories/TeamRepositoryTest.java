@@ -178,10 +178,10 @@ public class TeamRepositoryTest extends AbstractTestNGSpringContextTests {
 
     @Test(dependsOnMethods = {"saveTeams", "getTeamsByName"})
     public void addTeamMembers() {
-        teamMemberRepository.save(new TeamMember(team.getId(), user.getId()));
-        teamMemberRepository.save(new TeamMember(team2.getId(), user2.getId()));
-        teamMemberRepository.save(new TeamMember(team2.getId(), user3.getId()));
-        teamMemberRepository.save(new TeamMember(team3.getId(), user3.getId()));
+        teamMemberRepository.save(new TeamMember(team.getId(), user.getId(), null));
+        teamMemberRepository.save(new TeamMember(team2.getId(), user2.getId(), null));
+        teamMemberRepository.save(new TeamMember(team2.getId(), user3.getId(), null));
+        teamMemberRepository.save(new TeamMember(team3.getId(), user3.getId(), null));
     }
 
     @Test(dependsOnMethods = "addTeamMembers")

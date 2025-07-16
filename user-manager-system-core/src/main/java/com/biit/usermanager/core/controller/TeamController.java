@@ -173,7 +173,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
         //Store into the team
         final List<TeamMember> teamMembers = new ArrayList<>();
-        users.forEach(userDTO -> teamMembers.add(new TeamMember(teamId, userDTO.getId())));
+        users.forEach(userDTO -> teamMembers.add(new TeamMember(teamId, userDTO.getId(), assignedBy)));
         teamMemberProvider.saveAll(teamMembers);
 
         team.setUpdatedBy(assignedBy);
@@ -198,7 +198,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
 
 
         final List<TeamMember> userGroupUserToDelete = new ArrayList<>();
-        users.forEach(userDTO -> userGroupUserToDelete.add(new TeamMember(teamId, userDTO.getId())));
+        users.forEach(userDTO -> userGroupUserToDelete.add(new TeamMember(teamId, userDTO.getId(), null)));
         teamMemberProvider.deleteAll(userGroupUserToDelete);
 
         team.setUpdatedBy(assignedBy);

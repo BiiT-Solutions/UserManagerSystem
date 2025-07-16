@@ -7,6 +7,7 @@ import com.biit.usermanager.client.exceptions.ElementNotFoundException;
 import com.biit.usermanager.client.exceptions.InvalidConfigurationException;
 import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.logger.UserManagerClientLogger;
+import com.biit.utils.pool.BasePool;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.Response;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -25,11 +27,42 @@ import java.util.UUID;
 @Qualifier("organizationManagerClient")
 public class OrganizationManagerClient implements IUserOrganizationProvider<OrganizationDTO> {
 
+    private static final Long CACHE_EXPIRATION_TIME = 30000L;
+
     private final OrganizationUrlConstructor organizationUrlConstructor;
 
     private final SecurityClient securityClient;
 
     private final ObjectMapper mapper;
+
+    private final OrganizationsByUserCache organizationsByUserCache = new OrganizationsByUserCache();
+    private final OrganizationByNameCache organizationByNameCache = new OrganizationByNameCache();
+
+    static class OrganizationByNameCache extends BasePool<String, OrganizationDTO> {
+
+        @Override
+        public long getExpirationTime() {
+            return CACHE_EXPIRATION_TIME;
+        }
+
+        @Override
+        public boolean isDirty(OrganizationDTO element) {
+            return false;
+        }
+    }
+
+    static class OrganizationsByUserCache extends BasePool<String, Collection<OrganizationDTO>> {
+
+        @Override
+        public long getExpirationTime() {
+            return CACHE_EXPIRATION_TIME;
+        }
+
+        @Override
+        public boolean isDirty(Collection<OrganizationDTO> elements) {
+            return false;
+        }
+    }
 
     public OrganizationManagerClient(OrganizationUrlConstructor organizationUrlConstructor, SecurityClient securityClient, ObjectMapper mapper) {
         this.organizationUrlConstructor = organizationUrlConstructor;
@@ -41,6 +74,10 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
     @Override
     public OrganizationDTO findByName(String name) {
         try {
+            final OrganizationDTO cachedOrganization = organizationByNameCache.getElement(name);
+            if (cachedOrganization != null) {
+                return cachedOrganization;
+            }
             try (Response response = securityClient.get(organizationUrlConstructor.getUserManagerServerUrl(),
                     organizationUrlConstructor.getOrganization(name))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
@@ -49,7 +86,11 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
                 if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
                     throw new ElementNotFoundException(this.getClass(), "No organizations found with name '" + name + "'.");
                 }
-                return mapper.readValue(response.readEntity(String.class), OrganizationDTO.class);
+                final OrganizationDTO result = mapper.readValue(response.readEntity(String.class), OrganizationDTO.class);
+                if (result != null) {
+                    organizationByNameCache.addElement(result, name);
+                }
+                return result;
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
@@ -59,10 +100,19 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
         }
     }
 
-
+    /**
+     * Organizations are sorted by time when the user has been assigned to DESC.
+     *
+     * @param username the user that belongs to these organizations.
+     * @return
+     */
     @Override
     public Collection<OrganizationDTO> findByUsername(String username) {
         try {
+            final Collection<OrganizationDTO> cachedOrganizations = organizationsByUserCache.getElement(username);
+            if (cachedOrganizations != null) {
+                return cachedOrganizations;
+            }
             try (Response response = securityClient.get(organizationUrlConstructor.getUserManagerServerUrl(),
                     organizationUrlConstructor.getOrganizationsByUserName(username))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
@@ -71,13 +121,15 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
                 if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
                     throw new ElementNotFoundException(this.getClass(), "No organizations found for username '" + username + "'.");
                 }
-                return Arrays.asList(mapper.readValue(response.readEntity(String.class), OrganizationDTO[].class));
+                final List<OrganizationDTO> results = Arrays.asList(mapper.readValue(response.readEntity(String.class), OrganizationDTO[].class));
+                organizationsByUserCache.addElement(results, username);
+                return results;
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -89,10 +141,19 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
         return findByUserUID(userUuid.toString());
     }
 
-
+    /**
+     * Organizations are sorted by time when the user has been assigned to DESC.
+     *
+     * @param uuid the user that belongs to these organizations.
+     * @return
+     */
     @Override
     public Collection<OrganizationDTO> findByUserUID(String uuid) {
         try {
+            final Collection<OrganizationDTO> cachedOrganizations = organizationsByUserCache.getElement(uuid);
+            if (cachedOrganizations != null) {
+                return cachedOrganizations;
+            }
             try (Response response = securityClient.get(organizationUrlConstructor.getUserManagerServerUrl(),
                     organizationUrlConstructor.getOrganizationsByUser(uuid))) {
                 UserManagerClientLogger.debug(this.getClass(), "Response obtained from '{}' is '{}'.",
@@ -101,13 +162,15 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
                 if (Objects.equals(response.getStatus(), Response.Status.NOT_FOUND.getStatusCode())) {
                     throw new ElementNotFoundException(this.getClass(), "No organizations found for uuid '" + uuid + "'.");
                 }
-                return Arrays.asList(mapper.readValue(response.readEntity(String.class), OrganizationDTO[].class));
+                final List<OrganizationDTO> results = Arrays.asList(mapper.readValue(response.readEntity(String.class), OrganizationDTO[].class));
+                organizationsByUserCache.addElement(results, uuid);
+                return results;
             }
         } catch (JsonProcessingException e) {
             throw new InvalidResponseException(e);
         } catch (InvalidConfigurationException e) {
             UserManagerClientLogger.warning(this.getClass(), e.getMessage());
-            return null;
+            return new ArrayList<>();
         }
     }
 }
