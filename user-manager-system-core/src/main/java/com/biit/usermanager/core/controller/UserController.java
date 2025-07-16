@@ -522,7 +522,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                 new UserNotFoundException(this.getClass(), "No User with username '" + username + "' found on the system."));
         final UserDTO updater = getByUsername(updatedBy);
         final UserDTO userDTO = setGrantedAuthorities(convert(user), null, null);
-        if (updater != null && userDTO.getGrantedAuthorities().contains(ADMIN_AUTHORITY) && !updater.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
+        if (updater != null && userDTO != null && userDTO.getGrantedAuthorities().contains(ADMIN_AUTHORITY)
+                && !updater.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
             throw new ActionNotAllowedException(this.getClass(), "You cannot change an admin's password.");
         }
 
@@ -643,6 +644,9 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     public void delete(UserDTO entity, String deletedBy) {
         if (deletedBy != null && Objects.equals(entity.getUsername(), deletedBy)) {
             throw new InvalidParameterException(this.getClass(), "You cannot delete your own user.");
+        }
+        if (entity == null) {
+            return;
         }
         final UserDTO deleter = getByUsername(deletedBy);
         setGrantedAuthorities(entity, null, null);
