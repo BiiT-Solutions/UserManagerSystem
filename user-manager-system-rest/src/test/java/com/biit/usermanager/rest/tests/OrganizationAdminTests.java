@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Test(groups = "userRoleTests")
+@Test(groups = "organizationAdminTests")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
 
@@ -326,6 +326,7 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
         //Org Admin + 1 new user.
         Assert.assertEquals(usersSearchedByOrgAdmin.size(), 2);
     }
+
 
     @Test(dependsOnMethods = "createUsers")
     public void someServicesAreRestrictedToOrgAdmin() throws Exception {

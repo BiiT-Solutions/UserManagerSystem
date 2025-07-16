@@ -15,6 +15,7 @@
                 <include name="userGroupTests"/>
                 <!-- has problems on jenkins -->
                 <exclude name="forgotPasswordTests"/>
+                <include name="organizationAdminTests"/>
             </run>
         </groups>
         <classes>
@@ -24,6 +25,7 @@
             <class name="com.biit.usermanager.rest.tests.UserGroupTests"/>
             <class name="com.biit.usermanager.rest.tests.FirstUserCreationTest"/>
             <class name="com.biit.usermanager.rest.tests.ForgotPasswordTests"/>
+            <class name="com.biit.usermanager.rest.tests.OrganizationAdminTests"/>
         </classes>
     </test>
 </suite>
