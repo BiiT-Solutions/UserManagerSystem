@@ -100,12 +100,7 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
         }
     }
 
-    /**
-     * Organizations are sorted by time when the user has been assigned to DESC.
-     *
-     * @param username the user that belongs to these organizations.
-     * @return
-     */
+
     @Override
     public Collection<OrganizationDTO> findByUsername(String username) {
         try {
@@ -141,12 +136,7 @@ public class OrganizationManagerClient implements IUserOrganizationProvider<Orga
         return findByUserUID(userUuid.toString());
     }
 
-    /**
-     * Organizations are sorted by time when the user has been assigned to DESC.
-     *
-     * @param uuid the user that belongs to these organizations.
-     * @return
-     */
+
     @Override
     public Collection<OrganizationDTO> findByUserUID(String uuid) {
         try {

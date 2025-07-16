@@ -24,7 +24,7 @@ public interface OrganizationRepository extends ElementRepository<Organization, 
     @Query("""
             SELECT o FROM Organization o WHERE o.name IN
                 (SELECT DISTINCT t.organization.name FROM Team t WHERE t.id IN
-                    (SELECT DISTINCT tm.id.teamId FROM TeamMember tm WHERE tm.id.userId=:userId ORDER BY tm.createdAt DESC)
+                    (SELECT DISTINCT tm.id.teamId FROM TeamMember tm WHERE tm.id.userId=:userId)
                 )
             """)
     Set<Organization> findByUser(Long userId);
