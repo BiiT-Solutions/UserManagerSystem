@@ -22,10 +22,10 @@ public interface OrganizationRepository extends ElementRepository<Organization, 
     Optional<Organization> findByTeam(Long teamId);
 
     @Query("""
-            SELECT o FROM Organization o WHERE o.name IN
-                (SELECT DISTINCT t.organization.name FROM Team t WHERE t.id IN
-                    (SELECT DISTINCT tm.id.teamId FROM TeamMember tm WHERE tm.id.userId=:userId)
-                )
+            SELECT DISTINCT o, tm.createdAt FROM Organization o
+                        RIGHT JOIN Team t ON t.organization.id=o.id
+                                    RIGHT JOIN TeamMember tm ON t.id=tm.id.teamId WHERE tm.id.userId=:userId
+                                                ORDER BY tm.createdAt DESC
             """)
     Set<Organization> findByUser(Long userId);
 }
