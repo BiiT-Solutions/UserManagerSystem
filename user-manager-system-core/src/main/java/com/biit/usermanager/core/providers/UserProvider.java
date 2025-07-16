@@ -55,6 +55,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         if (entity == null) {
             return null;
         }
+        populateHash(entity);
         if (entity.getId() == null) {
             return getRepository().save(entity);
         } else {
@@ -71,12 +72,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     public Optional<User> findByUsername(String username) {
         //If encryption is enabled, use hash.
         if (getEncryptionKey() != null && !getEncryptionKey().isBlank()) {
-            final Optional<User> authenticatedUser = findByUsernameHash(username);
-            if (authenticatedUser.isPresent()) {
-                authenticatedUser.get().setUsernameHash(authenticatedUser.get().getUsername());
-                return authenticatedUser;
-            }
-            return Optional.empty();
+            return findByUsernameHash(username);
         } else {
             return getRepository().findByUsernameIgnoreCase(username);
         }
@@ -86,9 +82,7 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
     public List<User> findByUsernames(Collection<String> usernames) {
         //If encryption is enabled, use hash.
         if (getEncryptionKey() != null && !getEncryptionKey().isBlank()) {
-            final List<User> authenticatedUser = findByUsernameHash(usernames);
-            authenticatedUser.forEach(u -> u.setUsernameHash(u.getUsername()));
-            return authenticatedUser;
+            return findByUsernameHash(usernames);
         } else {
             return getRepository().findByUsernameIn(usernames);
         }
@@ -104,7 +98,6 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
             final List<User> authenticatedUser = findByEmailHash(email);
             //We have some legacy data where an email is shared between multiple email accounts.
             if (!authenticatedUser.isEmpty()) {
-                authenticatedUser.get(0).setEmail(authenticatedUser.get(0).getEmail().toLowerCase().trim());
                 return Optional.of(authenticatedUser.get(0));
             }
             return Optional.empty();
@@ -184,6 +177,15 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
         return findByIdIn(teamMemberRepository.findByIdTeamId(teamId, pageable).stream()
                 .map(userGroupUsers -> userGroupUsers.getId().getUserId()).toList());
     }
+
+
+    @Override
+    protected void populateHash(User entity) {
+        super.populateHash(entity);
+        entity.setEmailHash(entity.getEmail());
+        entity.setUsernameHash(entity.getUsernameHash());
+    }
+
 
     @Override
     @Transactional
