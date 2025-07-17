@@ -3,11 +3,15 @@ package com.biit.usermanager.persistence.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 public class UserApplicationBackendServiceRoleId implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -1315986192532624395L;
 
     protected static final int MAX_UNIQUE_COLUMN_LENGTH = 190;
 

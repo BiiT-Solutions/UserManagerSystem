@@ -1,5 +1,6 @@
 package com.biit.usermanager.rest.tests;
 
+import com.biit.server.security.exceptions.ActionNotAllowedException;
 import com.biit.server.security.model.AuthRequest;
 import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
@@ -73,7 +74,9 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
     private static final String[] ORG_BACKEND_ROLES = new String[]{"ORGANIZATION_ADMIN"};
 
     private static final String ORGANIZATION_NAME = "Umbrella";
+    private static final String NEW_ORGANIZATION_NAME = "Academy";
     private static final String TEAM_NAME = "TeamA";
+    private static final String NEW_TEAM_NAME = "TeamB";
 
     @Autowired
     private UserController userController;
@@ -125,6 +128,12 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
 
     private TeamDTO teamDTO;
 
+    private TeamDTO secondTeamDTO;
+
+    private UserDTO orgAdmin;
+
+    private UserDTO admin;
+
     private <T> String toJson(T object) throws JsonProcessingException {
         return objectMapper.writeValueAsString(object);
     }
@@ -143,7 +152,7 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
     @BeforeClass(dependsOnMethods = "createOrganization")
     public void createAdminUser() {
         //Create the admin user
-        final UserDTO admin = userController.createUser(ADMIN_USER_NAME, ADMIN_USER_UNIQUE_ID, ADMIN_USER_FIRST_NAME, ADMIN_USER_LAST_NAME, ADMIN_USER_PASSWORD, null, null);
+        admin = userController.createUser(ADMIN_USER_NAME, ADMIN_USER_UNIQUE_ID, ADMIN_USER_FIRST_NAME, ADMIN_USER_LAST_NAME, ADMIN_USER_PASSWORD, null, null);
 
         //Create the application
         applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
@@ -180,7 +189,7 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
     @BeforeClass(dependsOnMethods = "createAdminUser")
     public void createOrganizationAdminUser() {
         //Create the admin user
-        final UserDTO orgAdmin = userController.createUser(ORG_USER_NAME, ORG_USER_UNIQUE_ID, ORG_USER_FIRST_NAME, ORG_USER_LAST_NAME, ORG_USER_PASSWORD, null, null);
+        orgAdmin = userController.createUser(ORG_USER_NAME, ORG_USER_UNIQUE_ID, ORG_USER_FIRST_NAME, ORG_USER_LAST_NAME, ORG_USER_PASSWORD, null, null);
 
         //Set the application roles
         final List<RoleDTO> roleDTOs = new ArrayList<>();
@@ -351,8 +360,18 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
     }
 
 
-    @Test
+    @Test(expectedExceptions = ActionNotAllowedException.class)
     public void anOrganizationAdminCanOnlyBePresentOnASingleOrganization() {
+        final OrganizationDTO organizationDTO = organizationController.create(new OrganizationDTO(NEW_ORGANIZATION_NAME), null);
+        secondTeamDTO = teamController.create(new TeamDTO(NEW_TEAM_NAME, organizationDTO), null);
 
+        //Assign user to a different organization by a team.
+        teamController.assign(secondTeamDTO.getId(), orgAdmin, ORG_USER_NAME);
+    }
+
+    @Test(dependsOnMethods = "anOrganizationAdminCanOnlyBePresentOnASingleOrganization")
+    public void anAdminCanBePresentOnMultipleOrganization() {
+        //Assign user to a different organization by a team.
+        teamController.assign(secondTeamDTO.getId(), admin, ORG_USER_NAME);
     }
 }

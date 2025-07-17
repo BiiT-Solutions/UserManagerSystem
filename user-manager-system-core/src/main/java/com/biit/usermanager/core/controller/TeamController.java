@@ -4,6 +4,7 @@ package com.biit.usermanager.core.controller;
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.server.logger.DtoControllerLogger;
 import com.biit.server.security.IUserOrganizationProvider;
+import com.biit.server.security.exceptions.ActionNotAllowedException;
 import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.TeamConverter;
@@ -18,6 +19,7 @@ import com.biit.usermanager.core.kafka.TeamEventSender;
 import com.biit.usermanager.core.providers.OrganizationProvider;
 import com.biit.usermanager.core.providers.TeamMemberProvider;
 import com.biit.usermanager.core.providers.TeamProvider;
+import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserProvider;
 import com.biit.usermanager.dto.OrganizationDTO;
 import com.biit.usermanager.dto.TeamDTO;
@@ -26,6 +28,7 @@ import com.biit.usermanager.persistence.entities.Organization;
 import com.biit.usermanager.persistence.entities.Team;
 import com.biit.usermanager.persistence.entities.TeamMember;
 import com.biit.usermanager.persistence.entities.User;
+import com.biit.usermanager.persistence.entities.UserApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.repositories.TeamRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,24 +45,29 @@ import java.util.UUID;
 public class TeamController extends KafkaElementController<Team, Long, TeamDTO, TeamRepository,
         TeamProvider, TeamConverterRequest, TeamConverter> {
 
+    private static final String ORGANIZATION_ADMIN_ROLE = "ORGANIZATION_ADMIN";
+
     private final OrganizationConverter organizationConverter;
     private final OrganizationProvider organizationProvider;
     private final UserProvider userProvider;
 
     private final TeamMemberProvider teamMemberProvider;
     private final UserConverter userConverter;
+    private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
 
     @Autowired
     protected TeamController(TeamProvider provider, TeamConverter converter, OrganizationConverter organizationConverter,
                              OrganizationProvider organizationProvider, TeamEventSender eventSender, UserProvider userProvider,
                              TeamMemberProvider teamMemberProvider, UserConverter userConverter,
-                             List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+                             List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider,
+                             UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider) {
         super(provider, converter, eventSender, userOrganizationProvider);
         this.organizationConverter = organizationConverter;
         this.organizationProvider = organizationProvider;
         this.userProvider = userProvider;
         this.teamMemberProvider = teamMemberProvider;
         this.userConverter = userConverter;
+        this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
     }
 
     @Override
@@ -173,6 +181,20 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
                 -> new TeamNotFoundException(this.getClass(), "No Team exists with id '" + teamId + "'."));
 
         final List<Long> usersInTeam = userProvider.getByTeam(teamId).stream().map(User::getId).toList();
+
+        //OrgAdmin can only be in one organization. Prevent to be assigned on a second one.
+        for (UserDTO user : users) {
+            final Set<Organization> organizations = organizationProvider.findByUser(userConverter.reverse(user));
+            //Organizations on team is lazy, so we can only search by id.
+            if (!organizations.isEmpty() && !organizations.stream().map(Organization::getName).toList().contains(team.getOrganization().getName())) {
+                final Set<UserApplicationBackendServiceRole> userBackendRoles = userApplicationBackendServiceRoleProvider.findByUserId(user.getId());
+                if (userBackendRoles.stream().map(r -> r.getId().getBackendServiceRole()).toList()
+                        .stream().anyMatch(s -> s.endsWith(ORGANIZATION_ADMIN_ROLE))) {
+                    throw new ActionNotAllowedException(this.getClass(), "You are not allowed to hava an organization admin in multiples organizations.");
+                }
+            }
+        }
+
 
         users = users.stream().filter(userDTO -> !usersInTeam.contains(userDTO.getId())).toList();
 
