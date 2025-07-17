@@ -353,6 +353,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @PathVariable("username") String username,
             Authentication authentication, HttpServletRequest httpRequest) {
         canBeDoneByDifferentUsers(username, authentication);
+        getController().getByUsername(username);
         getController().delete(username, authentication.getName());
     }
 
