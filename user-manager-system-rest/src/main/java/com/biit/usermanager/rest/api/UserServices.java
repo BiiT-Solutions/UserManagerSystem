@@ -269,7 +269,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @ResponseStatus(value = HttpStatus.CREATED)
     public IAuthenticatedUser register(@RequestBody CreateUserRequest request, Authentication authentication, HttpServletRequest httpRequest) {
         UserManagerLogger.warning(this.getClass(), "Creating a new user from ip '" + networkController.getClientIP(httpRequest) + "'.");
-        return getController().createPublicUser(request, authentication.getName());
+        return getController().createPublicUser(request, request.getUsername());
     }
 
 

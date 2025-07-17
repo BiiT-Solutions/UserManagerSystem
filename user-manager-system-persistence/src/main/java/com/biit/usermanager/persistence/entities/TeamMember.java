@@ -31,6 +31,7 @@ public class TeamMember extends CreatedElement {
     public TeamMember(Long teamId, Long userId, String organizationName, String createdBy) {
         this();
         setId(new TeamMemberId(teamId, userId));
+        setOrganizationName(organizationName);
         setCreatedBy(createdBy);
     }
 
