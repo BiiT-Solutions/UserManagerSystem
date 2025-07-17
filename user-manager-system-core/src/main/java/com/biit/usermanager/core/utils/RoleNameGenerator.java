@@ -38,7 +38,7 @@ public final class RoleNameGenerator {
             return null;
         }
         return userApplicationBackendServiceRole.getId().getApplicationName().toUpperCase() + "_"
-                + userApplicationBackendServiceRole.getId().getRoleName().toUpperCase();
+                + userApplicationBackendServiceRole.getId().getRoleName().replace(" ", "_").toUpperCase();
     }
 
     public static String createBackendRoleName(UserApplicationBackendServiceRole userApplicationBackendServiceRole) {
@@ -46,7 +46,7 @@ public final class RoleNameGenerator {
             return null;
         }
         return userApplicationBackendServiceRole.getId().getBackendServiceName().toUpperCase() + "_"
-                + userApplicationBackendServiceRole.getId().getBackendServiceRole().toUpperCase();
+                + userApplicationBackendServiceRole.getId().getBackendServiceRole().replace(" ", "_").toUpperCase();
     }
 
     public static String createApplicationRoleName(UserGroupApplicationBackendServiceRole userGroupApplicationBackendServiceRole) {
