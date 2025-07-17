@@ -31,7 +31,7 @@ public class Organization extends Element<String> {
 
     public Organization(String name) {
         this();
-        this.name = name;
+        setName(name);
     }
 
     @Override
@@ -50,6 +50,7 @@ public class Organization extends Element<String> {
 
     public void setName(String name) {
         this.name = name;
+        setCreatedOn(name);
     }
 
     public String getDescription() {
@@ -58,10 +59,5 @@ public class Organization extends Element<String> {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public void setCreatedOn(String createdOn) {
-        //Do nothing, as organizations are not linked to organization.
     }
 }

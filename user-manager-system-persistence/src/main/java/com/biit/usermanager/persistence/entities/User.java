@@ -437,6 +437,13 @@ public class User extends Element<Long> {
     }
 
     @Override
+    public void populateHash() {
+        super.populateHash();
+        setEmailHash(getEmail());
+        setUsernameHash(getUsernameHash());
+    }
+
+    @Override
     public String toString() {
         return "User{"
                 + "username='" + username + '\''

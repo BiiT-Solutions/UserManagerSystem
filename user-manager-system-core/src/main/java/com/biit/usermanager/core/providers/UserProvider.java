@@ -180,14 +180,6 @@ public class UserProvider extends ElementProvider<User, Long, UserRepository> {
 
 
     @Override
-    protected void populateHash(User entity) {
-        super.populateHash(entity);
-        entity.setEmailHash(entity.getEmail());
-        entity.setUsernameHash(entity.getUsernameHash());
-    }
-
-
-    @Override
     @Transactional
     public void delete(User entity) {
         if (entity != null) {

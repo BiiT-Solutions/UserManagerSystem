@@ -222,6 +222,12 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
     }
 
     @BeforeClass
+    public void createSecondOrganization() {
+        final OrganizationDTO organizationDTO = organizationController.create(new OrganizationDTO(NEW_ORGANIZATION_NAME), null);
+        secondTeamDTO = teamController.create(new TeamDTO(NEW_TEAM_NAME, organizationDTO), null);
+    }
+
+    @BeforeClass
     public void startServer() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
@@ -338,7 +344,7 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
 
 
     @Test(dependsOnMethods = "createUsers")
-    public void someServicesAreRestrictedToOrgAdmin() throws Exception {
+    public void someEntitiesAreRestrictedToOrgAdmin() throws Exception {
         MvcResult adminGetResult = this.mockMvc
                 .perform(get("/applications")
                         .header("Authorization", "Bearer " + adminJwtToken)
@@ -359,17 +365,36 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
         Assert.assertEquals(orgApplicationDTOS.size(), 0);
     }
 
+    @Test(dependsOnMethods = "createUsers")
+    public void organizationEntitiesAreAvailableToOrgAdmin() throws Exception {
+        MvcResult adminGetResult = this.mockMvc
+                .perform(get("/organizations")
+                        .header("Authorization", "Bearer " + adminJwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        MvcResult orgAdminGetResult = this.mockMvc
+                .perform(get("/organizations")
+                        .header("Authorization", "Bearer " + orgAdminJwtToken)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        final List<OrganizationDTO> adminOrganizationsDTOS = Arrays.asList(fromJson(adminGetResult.getResponse().getContentAsString(), OrganizationDTO[].class));
+        final List<OrganizationDTO> orgAdminOrganizationsDTOS = Arrays.asList(fromJson(orgAdminGetResult.getResponse().getContentAsString(), OrganizationDTO[].class));
+        Assert.assertEquals(adminOrganizationsDTOS.size(), 2);
+        Assert.assertEquals(orgAdminOrganizationsDTOS.size(), 1);
+    }
+
 
     @Test(expectedExceptions = ActionNotAllowedException.class)
     public void anOrganizationAdminCanOnlyBePresentOnASingleOrganization() {
-        final OrganizationDTO organizationDTO = organizationController.create(new OrganizationDTO(NEW_ORGANIZATION_NAME), null);
-        secondTeamDTO = teamController.create(new TeamDTO(NEW_TEAM_NAME, organizationDTO), null);
-
         //Assign user to a different organization by a team.
         teamController.assign(secondTeamDTO.getId(), orgAdmin, ORG_USER_NAME);
     }
 
-    @Test(dependsOnMethods = "anOrganizationAdminCanOnlyBePresentOnASingleOrganization")
+    @Test
     public void anAdminCanBePresentOnMultipleOrganization() {
         //Assign user to a different organization by a team.
         teamController.assign(secondTeamDTO.getId(), admin, ORG_USER_NAME);
