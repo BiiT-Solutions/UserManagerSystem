@@ -147,7 +147,8 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     }
 
 
-    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege)")
+    @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.adminPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Adds members to a team.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{id}/users",
