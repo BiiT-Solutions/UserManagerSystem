@@ -5,6 +5,7 @@ import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.exceptions.ErrorResponse;
 import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
+import com.biit.usermanager.core.exceptions.ActionForbiddenByConflictingData;
 import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationBackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
@@ -205,6 +206,12 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
         UserManagerLogger.errorMessage(this.getClass().getName(), ex);
         return new ResponseEntity<>(new ErrorResponse("Group already exists.", "user_group_already_exists", ex),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ActionForbiddenByConflictingData.class)
+    public ResponseEntity<Object> actionForbiddenByConflictingData(Exception ex) {
+        UserManagerLogger.errorMessage(this.getClass().getName(), ex);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "conflicting_data", ex), HttpStatus.CONFLICT);
     }
 
 
