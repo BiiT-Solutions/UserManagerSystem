@@ -5,7 +5,6 @@ import com.biit.logger.mail.exceptions.EmailNotSentException;
 import com.biit.server.exceptions.ErrorResponse;
 import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.exceptions.ServerExceptionControllerAdvice;
-import com.biit.usermanager.core.exceptions.ActionForbiddenByConflictingData;
 import com.biit.usermanager.core.exceptions.ApplicationBackendRoleNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationBackendServiceNotFoundException;
 import com.biit.usermanager.core.exceptions.ApplicationNotFoundException;
