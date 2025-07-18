@@ -1,6 +1,9 @@
 package com.biit.usermanager.rest.api;
 
 import com.biit.server.rest.ElementServices;
+import com.biit.server.rest.SecurityService;
+import com.biit.server.security.IUserOrganizationProvider;
+import com.biit.server.security.model.IUserOrganization;
 import com.biit.server.security.rest.NetworkController;
 import com.biit.usermanager.core.controller.TeamController;
 import com.biit.usermanager.core.converters.TeamConverter;
@@ -40,10 +43,15 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
         TeamProvider, TeamConverterRequest, TeamConverter, TeamController> {
 
     private final NetworkController networkController;
+    private final SecurityService securityService;
+    private final List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProviders;
 
-    public TeamsServices(TeamController teamController, NetworkController networkController) {
+    public TeamsServices(TeamController teamController, NetworkController networkController, SecurityService securityService,
+                         List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProviders) {
         super(teamController);
         this.networkController = networkController;
+        this.securityService = securityService;
+        this.userOrganizationProviders = userOrganizationProviders;
     }
 
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege,"
@@ -54,7 +62,9 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
                        @PathVariable("teamName") String teamName,
                        @Parameter(description = "Organization name")
                        @PathVariable("organizationName") String organizationName,
-                       HttpServletRequest request) {
+                       Authentication authentication, HttpServletRequest request) {
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProviders.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().getByName(teamName, organizationName);
     }
 
@@ -65,7 +75,9 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
     @GetMapping(value = "/organizations/{organizationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TeamDTO> get(@Parameter(description = "Organization name")
                              @PathVariable("organizationName") String organizationName,
-                             HttpServletRequest request) {
+                             Authentication authentication, HttpServletRequest request) {
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProviders.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().getByOrganization(organizationName);
     }
 
@@ -102,7 +114,9 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
                        @PathVariable("teamName") String teamName,
                        @Parameter(description = "Organization name")
                        @PathVariable("organizationName") String organizationName,
-                       HttpServletRequest request) {
+                       Authentication authentication, HttpServletRequest request) {
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProviders.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         getController().deleteByName(teamName, organizationName);
     }
 
@@ -156,13 +170,15 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TeamDTO addUsers(
             @Parameter(description = "Organization of the Team", required = true)
-            @PathVariable("organizationName") String organization,
+            @PathVariable("organizationName") String organizationName,
             @Parameter(description = "Name of the Team", required = true)
-            @PathVariable("teamName") String name,
+            @PathVariable("teamName") String teamName,
             @RequestBody Collection<UserDTO> users,
             Authentication authentication,
             HttpServletRequest request) {
-        return getController().assign(organization, name, users, authentication.getName());
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProviders.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
+        return getController().assign(organizationName, teamName, users, authentication.getName());
     }
 
 
@@ -174,13 +190,15 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TeamDTO addUsersByUsername(
             @Parameter(description = "Organization of the Team", required = true)
-            @PathVariable("organizationName") String organization,
+            @PathVariable("organizationName") String organizationName,
             @Parameter(description = "Name of the Team", required = true)
-            @PathVariable("teamName") String name,
+            @PathVariable("teamName") String teamName,
             @RequestBody Collection<String> usernames,
             Authentication authentication,
             HttpServletRequest request) {
-        return getController().assignByUserName(organization, name, usernames, authentication.getName());
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProviders.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
+        return getController().assignByUserName(organizationName, teamName, usernames, authentication.getName());
     }
 
 
@@ -206,13 +224,15 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TeamDTO removeUsers(
             @Parameter(description = "Organization of the Team", required = true)
-            @PathVariable("organizationName") String organization,
+            @PathVariable("organizationName") String organizationName,
             @Parameter(description = "Name of the Team", required = true)
-            @PathVariable("teamName") String name,
+            @PathVariable("teamName") String teamName,
             @RequestBody Collection<UserDTO> users,
             Authentication authentication,
             HttpServletRequest request) {
-        return getController().unAssign(organization, name, users, authentication.getName());
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProviders.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
+        return getController().unAssign(organizationName, teamName, users, authentication.getName());
     }
 
 
@@ -223,13 +243,15 @@ public class TeamsServices extends ElementServices<Team, Long, TeamDTO, TeamRepo
             produces = MediaType.APPLICATION_JSON_VALUE)
     public TeamDTO removeUsersByUsername(
             @Parameter(description = "Organization of the Team", required = true)
-            @PathVariable("organizationName") String organization,
+            @PathVariable("organizationName") String organizationName,
             @Parameter(description = "Name of the Team", required = true)
-            @PathVariable("teamName") String name,
+            @PathVariable("teamName") String teamName,
             @RequestBody Collection<String> usernames,
             Authentication authentication,
             HttpServletRequest request) {
-        return getController().unAssignByUserName(organization, name, usernames, authentication.getName());
+        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProviders.get(0),
+                securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
+        return getController().unAssignByUserName(organizationName, teamName, usernames, authentication.getName());
     }
 
 
