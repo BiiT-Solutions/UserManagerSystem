@@ -1,6 +1,6 @@
 package com.biit.usermanager.rest.tests;
 
-import com.biit.server.security.exceptions.ActionNotAllowedException;
+import com.biit.server.security.exceptions.ActionForbiddenByConflictingData;
 import com.biit.server.security.model.AuthRequest;
 import com.biit.usermanager.core.controller.ApplicationBackendServiceRoleController;
 import com.biit.usermanager.core.controller.ApplicationController;
@@ -388,7 +388,7 @@ public class OrganizationAdminTests extends AbstractTestNGSpringContextTests {
     }
 
 
-    @Test(expectedExceptions = ActionNotAllowedException.class)
+    @Test(expectedExceptions = ActionForbiddenByConflictingData.class)
     public void anOrganizationAdminCanOnlyBePresentOnASingleOrganization() {
         //Assign user to a different organization by a team.
         teamController.assign(secondTeamDTO.getId(), orgAdmin, ORG_USER_NAME);
