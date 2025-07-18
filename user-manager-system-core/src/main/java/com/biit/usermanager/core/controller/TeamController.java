@@ -189,7 +189,7 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
             if (!organizations.isEmpty() && !organizations.stream().map(Organization::getName).toList().contains(team.getOrganization().getName())) {
                 final Set<UserApplicationBackendServiceRole> userBackendRoles = userApplicationBackendServiceRoleProvider.findByUserId(user.getId());
                 if (userBackendRoles.stream().map(r -> r.getId().getBackendServiceRole()).toList()
-                        .stream().anyMatch(s -> s.endsWith(ORGANIZATION_ADMIN_ROLE))) {
+                        .stream().anyMatch(s -> s.toLowerCase().endsWith(ORGANIZATION_ADMIN_ROLE.toLowerCase()))) {
                     throw new ActionNotAllowedException(this.getClass(), "You are not allowed to hava an organization admin in multiples organizations.");
                 }
             }
