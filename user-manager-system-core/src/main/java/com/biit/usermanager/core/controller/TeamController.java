@@ -4,13 +4,13 @@ package com.biit.usermanager.core.controller;
 import com.biit.kafka.controllers.KafkaElementController;
 import com.biit.server.logger.DtoControllerLogger;
 import com.biit.server.security.IUserOrganizationProvider;
+import com.biit.server.security.exceptions.ActionForbiddenByConflictingData;
 import com.biit.server.security.model.IUserOrganization;
 import com.biit.usermanager.core.converters.OrganizationConverter;
 import com.biit.usermanager.core.converters.TeamConverter;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.TeamConverterRequest;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
-import com.biit.usermanager.core.exceptions.ActionForbiddenByConflictingData;
 import com.biit.usermanager.core.exceptions.OrganizationAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.OrganizationNotFoundException;
 import com.biit.usermanager.core.exceptions.TeamNotFoundException;
@@ -190,7 +190,8 @@ public class TeamController extends KafkaElementController<Team, Long, TeamDTO, 
                 final Set<UserApplicationBackendServiceRole> userBackendRoles = userApplicationBackendServiceRoleProvider.findByUserId(user.getId());
                 if (userBackendRoles.stream().map(r -> r.getId().getBackendServiceRole()).toList()
                         .stream().anyMatch(s -> s.toLowerCase().endsWith(ORGANIZATION_ADMIN_ROLE.toLowerCase()))) {
-                    throw new ActionForbiddenByConflictingData(this.getClass(), "You are not allowed to hava an organization admin in multiples organizations.");
+                    throw new ActionForbiddenByConflictingData(this.getClass(),
+                            "You are not allowed to hava an organization admin in multiples organizations.");
                 }
             }
         }
