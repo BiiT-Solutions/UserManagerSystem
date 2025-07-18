@@ -24,7 +24,7 @@ public class BasicUserDTO extends ElementDTO<Long> implements IUser<Long>, IAuth
 
     private UUID uuid;
 
-    @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+    @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
     @NotBlank
     private String username = "";
 
