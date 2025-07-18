@@ -208,11 +208,5 @@ public class UserManagerExceptionControllerAdvice extends ServerExceptionControl
                 HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ActionForbiddenByConflictingData.class)
-    public ResponseEntity<Object> actionForbiddenByConflictingData(Exception ex) {
-        UserManagerLogger.errorMessage(this.getClass().getName(), ex);
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), "conflicting_data", ex), HttpStatus.CONFLICT);
-    }
-
 
 }
