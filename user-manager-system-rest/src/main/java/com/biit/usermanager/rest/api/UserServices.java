@@ -7,7 +7,6 @@ import com.biit.server.exceptions.BadRequestException;
 import com.biit.server.logger.RestServerLogger;
 import com.biit.server.providers.StorableObjectProvider;
 import com.biit.server.rest.ElementServices;
-import com.biit.server.rest.SecurityService;
 import com.biit.server.security.CreateUserRequest;
 import com.biit.server.security.IUserOrganizationProvider;
 import com.biit.server.security.model.IAuthenticatedUser;
@@ -72,11 +71,11 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
     private final NetworkController networkController;
     private final BruteForceService bruteForceService;
-    private final SecurityService securityService;
+    private final UserManagerSecurityService securityService;
     private final List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider;
 
     public UserServices(UserController userController, NetworkController networkController, BruteForceService bruteForceService,
-                        SecurityService securityService, List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+                        UserManagerSecurityService securityService, List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
         super(userController);
         this.networkController = networkController;
         this.bruteForceService = bruteForceService;
