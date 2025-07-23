@@ -2,6 +2,7 @@ package com.biit.usermanager.core.controller;
 
 
 import com.biit.kafka.controllers.KafkaCreatedElementController;
+import com.biit.server.exceptions.NotFoundException;
 import com.biit.server.logger.DtoControllerLogger;
 import com.biit.server.security.IUserOrganizationProvider;
 import com.biit.server.security.model.IUserOrganization;
@@ -12,6 +13,7 @@ import com.biit.usermanager.core.kafka.ApplicationBackendServiceRoleEventSender;
 import com.biit.usermanager.core.kafka.UserEventSender;
 import com.biit.usermanager.core.providers.ApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.core.providers.UserApplicationBackendServiceRoleProvider;
+import com.biit.usermanager.core.providers.UserGroupApplicationBackendServiceRoleProvider;
 import com.biit.usermanager.dto.ApplicationBackendServiceRoleDTO;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRoleId;
@@ -32,6 +34,7 @@ public class ApplicationBackendServiceRoleController extends KafkaCreatedElement
         ApplicationBackendServiceRoleProvider, ApplicationBackendServiceRoleConverterRequest, ApplicationBackendServiceRoleConverter> {
 
     private final UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider;
+    private final UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider;
 
     private final UserEventSender userEventSender;
 
@@ -42,10 +45,12 @@ public class ApplicationBackendServiceRoleController extends KafkaCreatedElement
                                                       ApplicationBackendServiceRoleEventSender eventSender,
                                                       UserApplicationBackendServiceRoleProvider userApplicationBackendServiceRoleProvider,
                                                       UserEventSender userEventSender,
-                                                      List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider) {
+                                                      List<IUserOrganizationProvider<? extends IUserOrganization>> userOrganizationProvider,
+                                                      UserGroupApplicationBackendServiceRoleProvider userGroupApplicationBackendServiceRoleProvider) {
         super(provider, converter, eventSender, userOrganizationProvider);
         this.userApplicationBackendServiceRoleProvider = userApplicationBackendServiceRoleProvider;
         this.userEventSender = userEventSender;
+        this.userGroupApplicationBackendServiceRoleProvider = userGroupApplicationBackendServiceRoleProvider;
     }
 
     @Override
@@ -75,6 +80,8 @@ public class ApplicationBackendServiceRoleController extends KafkaCreatedElement
         return convertAll(getProvider().findByServiceRole(backendServiceRole));
     }
 
+
+    @Transactional
     public void deleteByApplicationRoleAndServiceRole(
             String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName, String deletedBy) {
         final ApplicationBackendServiceRole applicationBackendServiceRole = getProvider().findByApplicationRoleAndServiceRole(
@@ -82,8 +89,9 @@ public class ApplicationBackendServiceRoleController extends KafkaCreatedElement
                 new ApplicationBackendServiceNotFoundException(this.getClass(), "No role found for application '" + applicationName + "' with role '"
                         + applicationRoleName + "' and backend service '" + backendServiceName + "' role '" + backendServiceRoleName + "'"));
         DtoControllerLogger.info(this.getClass(), "Entity '{}' deleted by '{}'.", applicationBackendServiceRole, deletedBy);
-        super.delete(convert(applicationBackendServiceRole), deletedBy);
+        delete(convert(applicationBackendServiceRole), deletedBy);
     }
+
 
     @Override
     @Transactional
@@ -95,29 +103,37 @@ public class ApplicationBackendServiceRoleController extends KafkaCreatedElement
                         entity.getId().getBackendServiceRole().getId().getBackendService().getName(),
                         entity.getId().getBackendServiceRole().getId().getName());
 
+        userApplicationBackendServiceRoleProvider.deleteAll(usersToInform);
+
+        userGroupApplicationBackendServiceRoleProvider.deleteBy(
+                entity.getId().getApplicationRole().getId().getApplication().getName(),
+                entity.getId().getApplicationRole().getId().getRole().getName(),
+                entity.getId().getBackendServiceRole().getId().getBackendService().getName(),
+                entity.getId().getBackendServiceRole().getId().getName());
+
         super.delete(entity, deletedBy);
 
         userEventSender.sendEvents(usersToInform, UserEventSender.REVOCATION_EVENT_TAG, deletedBy);
     }
 
     @Override
+    @Transactional
     public void deleteById(ApplicationBackendServiceRoleId id, String deletedBy) {
-        //Send events.
-        final Set<UserApplicationBackendServiceRole> usersToInform = userApplicationBackendServiceRoleProvider
-                .findBy(id.getApplicationRole().getId().getApplication().getName(),
-                        id.getApplicationRole().getId().getRole().getName(),
-                        id.getBackendServiceRole().getId().getBackendService().getName(),
-                        id.getBackendServiceRole().getId().getName());
 
-        super.deleteById(id, deletedBy);
+        final ApplicationBackendServiceRole entity = getProvider().findById(id).orElseThrow(() ->
+                new NotFoundException(this.getClass(), "No application backend service role exists with id '" + id + "'."));
 
-        userEventSender.sendEvents(usersToInform, UserEventSender.REVOCATION_EVENT_TAG, deletedBy);
+        delete(convert(entity), deletedBy);
     }
 
     @Override
     public void deleteAll(String deletedBy) {
         //Send events.
         final List<UserApplicationBackendServiceRole> usersToInform = userApplicationBackendServiceRoleProvider.getAll();
+
+        userGroupApplicationBackendServiceRoleProvider.deleteAll();
+
+        userApplicationBackendServiceRoleProvider.deleteAll(usersToInform);
 
         super.deleteAll(deletedBy);
 

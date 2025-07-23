@@ -62,6 +62,12 @@ public class UserGroupApplicationBackendServiceRoleProvider extends StorableObje
                 applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
     }
 
+    public void deleteBy(
+            String applicationName, String applicationRoleName, String backendServiceName, String backendServiceRoleName) {
+        getRepository().deleteByIdApplicationNameAndIdRoleNameAndIdBackendServiceNameAndIdBackendServiceRole(
+                applicationName, applicationRoleName, backendServiceName, backendServiceRoleName);
+    }
+
     public List<UserGroupApplicationBackendServiceRole> findBy(
             Long userId, String applicationName, String applicationRoleName) {
         return getRepository().findByIdUserGroupIdAndIdApplicationNameAndIdRoleName(userId, applicationName, applicationRoleName);
