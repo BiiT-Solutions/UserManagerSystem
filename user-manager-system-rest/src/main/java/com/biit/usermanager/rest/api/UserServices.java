@@ -84,6 +84,21 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     }
 
 
+    @Override
+    @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege,"
+            + "@securityService.organizationAdminPrivilege)")
+    @Operation(summary = "Gets all", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getAll(@RequestParam(name = "page", defaultValue = "0") Optional<Integer> page,
+                                @RequestParam(name = "size", defaultValue = StorableObjectProvider.MAX_PAGE_SIZE + "") Optional<Integer> size,
+                                Authentication authentication, HttpServletRequest request) {
+        if (isOrganizationAdminAction(authentication)) {
+            return getController().getByUserOrganization(page.orElse(0), size.orElse(StorableObjectProvider.MAX_PAGE_SIZE), authentication.getName());
+        }
+        return getController().get(page.orElse(0), size.orElse(StorableObjectProvider.MAX_PAGE_SIZE));
+    }
+
+
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege,"
             + "@securityService.organizationAdminPrivilege)")
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
