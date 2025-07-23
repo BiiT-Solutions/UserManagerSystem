@@ -85,8 +85,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
 
 
     @Override
-    @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege,"
-            + "@securityService.organizationAdminPrivilege)")
+    //@Preauthorize is on the parent.
     @Operation(summary = "Gets all", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getAll(@RequestParam(name = "page", defaultValue = "0") Optional<Integer> page,
