@@ -1080,7 +1080,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         users.addAll(convertAll(getProvider().findByIdIn(userIds)));
 
         //Get users created by org admin, but are not assigned to a team.
-        //users.addAll(super.getByUserOrganization(page, size, requester));
+        users.addAll(super.getByUserOrganization(page, size, requester));
 
         return new ArrayList<>(users);
     }
