@@ -614,6 +614,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
+    @Transactional
     @Override
     public boolean delete(IAuthenticatedUser authenticatedUser) {
         if (authenticatedUser == null) {
