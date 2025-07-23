@@ -1062,7 +1062,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
 
     /**
      * Users can be in more than one organization.
-     * Retrieves all users create by the organization admin plus any user that is assigned to a team from the organization of the org admin.
+     * Retrieves all users that are on a team from an organization of the user. Ignores CreatedOn property.
      *
      * @param page      Starting page.
      * @param size      Size of page.
@@ -1080,7 +1080,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         users.addAll(convertAll(getProvider().findByIdIn(userIds)));
 
         //Get users created by org admin, but are not assigned to a team.
-        users.addAll(super.getByUserOrganization(page, size, requester));
+        //users.addAll(super.getByUserOrganization(page, size, requester));
 
         return new ArrayList<>(users);
     }
