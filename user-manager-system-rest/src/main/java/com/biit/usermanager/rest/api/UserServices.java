@@ -484,7 +484,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @RequestParam(name = "page", defaultValue = "0") Optional<Integer> page,
             @RequestParam(name = "size", defaultValue = StorableObjectProvider.MAX_PAGE_SIZE + "") Optional<Integer> size,
             Authentication authentication, HttpServletRequest request) {
-        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+        checkHasOrganizationAdminAccess(organizationName, authentication,
                 securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         if (size.isPresent()) {
             return getController().getByTeam(organizationName, teamName, page.orElse(0), size.get());
@@ -503,7 +503,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Name of an existing team", required = true) @PathVariable("teamName") String teamName,
             Authentication authentication, HttpServletRequest request) {
-        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+        checkHasOrganizationAdminAccess(organizationName, authentication,
                 securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().countByTeam(organizationName, teamName);
     }
@@ -519,7 +519,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @PathVariable("organizationName")
             String organizationName,
             Authentication authentication, HttpServletRequest request) {
-        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+        checkHasOrganizationAdminAccess(organizationName, authentication,
                 securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().getByOrganization(organizationName);
     }
@@ -533,7 +533,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             @Parameter(description = "Name of an existing organization", required = true)
             @PathVariable("organizationName") String organizationName,
             Authentication authentication, HttpServletRequest request) {
-        checkHasOrganizationAdminAccess(organizationName, authentication, userOrganizationProvider.get(0),
+        checkHasOrganizationAdminAccess(organizationName, authentication,
                 securityService.getAdminPrivilege(), securityService.getEditorPrivilege());
         return getController().countByOrganization(organizationName);
     }
