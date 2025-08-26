@@ -3,10 +3,14 @@ package com.biit.usermanager.persistence.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Embeddable
 public class UserGroupUserId implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 8796260811642103811L;
 
     @Column(name = "user_group_id", nullable = false)
     private Long userGroupId;

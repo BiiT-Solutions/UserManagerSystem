@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.io.Serial;
+
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -16,6 +18,9 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
         @Index(name = "ind_usergroup_users", columnList = "user_group_id"),
 })
 public class UserGroupUser extends StorableObject {
+
+    @Serial
+    private static final long serialVersionUID = -5378190918989695625L;
 
     @EmbeddedId
     private UserGroupUserId id;

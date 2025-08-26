@@ -524,7 +524,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         final UserDTO userDTO = setGrantedAuthorities(convert(user), null, null);
         if (updater != null && userDTO != null && userDTO.getGrantedAuthorities().contains(ADMIN_AUTHORITY)
                 && !updater.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
-            throw new ActionNotAllowedException(this.getClass(), "You cannot change an admin's password.");
+            throw new ActionNotAllowedException(this.getClass(), "You cannot change another admin's password.");
         }
 
 
