@@ -651,7 +651,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
         final UserDTO deleter = getByUsername(deletedBy);
         setGrantedAuthorities(entity, null, null);
-        if (deleter != null && entity.getGrantedAuthorities().contains(ADMIN_AUTHORITY) && !deleter.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
+        if (deleter != null && entity.getGrantedAuthorities() != null
+                && entity.getGrantedAuthorities().contains(ADMIN_AUTHORITY) && !deleter.getGrantedAuthorities().contains(ADMIN_AUTHORITY)) {
             throw new ActionNotAllowedException(this.getClass(), "You cannot delete an admin user.");
         }
         super.delete(entity, deletedBy);
