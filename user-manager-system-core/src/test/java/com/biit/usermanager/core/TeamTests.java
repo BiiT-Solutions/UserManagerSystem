@@ -106,7 +106,7 @@ public class TeamTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void createUsers() {
         //Create the admin user
-        user1 = (UserDTO) userController.createUser(USER_1_NAME, USER_1_UNIQUE_ID, USER_1_FIRST_NAME, USER_1_LAST_NAME, USER_1_PASSWORD, null, null);
+        user1 = userController.createUser(USER_1_NAME, USER_1_UNIQUE_ID, USER_1_FIRST_NAME, USER_1_LAST_NAME, USER_1_PASSWORD, null, null);
     }
 
 

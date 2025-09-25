@@ -102,8 +102,8 @@ public class SecurityTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void setDefaultData() {
         //Create the admin user
-        admin = (UserDTO) userController.createUser(USER1_NAME, USER1_UNIQUE_ID, USER1_FIRST_NAME, USER1_LAST_NAME, USER1_PASSWORD, null, null);
-        guest = (UserDTO) userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null, null);
+        admin = userController.createUser(USER1_NAME, USER1_UNIQUE_ID, USER1_FIRST_NAME, USER1_LAST_NAME, USER1_PASSWORD, null, null);
+        guest = userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null, null);
 
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);

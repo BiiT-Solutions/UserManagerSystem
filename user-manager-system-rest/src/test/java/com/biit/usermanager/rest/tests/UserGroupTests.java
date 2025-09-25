@@ -80,10 +80,6 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
     private static final String USER_GROUP1 = "group1";
     private static final String USER_GROUP2 = "group2";
 
-
-    @Value("${bcrypt.salt:}")
-    private String bcryptSalt;
-
     @Autowired
     private UserController userController;
 
@@ -140,7 +136,7 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void createAdminUser() {
         //Create the admin user
-        admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
+        admin = userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
 
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
@@ -176,9 +172,9 @@ public class UserGroupTests extends AbstractTestNGSpringContextTests {
 
     @BeforeClass
     public void createExtraUsers() {
-        user1 = (UserDTO) userController.createUser(USER1_NAME, USER1_UNIQUE_ID, USER1_FIRST_NAME, USER1_LAST_NAME, USER1_PASSWORD, null, null);
-        user2 = (UserDTO) userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null, null);
-        user3 = (UserDTO) userController.createUser(USER3_NAME, USER3_UNIQUE_ID, USER3_FIRST_NAME, USER3_LAST_NAME, USER3_PASSWORD, null, null);
+        user1 = userController.createUser(USER1_NAME, USER1_UNIQUE_ID, USER1_FIRST_NAME, USER1_LAST_NAME, USER1_PASSWORD, null, null);
+        user2 = userController.createUser(USER2_NAME, USER2_UNIQUE_ID, USER2_FIRST_NAME, USER2_LAST_NAME, USER2_PASSWORD, null, null);
+        user3 = userController.createUser(USER3_NAME, USER3_UNIQUE_ID, USER3_FIRST_NAME, USER3_LAST_NAME, USER3_PASSWORD, null, null);
     }
 
     @BeforeClass
