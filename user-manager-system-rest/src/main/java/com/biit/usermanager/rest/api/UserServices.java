@@ -17,6 +17,7 @@ import com.biit.server.security.rest.NetworkController;
 import com.biit.usermanager.core.controller.UserController;
 import com.biit.usermanager.core.converters.UserConverter;
 import com.biit.usermanager.core.converters.models.UserConverterRequest;
+import com.biit.usermanager.core.exceptions.InvalidPasswordException;
 import com.biit.usermanager.core.exceptions.UserAlreadyExistsException;
 import com.biit.usermanager.core.exceptions.UserNotFoundException;
 import com.biit.usermanager.core.providers.UserProvider;
@@ -239,7 +240,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
         try {
             getController().updatePassword(authentication.getName(), request.getOldPassword(), request.getNewPassword(), authentication.getName());
         } catch (Exception e) {
-            UserManagerLogger.errorMessage(this.getClass(), e);
+            throw new InvalidPasswordException(this.getClass(), "Password does not match");
         }
     }
 
