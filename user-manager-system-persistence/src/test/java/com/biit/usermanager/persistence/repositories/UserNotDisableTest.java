@@ -14,19 +14,19 @@ import java.util.List;
 @SpringBootTest
 @Test(groups = {"userRepository"})
 public class UserNotDisableTest extends AbstractTestNGSpringContextTests {
-    private final static String USER_NAME_1 = "Ana";
-    private final static String USER_NAME_2 = "Adrian";
-    private final static String USER_NAME_3 = "Mariano";
+    private static final String USER_NAME_1 = "Ana";
+    private static final String USER_NAME_2 = "Adrian";
+    private static final String USER_NAME_3 = "Mariano";
 
-    private final static String id_Card1 = "21796308J";
-    private final static String id_Card2 = "21796308S";
-    private final static String id_Card3 = "21896308D";
+    private static final String id_Card1 = "21796308J";
+    private static final String id_Card2 = "21796308S";
+    private static final String id_Card3 = "21896308D";
 
-    private final static String username1 = "amari";
+    private static final String username1 = "amari";
 
-    private final static String username2 = "adrian";
+    private static final String username2 = "adrian";
 
-    private final static String username3 = "mariano";
+    private static final String username3 = "mariano";
 
     @Autowired
     private UserRepository userRepository;

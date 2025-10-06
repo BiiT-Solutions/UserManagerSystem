@@ -49,8 +49,8 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
     private static final String ADMIN_USER_NAME = "admin";
     private static final String ADMIN_EMAIL = "admin@test.com";
-    private final static String ADMIN_FIRST_NAME = "Admin";
-    private final static String ADMIN_LAST_NAME = "User";
+    private static final String ADMIN_FIRST_NAME = "Admin";
+    private static final String ADMIN_LAST_NAME = "User";
     private static final String ADMIN_PASSWORD = "zxc567";
     private static final String ADMIN_ID_CARD = "12345678A";
     private static final List<String> ADMIN_ROLES = List.of("DOCTOR");
@@ -59,8 +59,8 @@ public class RoleActivitiesTest extends AbstractTestNGSpringContextTests {
 
     private static final String USER_NAME = "test";
     private static final String USER_EMAIL = "test@test.com";
-    private final static String USER_FIRST_NAME = "Test";
-    private final static String USER_LAST_NAME = "User";
+    private static final String USER_FIRST_NAME = "Test";
+    private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
     private static final String USER_ID_CARD = "87654321B";
     private static final List<String> USER_ROLES = List.of("RECEPTIONIST");

@@ -49,8 +49,8 @@ import java.util.Set;
 public class AuthorizationTests extends AbstractTransactionalTestNGSpringContextTests {
     private static final String ADMIN_USER_NAME = "admin";
     private static final String ADMIN_EMAIL = "admin@test.com";
-    private final static String ADMIN_FIRST_NAME = "Admin";
-    private final static String ADMIN_LAST_NAME = "User";
+    private static final String ADMIN_FIRST_NAME = "Admin";
+    private static final String ADMIN_LAST_NAME = "User";
     private static final String ADMIN_PASSWORD = "zxc567";
     private static final String ADMIN_ID_CARD = "12345678A";
     private static final List<String> ADMIN_ROLES = List.of("ADMIN");
@@ -61,8 +61,8 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     private static final String USER_NAME = "test";
     private static final String USER_EMAIL = "test@test.com";
-    private final static String USER_FIRST_NAME = "Test";
-    private final static String USER_LAST_NAME = "User";
+    private static final String USER_FIRST_NAME = "Test";
+    private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
     private static final String USER_ID_CARD = "87654321B";
 
@@ -70,8 +70,8 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     private static final String OTHER_USER_NAME = "test2";
     private static final String OTHER_USER_EMAIL = "test2@test.com";
-    private final static String OTHER_USER_FIRST_NAME = "Test2";
-    private final static String OTHER_USER_LAST_NAME = "User2";
+    private static final String OTHER_USER_FIRST_NAME = "Test2";
+    private static final String OTHER_USER_LAST_NAME = "User2";
     private static final String OTHER_USER_PASSWORD = "456123";
     private static final String OTHER_USER_ID_CARD = "6667778P";
 
@@ -79,9 +79,6 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
 
     private static final String EMPTY_GROUP_NAME = "Group2";
     private static final String OTHER_GROUP_NAME = "Group3";
-
-    @Autowired
-    private WebApplicationContext context;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -133,7 +130,6 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     private Map<String, RoleDTO> roles;
 
     private TeamDTO teamDTO;
-    private TeamDTO teamDTO2;
 
     private List<ApplicationBackendServiceRoleDTO> applicationBackendServiceRoleDTOs;
     private List<ApplicationBackendServiceRoleDTO> adminRoles;
@@ -164,7 +160,6 @@ public class AuthorizationTests extends AbstractTransactionalTestNGSpringContext
     @BeforeClass(dependsOnMethods = "createOrganization")
     private void createGroups() {
         teamDTO = teamController.create(new TeamDTO(GROUP_NAME, organizationDTO), null);
-        teamDTO2 = teamController.create(new TeamDTO(OTHER_GROUP_NAME, organizationDTO), null);
         teamController.create(new TeamDTO(EMPTY_GROUP_NAME, organizationDTO), null);
     }
 

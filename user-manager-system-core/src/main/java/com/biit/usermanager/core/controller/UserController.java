@@ -570,6 +570,32 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
     }
 
 
+    /**
+     * Restricted service that only update some fields from the user.
+     *
+     * @param userDTO   data to be updated.
+     * @param updatedBy who has asked by this service.
+     * @return the new updated user.
+     */
+    public UserDTO updateOwnUser(UserDTO userDTO, String updatedBy) {
+        userDTO.setUsername(updatedBy);
+        final User user = getProvider().findByUsername(updatedBy).orElseThrow(() ->
+                new UserNotFoundException(this.getClass(), "No User with username '" + updatedBy + "' found on the system."));
+        user.setUpdatedBy(updatedBy);
+        user.setIdCard(userDTO.getIdCard());
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setAddress(userDTO.getAddress());
+        user.setPostalCode(userDTO.getPostalCode());
+        user.setCity(userDTO.getCity());
+        user.setCountry(userDTO.getCountry());
+        if (userDTO.getLocale() != null) {
+            user.setLocale(userDTO.getLocale());
+        }
+        return getConverter().convert(new UserConverterRequest(getProvider().update(user)));
+    }
+
+
     @Override
     public UserDTO updateUser(CreateUserRequest createUserRequest, String updatedBy) {
         final User user = getProvider().findByUsername(createUserRequest.getUsername()).orElseThrow(() ->
@@ -657,6 +683,7 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
         }
         super.delete(entity, deletedBy);
     }
+
 
     @Override
     @Transactional
@@ -783,6 +810,8 @@ public class UserController extends KafkaElementController<User, Long, UserDTO, 
                                                          userDTO, List<ApplicationBackendServiceRole> applicationBackendServiceRoles) {
         final User user = reverse(userDTO);
         user.setApplicationBackendServiceRoles(new HashSet<>(applicationBackendServiceRoles));
+        //Do not update password.
+        user.setPassword(null);
         getProvider().save(user);
     }
 

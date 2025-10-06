@@ -16,6 +16,7 @@ import com.biit.usermanager.dto.BackendServiceDTO;
 import com.biit.usermanager.dto.BackendServiceRoleDTO;
 import com.biit.usermanager.dto.RoleDTO;
 import com.biit.usermanager.dto.UserDTO;
+import com.biit.usermanager.persistence.entities.ApplicationBackendServiceRole;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
@@ -62,22 +64,18 @@ public class UserTests extends AbstractTestNGSpringContextTests {
 
     private static final String USER2_NAME = "user2";
     private static final String USER2_UNIQUE_ID = "1111111BB";
-    private final static String USER2_FIRST_NAME = "Test2";
-    private final static String USER2_LAST_NAME = "User2";
+    private static final String USER2_FIRST_NAME = "Test2";
+    private static final String USER2_LAST_NAME = "User2";
     private static final String USER2_PASSWORD = "password";
 
-    private final static String USER2_NEW_FIRST_NAME = "New Test2";
-    private final static String USER2_NEW_LAST_NAME = "New  User2";
+    private static final String USER2_NEW_FIRST_NAME = "New Test2";
+    private static final String USER2_NEW_LAST_NAME = "New  User2";
 
     private static final String USER3_NAME = "user3";
     private static final String USER3_UNIQUE_ID = "2222222CC";
-    private final static String USER3_FIRST_NAME = "Test3";
-    private final static String USER3_LAST_NAME = "User3";
+    private static final String USER3_FIRST_NAME = "Test3";
+    private static final String USER3_LAST_NAME = "User3";
     private static final String USER3_PASSWORD = "password";
-
-
-    @Value("${bcrypt.salt:}")
-    private String bcryptSalt;
 
     @Autowired
     private UserController userController;
@@ -113,7 +111,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
 
     private MockMvc mockMvc;
 
-    private String jwtToken;
+    private String userToken;
 
     private UserDTO admin;
 
@@ -129,7 +127,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
     @BeforeClass
     public void createAdminUser() {
         //Create the admin user
-        admin = (UserDTO) userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
+        admin = userController.createUser(USER_NAME, USER_UNIQUE_ID, USER_FIRST_NAME, USER_LAST_NAME, USER_PASSWORD, null, null);
 
         //Create the application
         final ApplicationDTO applicationDTO = applicationController.create(new ApplicationDTO(APPLICATION_NAME, ""), null);
@@ -185,8 +183,8 @@ public class UserTests extends AbstractTestNGSpringContextTests {
                 .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
                 .andReturn();
 
-        jwtToken = createResult.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
-        Assert.assertNotNull(jwtToken);
+        userToken = createResult.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
+        Assert.assertNotNull(userToken);
     }
 
     @Test(dependsOnMethods = "login")
@@ -216,7 +214,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
         this.mockMvc
                 .perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + jwtToken)
+                        .header("Authorization", "Bearer " + userToken)
                         .content(toJson(user2))
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -239,6 +237,64 @@ public class UserTests extends AbstractTestNGSpringContextTests {
 
         UserDTO authenticatedUser = fromJson(createResult.getResponse().getContentAsString(), UserDTO.class);
         Assert.assertEquals(authenticatedUser.getName(), USER2_NEW_FIRST_NAME);
+    }
+
+
+    @Test(dependsOnMethods = "updateUser")
+    public void updateOwnUser() throws Exception {
+        final UserDTO user = userController.findByUsername(USER2_NAME).get();
+        //Add basic access to the tool
+        List<ApplicationBackendServiceRole> backendRoles = applicationBackendServiceRoleConverter.reverseAll(applicationBackendServiceRoleController.get());
+        //No admin roles.
+        backendRoles = backendRoles.stream().filter(b -> !b.getId().getBackendServiceRole().getName().contains("ADMIN")).toList();
+        userController.setApplicationBackendServiceRole(user, backendRoles);
+
+        //Get JWT with new permissions
+        AuthRequest request = new AuthRequest();
+        request.setUsername(USER2_NAME);
+        request.setPassword(USER2_PASSWORD);
+
+        MvcResult loginResult = this.mockMvc
+                .perform(post("/auth/public/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
+                .andReturn();
+
+        userToken = loginResult.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
+
+        //Change own user data.
+        user.setFirstname(USER_FIRST_NAME);
+        user.setLastname(USER_LAST_NAME);
+
+        this.mockMvc
+                .perform(patch("/users/own")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + userToken)
+                        .content(toJson(user))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+
+        //Ensure that the password is not updated.
+        request = new AuthRequest();
+        request.setUsername(USER_NAME);
+        request.setPassword(USER_PASSWORD);
+
+        MvcResult createResult = this.mockMvc
+                .perform(post("/auth/public/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().exists(HttpHeaders.AUTHORIZATION))
+                .andReturn();
+
+        UserDTO authenticatedUser = fromJson(createResult.getResponse().getContentAsString(), UserDTO.class);
+        Assert.assertEquals(authenticatedUser.getName(), USER_FIRST_NAME);
 
     }
 
@@ -247,7 +303,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
     public void searchByUUID() throws Exception {
         final MvcResult userResult = this.mockMvc
                 .perform(get("/users/uuids").param("uuids", admin.getUID())
-                        .header("Authorization", "Bearer " + jwtToken)
+                        .header("Authorization", "Bearer " + userToken)
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -284,7 +340,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
         this.mockMvc
                 .perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + jwtToken)
+                        .header("Authorization", "Bearer " + userToken)
                         .content(toJson(user2))
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -304,7 +360,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
 
         MvcResult createResult = this.mockMvc
                 .perform(get("/users/" + user2.getId())
-                        .header("Authorization", "Bearer " + jwtToken)
+                        .header("Authorization", "Bearer " + userToken)
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -322,7 +378,7 @@ public class UserTests extends AbstractTestNGSpringContextTests {
         this.mockMvc
                 .perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + jwtToken)
+                        .header("Authorization", "Bearer " + userToken)
                         .content(toJson(userDTO))
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())

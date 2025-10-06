@@ -43,6 +43,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -593,5 +594,14 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     public Collection<UserDTO> getsUserByExternalReference(@Parameter(description = "List of references", required = true) @RequestParam("references")
                                                            List<String> externalReferences, Authentication authentication, HttpServletRequest httpRequest) {
         return getController().getByExternalReference(externalReferences);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority(@securityService.editorPrivilege, @securityService.adminPrivilege, @securityService.viewerPrivilege)")
+    @Operation(summary = "Updated current user's non critical data.", security = @SecurityRequirement(name = "bearerAuth"), hidden = true)
+    @PatchMapping(path = "/own", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public UserDTO updateCurrentUser(@RequestBody UserDTO user, Authentication authentication, HttpServletRequest request) {
+        return getController().updateOwnUser(user, authentication.getName());
     }
 }

@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class ClientTests extends AbstractTestNGSpringContextTests {
     private static final String USER_NAME = "admin";
     private static final String USER_PASSWORD = "asd123";
-    private final static String JWT_SALT = "4567";
+    private static final String JWT_SALT = "4567";
 
     @Autowired
     private WebApplicationContext context;

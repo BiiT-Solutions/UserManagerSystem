@@ -64,16 +64,16 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
 
     private static final String ADMIN_USER_NAME = "admin";
     private static final String ADMIN_EMAIL = "admin@test.com";
-    private final static String ADMIN_FIRST_NAME = "Admin";
-    private final static String ADMIN_LAST_NAME = "User";
+    private static final String ADMIN_FIRST_NAME = "Admin";
+    private static final String ADMIN_LAST_NAME = "User";
     private static final String ADMIN_PASSWORD = "zxc567";
     private static final String ADMIN_ID_CARD = "12345678A";
 
     private static final String USER_NAME = "test";
 
     private static final String USER_EMAIL = "test@test.com";
-    private final static String USER_FIRST_NAME = "Test";
-    private final static String USER_LAST_NAME = "User";
+    private static final String USER_FIRST_NAME = "Test";
+    private static final String USER_LAST_NAME = "User";
     private static final String USER_PASSWORD = "asd123";
     private static final String USER_NEW_PASSWORD = "asd12356";
     private static final String USER_ID_CARD = "87654321B";
@@ -86,8 +86,8 @@ public class AuthenticationTests extends AbstractTestNGSpringContextTests {
     private static final String NEW_USER_NAME = "NewUser";
     private static final String NEW_USER_NAME_UPDATED = "NewUser2";
     private static final String NEW_USER_EMAIL = "new@test.com";
-    private final static String NEW_USER_FIRST_NAME = "New";
-    private final static String NEW_USER_LAST_NAME = "User";
+    private static final String NEW_USER_FIRST_NAME = "New";
+    private static final String NEW_USER_LAST_NAME = "User";
     private static final String NEW_USER_PASSWORD = "asd123";
     private static final String NEW_USER_ID_CARD = "1233123123P";
     private static final String[] NEW_USER_ROLES = new String[]{"usermanagersystem_viewer"};

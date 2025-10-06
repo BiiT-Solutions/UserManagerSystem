@@ -61,15 +61,15 @@ public class UserExternalReferenceTests extends AbstractTestNGSpringContextTests
 
     private static final String USER2_NAME = "user2";
     private static final String USER2_UNIQUE_ID = "1111111BB";
-    private final static String USER2_FIRST_NAME = "Test2";
-    private final static String USER2_LAST_NAME = "User2";
+    private static final String USER2_FIRST_NAME = "Test2";
+    private static final String USER2_LAST_NAME = "User2";
     private static final String USER2_PASSWORD = "password";
     private static final String USER2_EXTERNAL_REFERENCE = UUID.randomUUID().toString();
 
     private static final String USER3_NAME = "user3";
     private static final String USER3_UNIQUE_ID = "1111111CC";
-    private final static String USER3_FIRST_NAME = "Test3";
-    private final static String USER3_LAST_NAME = "User3";
+    private static final String USER3_FIRST_NAME = "Test3";
+    private static final String USER3_LAST_NAME = "User3";
     private static final String USER3_PASSWORD = "password";
     private static final String USER3_EXTERNAL_REFERENCE = UUID.randomUUID().toString();
 
