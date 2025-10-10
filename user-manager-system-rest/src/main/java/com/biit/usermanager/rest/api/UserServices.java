@@ -91,7 +91,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @Operation(summary = "Get user by username", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsername(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
             HttpServletRequest request, Authentication authentication) {
@@ -129,7 +129,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/applications/{applicationName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndApplication(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
@@ -149,7 +149,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/usernames/{username}/service/{backendServiceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getByUsernameAndBackendService(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
@@ -251,7 +251,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
             security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping(path = "/{username}/passwords", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public UserDTO updateUserPassword(@Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+    public UserDTO updateUserPassword(@Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
                                       @Parameter(description = "username", required = true)
                                       @PathVariable("username") String username,
                                       @RequestBody UpdatePasswordRequest request, Authentication authentication, HttpServletRequest httpRequest) {
@@ -278,7 +278,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @GetMapping(path = "/public/{username}/available")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<Void> checkUsernameExists(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "username", required = true)
             @PathVariable("username") String username,
             HttpServletRequest httpRequest) {
@@ -315,7 +315,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @GetMapping(path = "/{username}/passwords", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public String getsUserPassword(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "username", required = true)
             @PathVariable("username") String username,
             Authentication authentication, HttpServletRequest httpRequest) {
@@ -349,7 +349,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @DeleteMapping(path = "/usernames/{username}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void deleteUser(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "username", required = true)
             @PathVariable("username") String username,
             Authentication authentication, HttpServletRequest httpRequest) {
@@ -389,7 +389,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @PostMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO setRolesFromApplicationAndRoles(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
@@ -410,7 +410,7 @@ public class UserServices extends ElementServices<User, Long, UserDTO, UserRepos
     @DeleteMapping(value = "/usernames/{username}/applications/{applicationName}/application-roles/{applicationRoleName}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO deleteRolesFromApplicationAndRoles(
-            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+            @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
             @Parameter(description = "Username of an existing user", required = true)
             @PathVariable("username") String username,
             @Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)

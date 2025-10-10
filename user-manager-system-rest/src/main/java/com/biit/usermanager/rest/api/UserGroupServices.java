@@ -333,7 +333,7 @@ public class UserGroupServices extends ElementServices<UserGroup, Long, UserGrou
     @PreAuthorize("hasAnyAuthority(@securityService.adminPrivilege, @securityService.editorPrivilege, @securityService.viewerPrivilege)")
     @Operation(summary = "Get all groups from a user.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserGroupDTO> getByUsername(@Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_SMALL_FIELD_LENGTH)
+    public List<UserGroupDTO> getByUsername(@Size(min = ElementDTO.MIN_FIELD_LENGTH, max = ElementDTO.MAX_NORMAL_FIELD_LENGTH)
                                             @Parameter(description = "Name of an existing user", required = true)
                                             @PathVariable("username") String username,
                                             HttpServletRequest request) {
