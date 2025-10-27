@@ -76,7 +76,7 @@ Include on your mvn `pom.xml` file:
 
 ```
  <dependency>
-       <groupId>com.biit</groupId>
+       <groupId>com.biit-solutions</groupId>
        <artifactId>user-manager-system-rest-client</artifactId>
  </dependency>
 ```
@@ -149,7 +149,7 @@ Include on your mvn `pom.xml` file:
 
 ```
  <dependency>
-       <groupId>com.biit</groupId>
+       <groupId>com.biit-solutions</groupId>
        <artifactId>user-manager-system-security</artifactId>
  </dependency>
 ```
@@ -243,7 +243,7 @@ If you want to test your application without connecting to the User Manager Syst
 
 ```
  <dependency>
-       <groupId>com.biit</groupId>
+       <groupId>com.biit-solutions</groupId>
        <artifactId>user-manager-system-test</artifactId>
        <scope>test</scope>
  </dependency>

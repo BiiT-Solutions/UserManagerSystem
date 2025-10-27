@@ -6,7 +6,7 @@
     <artifactId>user-manager-system-rest-client</artifactId>
 
     <parent>
-        <groupId>com.biit</groupId>
+        <groupId>com.biit-solutions</groupId>
         <artifactId>user-manager-system</artifactId>
         <version>0.5.50-SNAPSHOT</version>
     </parent>
@@ -17,17 +17,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.biit</groupId>
+            <groupId>com.biit-solutions</groupId>
             <artifactId>user-manager-system-logger</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.biit</groupId>
+            <groupId>com.biit-solutions</groupId>
             <artifactId>user-manager-system-dto</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.biit</groupId>
+            <groupId>com.biit-solutions</groupId>
             <artifactId>rest-server-security-client</artifactId>
         </dependency>
         <dependency>
@@ -74,7 +74,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.biit</groupId>
+            <groupId>com.biit-solutions</groupId>
             <artifactId>user-manager-system-rest</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
